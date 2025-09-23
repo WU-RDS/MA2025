@@ -5,6 +5,10 @@ on:
   schedule:
     - cron: '0 0 1 9 *' # run every first of September
 
+permissions:
+  contents: write
+  pull-requests: write
+  
 jobs:
   update-r:
     runs-on: ubuntu-latest

@@ -1,0 +1,23 @@
+name: update-cran-date
+
+on:
+  workflow_dispatch: # allows manual triggering
+  # schedule:
+  #   - cron: '0 6 * * *'
+
+jobs:
+  lockfile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+      - run: nix run .#update-r 
+      - name: Update flake.lock
+        uses: DeterminateSystems/update-flake-lock@v27
+        with:
+          token: ${{ secrets.GH_TOKEN_FOR_UPDATES }}
+          branch: update_cran_date
+          pr-title: "Update CRAN date"
+          pr-labels: |
+            r-update
+            automated

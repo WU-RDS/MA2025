@@ -6,7 +6,7 @@ on:
   #   - cron: '0 6 * * *'
 
 jobs:
-  lockfile:
+  update-r:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository

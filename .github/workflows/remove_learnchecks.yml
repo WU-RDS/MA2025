@@ -6,7 +6,7 @@ on:
     - cron: '0 0 1 9 *' # run every first of September
 
 jobs:
-  lockfile:
+  remove-learning-checks:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository

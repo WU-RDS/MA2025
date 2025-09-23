@@ -7,6 +7,11 @@ on:
 
 jobs:
   update-r:
+    permissions:
+      contents: write
+      id-token: write
+      issues: write
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -16,7 +21,6 @@ jobs:
       - name: Update flake.lock
         uses: DeterminateSystems/update-flake-lock@v27
         with:
-          token: ${{ secrets.GH_TOKEN_FOR_UPDATES }}
           branch: update_cran_date
           pr-title: "Update CRAN date"
           pr-labels: |

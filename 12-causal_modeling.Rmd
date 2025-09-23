@@ -575,7 +575,7 @@ The following code _should_ download and source the macro for you but will defin
 ```{r, eval=TRUE, cache=TRUE}
 ## Download and source the PROCESS macro by Andrew F. Hayes
 temp <- tempfile()
-process_macro_dl <- "https://www.afhayes.com/public/processv43.zip"
+process_macro_dl <- "https://www.afhayes.com/public/processv50.zip"
 download.file(process_macro_dl,temp)
 files <- unzip(temp, list = TRUE)
 fname <- files$Name[endsWith(files$Name, "process.R")]

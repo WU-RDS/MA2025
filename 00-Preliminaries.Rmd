@@ -365,7 +365,7 @@ ggplot(data_1) +
   geom_path(aes(x=reorder(x, y2),y=y2), color="steelblue", size = 1, linetype = "dashed", group = 1) + 
   geom_segment(aes(x="post",y=data_1$y2[3], xend="post", yend=data_1$y3[3]),size=1, color="darkmagenta", arrow = arrow(length = unit(0.1, "inches"))) + 
   geom_segment(aes(x="post",y=data_1$y3[3], xend="post", yend=data_1$y2[3]),size=1, color="darkmagenta", arrow = arrow(length = unit(0.1, "inches"))) + 
-  annotate("text", x = 3.1, y = (data_1$y3[3]+data_1$y2[3])/2, label =  expression(Delta), size = 5, color = "darkmagenta") +
+  annotate("text", x = 3.1, y = (y3[3]+y2[3])/2, label = "Delta", parse = TRUE, size = 5, color = "darkmagenta") +
   geom_vline(xintercept = (1.5+2.5)/2, col='grey', lwd=1,linetype="dotted") +
   #annotate("text", x = 1.59, y = 0.5, label =  "Intervention", size = 3) +
   annotate("text", x = 3.13, y = data_1$y3[3], label =  "Yt,post", size = 3) +

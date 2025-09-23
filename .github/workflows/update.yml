@@ -5,12 +5,13 @@ on:
   schedule:
     - cron: '0 0 1 9 *' # run every first of September
 
-permissions:
-  contents: write
-  pull-requests: write
-  
 jobs:
   update-r:
+    permissions:
+      contents: write
+      id-token: write
+      issues: write
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository

@@ -51,6 +51,11 @@
         sed -i  "s|nixpkgs.url = \"github:rstats-on-nix/nixpkgs/[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}\";|nixpkgs.url = \"github:rstats-on-nix/nixpkgs/$RVER\";|" flake.nix
         echo "CRAN date is $RVER"
       '';
+      rm-learnchecks = pkgs.writeShellScriptBin "rm-learnchecks" ''
+        #!${pkgs.bash}/bin/bash
+        set -euo pipefail
+        ${pkgs.findutils}/bin/find . -iname '*.[rR]md' -type f -exec ${pkgs.gnused}/bin/sed -i 's/- \[x\]/- [ ]/' {} \;
+      '';
     });
 
     devShells = forAllSystems ({

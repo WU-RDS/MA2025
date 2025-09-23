@@ -45,7 +45,6 @@
     devShells = forAllSystems ({pkgs}: {
       default = pkgs.mkShell {
         packages = [
-          pkgs.xquartz
           (pkgs.rWrapper.override {
             packages =
               # External R packages list (expects r-packages.nix to return a list)

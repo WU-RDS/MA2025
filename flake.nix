@@ -14,7 +14,7 @@
   };
 
   inputs = {
-    nixpkgs.url = "github:rstats-on-nix/nixpkgs/2025-09-01";
+    nixpkgs.url = "github:rstats-on-nix/nixpkgs/2025-09-22";
   };
 
   outputs = {

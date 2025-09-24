@@ -28,3 +28,7 @@ On the 1st of September every year automated pull requests are triggered:
 These can also be triggered manually under "Actions":
 
 ![](./images/gh_actions.png)
+
+# Testing
+
+Changes to the the website or build system can be tested on the `testing` branch. CI will check if the website still builds after the change after which it is safe to merge into main.

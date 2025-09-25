@@ -61,7 +61,7 @@ To give you an example of how the graphics are composed, let's go back to the fr
 
 ```{r message=FALSE, warning=FALSE}
 library(tidyverse)
-music_data <- read.csv2("https://short.wu.ac.at/ma22_musicdata") |> # pipe music data into mutate
+music_data <- read.csv2("https://short.wu.ac.at/ma22_musicdata") %>% # pipe music data into mutate
   mutate(release_date = as.Date(release_date), # convert to date
          explicit = factor(explicit, levels = 0:1, labels = c("not explicit", "explicit")), # convert to factor w. new labels
          label = as.factor(label), # convert to factor with values as labels
@@ -71,7 +71,7 @@ music_data <- read.csv2("https://short.wu.ac.at/ma22_musicdata") |> # pipe music
          expert_rating = factor(expert_rating, 
                                 levels = c("poor", "fair", "good", "excellent", "masterpiece"), 
                                 ordered = TRUE)
-         ) |>
+         ) %>%
   filter(!is.na(valence))
 head(music_data)
 ```
@@ -269,8 +269,8 @@ head(music_data)
 Now we can create the histogram using ```geom_histogram()```. The argument ```binwidth``` specifies the range that each bar spans, ```col = "black"``` specifies the border to be black and ```fill = "darkblue"``` sets the inner color of the bars to dark blue. For brevity, we have now also started naming the x and y axis with the single function ```labs()```, instead of using the two distinct functions ```xlab()``` and ```ylab()```. Let's look at the distribution of streams of R&B songs:
 
 ```{r message=FALSE, warning=FALSE, echo=TRUE, eval=TRUE, fig.align="center", fig.cap = "Histogram"}
-music_data |>
-  filter(genre=="R&B") |>
+music_data %>%
+  filter(genre=="R&B") %>%
   ggplot(aes(streams)) + 
     geom_histogram(binwidth = 20000000, col = "black", fill = "darkblue") + 
     labs(x = "Number of streams", y = "Frequency", title = "Distribution of streams") + 
@@ -280,8 +280,8 @@ music_data |>
 If you would like to highlight certain points of the distribution, you can use the `geom_vline` (short for vertical line) function to do this. For example, we may want to highlight the mean and the median of the distribution.
 
 ```{r message=FALSE, warning=FALSE, echo=TRUE, eval=TRUE, fig.align="center", fig.cap = "Histogram 2"}
-music_data |>
-  filter(genre=="R&B") |>
+music_data %>%
+  filter(genre=="R&B") %>%
 ggplot(aes(streams)) + 
   geom_histogram(binwidth = 20000000, col = "black", fill = "darkblue") + 
   labs(x = "Number of streams", y = "Frequency", title = "Distribution of streams", subtitle = "Red vertical line = mean, green vertical line = median") + 
@@ -440,7 +440,7 @@ Another important type of plot is the line plot used if, for example, you have a
 ```{r message=FALSE, warning=FALSE}
 music_data_ctry <- read.table("https://raw.githubusercontent.com/IMSMWU/Teaching/master/MRDA2017/streaming_charts_ctry.csv", 
                         sep = ",", 
-                        header = TRUE) |>
+                        header = TRUE) %>%
   mutate(week = as.Date(week),
          region = as.factor(region))
 head(music_data_ctry)

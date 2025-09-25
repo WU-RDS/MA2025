@@ -1,3 +1,20 @@
+# The following code is taken from the third chapter of the online script, which provides more detailed explanations:
+# https://wu-rds.github.io/MA2025/data-handling.html 
+
+#-------------------------------------------------------------------#
+#---------------------Install missing packages----------------------#
+#-------------------------------------------------------------------#
+
+req_pacakges <- c("tidyverse")
+req_pacakges <- req_pacakges[!req_pacakges %in% installed.packages()]
+lapply(req_pacakges, install.packages)
+# Useful options setting that prevents R from using scientific notation on numeric values
+options(scipen = 999, digits = 4)
+
+#-------------------------------------------------------------------#
+#--------------------------Getting started--------------------------#
+#-------------------------------------------------------------------#
+
 ## --------------------------------------------------------------------------------------------------------------------------------------------------------------
 x <- "hello world" #assigns the words "hello world" to the object x
 #this is a comment
@@ -32,12 +49,15 @@ y^2 + 3*x #adds the value of y squared and 3x the value of x together
 y <- as.character(y)
 print(y)
 
+#-------------------------------------------------------------------#
+#----------------------Vectors and Data Frames----------------------#
+#-------------------------------------------------------------------#
 
 ## --------------------------------------------------------------------------------------------------------------------------------------------------------------
-#Numeric:
+#Numeric vector:
 top10_track_streams <- c(163608, 126687, 120480, 110022, 108630, 95639, 94690, 89011, 87869, 85599) 
 log(top10_track_streams)
-#Character:
+#Character vector:
 top10_artist_names <- c("Axwell /\\ Ingrosso", "Imagine Dragons", "J. Balvin", "Robin Schulz", "Jonas Blue", "David Guetta", "French Montana", "Calvin Harris", "Liam Payne", "Lauv") # Characters have to be put in ""
 
 #Factor variable with two categories:
@@ -59,15 +79,12 @@ top10_track_explicit_1 <- c(FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE,
 
 ## --------------------------------------------------------------------------------------------------------------------------------------------------------------
 top10_track_streams
-
 ## --------------------------------------------------------------------------------------------------------------------------------------------------------------
 top_10_track_release_date
-
-
 ## --------------------------------------------------------------------------------------------------------------------------------------------------------------
 class(top_10_track_release_date)
 
-
+# Combine vectors in a data frame:
 ## --------------------------------------------------------------------------------------------------------------------------------------------------------------
 music_data <- data.frame(top10_track_streams, 
                          top10_artist_names, 
@@ -147,10 +164,10 @@ head(music_data)
 
 ## --------------------------------------------------------------------------------------------------------------------------------------------------------------
 music_data_new <- mutate(music_data, 
-       sqrt_streams = sqrt(top10_track_streams),
-       # "%Y" extracts the year, format returns a character
-       release_year = as.integer(format(top_10_track_release_date, "%Y")) 
-       ) %>%
+                         sqrt_streams = sqrt(top10_track_streams),
+                         # "%Y" extracts the year, format returns a character
+                         release_year = as.integer(format(top_10_track_release_date, "%Y")) 
+) %>%
   select(top10_artist_names, sqrt_streams, release_year)
 
 
@@ -158,7 +175,6 @@ music_data_new <- mutate(music_data,
 music_data <- dplyr::rename(music_data, genre = top10_artist_genre, release_date = top_10_track_release_date)
 head(music_data)
 
-drn <- dplyr::rename
 ## ---- message=FALSE, warning=FALSE-----------------------------------------------------------------------------------------------------------------------------
 names(music_data)[names(music_data)=="genre"] <- "top10_artist_genre"
 head(music_data)

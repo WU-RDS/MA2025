@@ -3760,7 +3760,7 @@ The following code _should_ download and source the macro for you but will defin
 ``` r
 ## Download and source the PROCESS macro by Andrew F. Hayes
 temp <- tempfile()
-process_macro_dl <- "https://www.afhayes.com/public/processv43.zip"
+process_macro_dl <- "https://www.afhayes.com/public/processv50.zip"
 download.file(process_macro_dl,temp)
 files <- unzip(temp, list = TRUE)
 fname <- files$Name[endsWith(files$Name, "process.R")]
@@ -3769,7 +3769,7 @@ source(unz(temp, fname))
 
 ```
 ## 
-## ********************* PROCESS for R Version 4.3.1 ********************* 
+## **************** PROCESS Procedure for R Version 5.0 ****************** 
 ##  
 ##            Written by Andrew F. Hayes, Ph.D.  www.afhayes.com              
 ##    Documentation available in Hayes (2022). www.guilford.com/p/hayes3   
@@ -3777,9 +3777,9 @@ source(unz(temp, fname))
 ## *********************************************************************** 
 ##  
 ## PROCESS is now ready for use.
-## Copyright 2020-2023 by Andrew F. Hayes ALL RIGHTS RESERVED
-## Workshop schedule at http://haskayne.ucalgary.ca/CCRAM
-## 
+## Copyright 2013-2025 by Andrew F. Hayes ALL RIGHTS RESERVED
+## Workshop schedule at haskayne.ucalgary.ca/CCRAM 
+## Information about PROCESS available at processmacro.org/faq.html
 ```
 
 ``` r
@@ -3804,17 +3804,17 @@ process(
 
 ```
 ## 
-## ********************* PROCESS for R Version 4.3.1 ********************* 
+## **************** PROCESS Procedure for R Version 5.0 ****************** 
 ##  
 ##            Written by Andrew F. Hayes, Ph.D.  www.afhayes.com              
 ##    Documentation available in Hayes (2022). www.guilford.com/p/hayes3   
 ##  
 ## *********************************************************************** 
-##          
-## Model : 4
-##     Y : Y
-##     X : X
-##     M : M
+##           
+##   Model: 4
+##       Y: Y
+##       X: X
+##       M: M
 ## 
 ## Sample size: 500
 ## 
@@ -3914,15 +3914,18 @@ To understand for which values of the moderator the slope is significant (and in
 
 
 ``` r
+library(interactions)
 moderated_ols <- lm(y ~ x*w, data = moderation_df)
 pred_resp <- predict_response(moderated_ols, c("x", "w"))
-plot(johnson_neyman(pred_resp)) 
+johnson_neyman(model = moderated_ols, pred = "x", modx = "w")
 ```
 
 ```
-## The association between `x` and `y` is negative for values of `w` lower
-##   than 63 and positive for values higher than 80. Inside the interval of
-##   [63.00, 80.00], there were no clear associations.
+## JOHNSON-NEYMAN INTERVAL
+## 
+## When w is OUTSIDE the interval [63.10, 80.19], the slope of x is p < .05.
+## 
+## Note: The range of observed values of w is [-150.45, 130.63]
 ```
 
 <img src="12-causal_modeling_files/figure-html/jn-1.png" width="672" style="display: block; margin: auto;" />
@@ -3936,17 +3939,17 @@ process(moderation_df, y = "y", x = "x", w="w", model=1, jn=1, seed=123)
 
 ```
 ## 
-## ********************* PROCESS for R Version 4.3.1 ********************* 
+## **************** PROCESS Procedure for R Version 5.0 ****************** 
 ##  
 ##            Written by Andrew F. Hayes, Ph.D.  www.afhayes.com              
 ##    Documentation available in Hayes (2022). www.guilford.com/p/hayes3   
 ##  
 ## *********************************************************************** 
-##          
-## Model : 1
-##     Y : y
-##     X : x
-##     W : w
+##           
+##   Model: 1
+##       Y: y
+##       X: x
+##       W: w
 ## 
 ## Sample size: 10000
 ## 
@@ -3965,10 +3968,10 @@ process(moderation_df, y = "y", x = "x", w="w", model=1, jn=1, seed=123)
 ## constant    0.0199    0.0202    0.9880    0.3232   -0.0196    0.0594
 ## x          -0.1506    0.0040  -37.8143    0.0000   -0.1584   -0.1428
 ## w          -0.0000    0.0006   -0.0306    0.9756   -0.0012    0.0011
-## Int_1       0.0021    0.0001   18.2215    0.0000    0.0019    0.0024
+## int_1       0.0021    0.0001   18.2215    0.0000    0.0019    0.0024
 ## 
 ## Product terms key:
-## Int_1  :  x  x  w      
+## int_1  :  x  x  w      
 ## 
 ## Test(s) of highest order unconditional interaction(s):
 ##       R2-chng         F       df1       df2         p
@@ -4005,7 +4008,7 @@ process(moderation_df, y = "y", x = "x", w="w", model=1, jn=1, seed=123)
 ##     27.0710   -0.0930    0.0051  -18.2950    0.0000   -0.1030   -0.0831
 ##     41.8644   -0.0616    0.0063   -9.7650    0.0000   -0.0739   -0.0492
 ##     56.6579   -0.0301    0.0077   -3.8998    0.0001   -0.0452   -0.0150
-##     63.0982   -0.0164    0.0084   -1.9602    0.0500   -0.0328   -0.0000
+##     63.0982   -0.0164    0.0084   -1.9602    0.0500   -0.0328    0.0000
 ##     71.4514    0.0013    0.0092    0.1460    0.8840   -0.0168    0.0195
 ##     80.1945    0.0199    0.0102    1.9602    0.0500    0.0000    0.0399
 ##     86.2449    0.0328    0.0108    3.0303    0.0024    0.0116    0.0540

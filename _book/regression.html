@@ -6837,13 +6837,13 @@ F Statistic
 The following code <em>should</em> download and source the macro for you but will definitely break in the future (try changing the <code>v43</code> part of the link to <code>v44</code> or <code>v45</code> etc. or obtain a new link from <a href="https://haskayne.ucalgary.ca/CCRAM/resource-hub">the website</a> if it does):</p>
 <div class="sourceCode" id="cb673"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb673-1"><a href="regression.html#cb673-1" tabindex="-1"></a><span class="do">## Download and source the PROCESS macro by Andrew F. Hayes</span></span>
 <span id="cb673-2"><a href="regression.html#cb673-2" tabindex="-1"></a>temp <span class="ot">&lt;-</span> <span class="fu">tempfile</span>()</span>
-<span id="cb673-3"><a href="regression.html#cb673-3" tabindex="-1"></a>process_macro_dl <span class="ot">&lt;-</span> <span class="st">&quot;https://www.afhayes.com/public/processv43.zip&quot;</span></span>
+<span id="cb673-3"><a href="regression.html#cb673-3" tabindex="-1"></a>process_macro_dl <span class="ot">&lt;-</span> <span class="st">&quot;https://www.afhayes.com/public/processv50.zip&quot;</span></span>
 <span id="cb673-4"><a href="regression.html#cb673-4" tabindex="-1"></a><span class="fu">download.file</span>(process_macro_dl,temp)</span>
 <span id="cb673-5"><a href="regression.html#cb673-5" tabindex="-1"></a>files <span class="ot">&lt;-</span> <span class="fu">unzip</span>(temp, <span class="at">list =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb673-6"><a href="regression.html#cb673-6" tabindex="-1"></a>fname <span class="ot">&lt;-</span> files<span class="sc">$</span>Name[<span class="fu">endsWith</span>(files<span class="sc">$</span>Name, <span class="st">&quot;process.R&quot;</span>)]</span>
 <span id="cb673-7"><a href="regression.html#cb673-7" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">unz</span>(temp, fname))</span></code></pre></div>
 <pre><code>## 
-## ********************* PROCESS for R Version 4.3.1 ********************* 
+## **************** PROCESS Procedure for R Version 5.0 ****************** 
 ##  
 ##            Written by Andrew F. Hayes, Ph.D.  www.afhayes.com              
 ##    Documentation available in Hayes (2022). www.guilford.com/p/hayes3   
@@ -6851,9 +6851,9 @@ The following code <em>should</em> download and source the macro for you but wil
 ## *********************************************************************** 
 ##  
 ## PROCESS is now ready for use.
-## Copyright 2020-2023 by Andrew F. Hayes ALL RIGHTS RESERVED
-## Workshop schedule at http://haskayne.ucalgary.ca/CCRAM
-## </code></pre>
+## Copyright 2013-2025 by Andrew F. Hayes ALL RIGHTS RESERVED
+## Workshop schedule at haskayne.ucalgary.ca/CCRAM 
+## Information about PROCESS available at processmacro.org/faq.html</code></pre>
 <div class="sourceCode" id="cb675"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb675-1"><a href="regression.html#cb675-1" tabindex="-1"></a><span class="fu">unlink</span>(temp)</span>
 <span id="cb675-2"><a href="regression.html#cb675-2" tabindex="-1"></a><span class="fu">rm</span>(files)</span>
 <span id="cb675-3"><a href="regression.html#cb675-3" tabindex="-1"></a><span class="fu">rm</span>(fname)</span>
@@ -6866,17 +6866,17 @@ The following code <em>should</em> download and source the macro for you but wil
 <span id="cb676-3"><a href="regression.html#cb676-3" tabindex="-1"></a>  <span class="at">progress =</span> <span class="dv">0</span>, <span class="at">seed =</span> <span class="dv">1</span>, <span class="at">plot =</span> <span class="dv">1</span></span>
 <span id="cb676-4"><a href="regression.html#cb676-4" tabindex="-1"></a>  )</span></code></pre></div>
 <pre><code>## 
-## ********************* PROCESS for R Version 4.3.1 ********************* 
+## **************** PROCESS Procedure for R Version 5.0 ****************** 
 ##  
 ##            Written by Andrew F. Hayes, Ph.D.  www.afhayes.com              
 ##    Documentation available in Hayes (2022). www.guilford.com/p/hayes3   
 ##  
 ## *********************************************************************** 
-##          
-## Model : 4
-##     Y : Y
-##     X : X
-##     M : M
+##           
+##   Model: 4
+##       Y: Y
+##       X: X
+##       M: M
 ## 
 ## Sample size: 500
 ## 
@@ -6953,27 +6953,30 @@ The following code <em>should</em> download and source the macro for you but wil
 <span id="cb679-7"><a href="regression.html#cb679-7" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;top&quot;</span>)</span></code></pre></div>
 <p><img src="12-causal_modeling_files/figure-html/unnamed-chunk-27-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>To understand for which values of the moderator the slope is significant (and in which direction) we can use the so-called Johnson-Neyman intervals.</p>
-<div class="sourceCode" id="cb680"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb680-1"><a href="regression.html#cb680-1" tabindex="-1"></a>moderated_ols <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x<span class="sc">*</span>w, <span class="at">data =</span> moderation_df)</span>
-<span id="cb680-2"><a href="regression.html#cb680-2" tabindex="-1"></a>pred_resp <span class="ot">&lt;-</span> <span class="fu">predict_response</span>(moderated_ols, <span class="fu">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;w&quot;</span>))</span>
-<span id="cb680-3"><a href="regression.html#cb680-3" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">johnson_neyman</span>(pred_resp)) </span></code></pre></div>
-<pre><code>## The association between `x` and `y` is negative for values of `w` lower
-##   than 63 and positive for values higher than 80. Inside the interval of
-##   [63.00, 80.00], there were no clear associations.</code></pre>
+<div class="sourceCode" id="cb680"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb680-1"><a href="regression.html#cb680-1" tabindex="-1"></a><span class="fu">library</span>(interactions)</span>
+<span id="cb680-2"><a href="regression.html#cb680-2" tabindex="-1"></a>moderated_ols <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x<span class="sc">*</span>w, <span class="at">data =</span> moderation_df)</span>
+<span id="cb680-3"><a href="regression.html#cb680-3" tabindex="-1"></a>pred_resp <span class="ot">&lt;-</span> <span class="fu">predict_response</span>(moderated_ols, <span class="fu">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;w&quot;</span>))</span>
+<span id="cb680-4"><a href="regression.html#cb680-4" tabindex="-1"></a><span class="fu">johnson_neyman</span>(<span class="at">model =</span> moderated_ols, <span class="at">pred =</span> <span class="st">&quot;x&quot;</span>, <span class="at">modx =</span> <span class="st">&quot;w&quot;</span>)</span></code></pre></div>
+<pre><code>## JOHNSON-NEYMAN INTERVAL
+## 
+## When w is OUTSIDE the interval [63.10, 80.19], the slope of x is p &lt; .05.
+## 
+## Note: The range of observed values of w is [-150.45, 130.63]</code></pre>
 <p><img src="12-causal_modeling_files/figure-html/jn-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>In PROCESS the simple moderation model is <code>model=1</code>. <code>jn=1</code> will give us the Johnson-Neyman intervals.</p>
 <div class="sourceCode" id="cb682"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb682-1"><a href="regression.html#cb682-1" tabindex="-1"></a><span class="fu">process</span>(moderation_df, <span class="at">y =</span> <span class="st">&quot;y&quot;</span>, <span class="at">x =</span> <span class="st">&quot;x&quot;</span>, <span class="at">w=</span><span class="st">&quot;w&quot;</span>, <span class="at">model=</span><span class="dv">1</span>, <span class="at">jn=</span><span class="dv">1</span>, <span class="at">seed=</span><span class="dv">123</span>)</span></code></pre></div>
 <pre><code>## 
-## ********************* PROCESS for R Version 4.3.1 ********************* 
+## **************** PROCESS Procedure for R Version 5.0 ****************** 
 ##  
 ##            Written by Andrew F. Hayes, Ph.D.  www.afhayes.com              
 ##    Documentation available in Hayes (2022). www.guilford.com/p/hayes3   
 ##  
 ## *********************************************************************** 
-##          
-## Model : 1
-##     Y : y
-##     X : x
-##     W : w
+##           
+##   Model: 1
+##       Y: y
+##       X: x
+##       W: w
 ## 
 ## Sample size: 10000
 ## 
@@ -6992,10 +6995,10 @@ The following code <em>should</em> download and source the macro for you but wil
 ## constant    0.0199    0.0202    0.9880    0.3232   -0.0196    0.0594
 ## x          -0.1506    0.0040  -37.8143    0.0000   -0.1584   -0.1428
 ## w          -0.0000    0.0006   -0.0306    0.9756   -0.0012    0.0011
-## Int_1       0.0021    0.0001   18.2215    0.0000    0.0019    0.0024
+## int_1       0.0021    0.0001   18.2215    0.0000    0.0019    0.0024
 ## 
 ## Product terms key:
-## Int_1  :  x  x  w      
+## int_1  :  x  x  w      
 ## 
 ## Test(s) of highest order unconditional interaction(s):
 ##       R2-chng         F       df1       df2         p
@@ -7032,7 +7035,7 @@ The following code <em>should</em> download and source the macro for you but wil
 ##     27.0710   -0.0930    0.0051  -18.2950    0.0000   -0.1030   -0.0831
 ##     41.8644   -0.0616    0.0063   -9.7650    0.0000   -0.0739   -0.0492
 ##     56.6579   -0.0301    0.0077   -3.8998    0.0001   -0.0452   -0.0150
-##     63.0982   -0.0164    0.0084   -1.9602    0.0500   -0.0328   -0.0000
+##     63.0982   -0.0164    0.0084   -1.9602    0.0500   -0.0328    0.0000
 ##     71.4514    0.0013    0.0092    0.1460    0.8840   -0.0168    0.0195
 ##     80.1945    0.0199    0.0102    1.9602    0.0500    0.0000    0.0399
 ##     86.2449    0.0328    0.0108    3.0303    0.0024    0.0116    0.0540

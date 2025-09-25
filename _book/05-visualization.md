@@ -48,7 +48,7 @@ To give you an example of how the graphics are composed, let's go back to the fr
 
 ``` r
 library(tidyverse)
-music_data <- read.csv2("https://short.wu.ac.at/ma22_musicdata") |> # pipe music data into mutate
+music_data <- read.csv2("https://short.wu.ac.at/ma22_musicdata") %>% # pipe music data into mutate
   mutate(release_date = as.Date(release_date), # convert to date
          explicit = factor(explicit, levels = 0:1, labels = c("not explicit", "explicit")), # convert to factor w. new labels
          label = as.factor(label), # convert to factor with values as labels
@@ -58,7 +58,7 @@ music_data <- read.csv2("https://short.wu.ac.at/ma22_musicdata") |> # pipe music
          expert_rating = factor(expert_rating, 
                                 levels = c("poor", "fair", "good", "excellent", "masterpiece"), 
                                 ordered = TRUE)
-         ) |>
+         ) %>%
   filter(!is.na(valence))
 head(music_data)
 ```
@@ -366,8 +366,8 @@ Now we can create the histogram using ```geom_histogram()```. The argument ```bi
 
 
 ``` r
-music_data |>
-  filter(genre=="R&B") |>
+music_data %>%
+  filter(genre=="R&B") %>%
   ggplot(aes(streams)) + 
     geom_histogram(binwidth = 20000000, col = "black", fill = "darkblue") + 
     labs(x = "Number of streams", y = "Frequency", title = "Distribution of streams") + 
@@ -383,8 +383,8 @@ If you would like to highlight certain points of the distribution, you can use t
 
 
 ``` r
-music_data |>
-  filter(genre=="R&B") |>
+music_data %>%
+  filter(genre=="R&B") %>%
 ggplot(aes(streams)) + 
   geom_histogram(binwidth = 20000000, col = "black", fill = "darkblue") + 
   labs(x = "Number of streams", y = "Frequency", title = "Distribution of streams", subtitle = "Red vertical line = mean, green vertical line = median") + 
@@ -613,7 +613,7 @@ Another important type of plot is the line plot used if, for example, you have a
 ``` r
 music_data_ctry <- read.table("https://raw.githubusercontent.com/IMSMWU/Teaching/master/MRDA2017/streaming_charts_ctry.csv", 
                         sep = ",", 
-                        header = TRUE) |>
+                        header = TRUE) %>%
   mutate(week = as.Date(week),
          region = as.factor(region))
 head(music_data_ctry)

@@ -1,24 +1,36 @@
-## ----echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE-------------------------
-library(knitr)
-options(scipen = 999)
-#This code automatically tidies code so that it does not reach over the page
-opts_chunk$set(tidy.opts=list(width.cutoff=50),tidy=TRUE, rownames.print = FALSE, rows.print = 10)
-opts_chunk$set(cache=T)
+#-------------------------------------------------------------------#
+#---------------------Descriptive statistics------------------------#
+#-------------------------------------------------------------------#
+# The following code is taken from the fourth chapter of the online script, which provides more detailed explanations:
+# https://wu-rds.github.io/MA2025/summarizing-data.html
 
+#-------------------------------------------------------------------#
+#---------------------Install missing packages----------------------#
+#-------------------------------------------------------------------#
 
+# At the top of each script this code snippet will make sure that all required packages are installed
+## ------------------------------------------------------------------------
+req_packages <- c("psych","summarytools")
+req_packages <- req_packages[!req_packages %in% installed.packages()]
+lapply(req_packages, install.packages)
+# Useful options setting that prevents R from using scientific notation on numeric values
+options(scipen = 999, digits = 2)
 
+#-------------------------------------------------------------------#
+#----------------------Categorical variables------------------------#
+#-------------------------------------------------------------------#
 
-## ---- message=FALSE, warning=FALSE, eval=TRUE, cache=TRUE------------------------
-# read.csv2 is shorthand for read.csv(file, sep = ";")
+# Load data
+## ------------------------------------------------------------------------
 music_data <- read.csv2("https://short.wu.ac.at/ma22_musicdata")
 dim(music_data)
 head(music_data)
 names(music_data)
 
-
-## ---- message=FALSE, warning=FALSE, eval=TRUE------------------------------------
+# Convert variables to correct data type
+## ------------------------------------------------------------------------
 library(tidyverse)
-music_data <- music_data |> # pipe music data into mutate
+music_data <- music_data %>% # pipe music data into mutate
   mutate(release_date = as.Date(release_date), # convert to date
          explicit = factor(explicit, levels = 0:1, labels = c("not explicit", "explicit")), # convert to factor w. new labels
          label = as.factor(label), # convert to factor with values as labels
@@ -28,116 +40,83 @@ music_data <- music_data |> # pipe music data into mutate
          expert_rating = factor(expert_rating, 
                                 levels = c("poor", "fair", "good", "excellent", "masterpiece"), 
                                 ordered = TRUE)
-         )
-head(music_data)
+  )
 
-
-## ---- message=FALSE, warning=FALSE, eval=TRUE------------------------------------
-table(music_data$genre) #absolute frequencies
+# The table function creates frequency tables
+## ------------------------------------------------------------------------
+table(music_data$genre) #absolute frequencies 
 table(music_data$label) #absolute frequencies
 table(music_data$explicit) #absolute frequencies
 
+# The prop.table function produces relative frequency tables
+## ------------------------------------------------------------------------
+prop.table(table(music_data$genre))  #relative frequencies
+prop.table(table(music_data$label))  #relative frequencies
+prop.table(table(music_data$explicit))  #relative frequencies
 
-## ---- message=FALSE, warning=FALSE, eval=TRUE------------------------------------
-prop.table(table(music_data$genre)) #relative frequencies
-prop.table(table(music_data$label)) #relative frequencies
-prop.table(table(music_data$explicit)) #relative frequencies
-
-## ----include=FALSE---------------------------------------------------------------
-warner_share <- prop.table(table(music_data$label))
-warner_share <- round(100*warner_share[names(warner_share) == "Warner Music"], digits = 1)
-rock_share <- prop.table(table(music_data$genre))
-rock_share <- round(100*rock_share[names(rock_share) == "Rock"], digits = 1)
-explicit_share <- prop.table(table(music_data$explicit))
-explicit_share <- round(100*explicit_share[names(explicit_share) == "explicit"], digits = 1)
-
-
-## ---- message=FALSE, warning=FALSE, eval=TRUE------------------------------------
+# By adding a second column we can investigate the conditional relative frequencies 
+## ------------------------------------------------------------------------
 prop.table(table(select(music_data, genre, explicit)),1) #conditional relative frequencies
 
-
-## ---- message=FALSE, warning=FALSE, eval=TRUE------------------------------------
+# Median of rank variable
 median_rating <- quantile(music_data$expert_rating, 0.5, type = 1)
 median_rating
-
-
-## ---- message=FALSE, warning=FALSE, eval=TRUE------------------------------------
+# Quantile function
 quantile(music_data$expert_rating,c(0.25,0.5,0.75), type = 1)
-
-
-## ----echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE--------------------------
+# Quantiles by genre
 percentiles <- c(0.25, 0.5, 0.75)
-rating_percentiles <- music_data |>
-  group_by(explicit) |>
-  summarize(
+rating_percentiles <- music_data %>%
+  group_by(explicit) %>%
+  reframe(
     percentile = percentiles,
-    value = quantile(expert_rating, percentiles, type = 1)) 
+    value = quantile(expert_rating, percentiles, type = 1)
+  )
 rating_percentiles
 
+#-------------------------------------------------------------------#
+#----------------------Continuous variables-------------------------#
+#-------------------------------------------------------------------#
 
-## ----message=FALSE, warning=FALSE, paged.print = FALSE---------------------------
+# The psych package contains the useful describe function, which produces more summary statistics than
+# the simple summary function contained in base R
+## ------------------------------------------------------------------------
 library(psych)
 psych::describe(select(music_data, streams, danceability, valence))
 
+# describeBy produces the summary statistics grouped by a grouping variable, in our case this is genre
+## ------------------------------------------------------------------------
+describeBy(select(music_data, streams, danceability, valence), music_data$genre, 
+           skew = FALSE, range = FALSE)
 
-## ----message=FALSE, warning=FALSE------------------------------------------------
-describeBy(select(music_data, streams, danceability, valence), music_data$genre,skew = FALSE, range = FALSE)
-
-
-## ---- echo=FALSE, message=FALSE, warning=FALSE, results='asis'-------------------
+# Use the summarytools package for nice formatting
+## ------------------------------------------------------------------------
 library(summarytools)
-st_css()
+view(dfSummary(music_data[, c("streams","valence", "genre", "label", "explicit")], plain.ascii = FALSE, 
+                style = "grid", valid.col = FALSE, tmp.img.dir = "tmp"),headings = FALSE, footnote = NA)
 
+#-------------------------------------------------------------------#
+#------------------------Creating subsets---------------------------#
+#-------------------------------------------------------------------#
 
-## ---- message=FALSE, error = FALSE, warning = FALSE, results='asis'--------------
-library(summarytools)
-print(dfSummary(select(music_data, streams, valence, genre, label, explicit), plain.ascii = FALSE, style = "grid",valid.col = FALSE, tmp.img.dir = "tmp", graph.magnif = .65),  method = 'render',headings = FALSE,footnote= NA)
-
-
-## ----message=FALSE, warning=FALSE------------------------------------------------
+# Check for missing values
 music_data_valence <- filter(music_data, !is.na(valence))
 
+#-------------------------------------------------------------------#
+#---------------------Going beyond the data-------------------------#
+#-------------------------------------------------------------------#
 
-## ----echo=FALSE,out.width = '70%',fig.align='center',fig.cap = "Standard normal table"----
-knitr::include_graphics("./images/prob_table.JPG")
-
-
-## ----echo=FALSE,out.width = '70%',fig.align='center',fig.cap = "Standard normal distribution"----
-knitr::include_graphics("./images/normal_distribution.JPG")
-
-
-## ----message=FALSE, warning=FALSE,fig.align='center',fig.cap = "Histogram of tempo variable"----
+# Histogram of tempo variable
 hist(music_data$tempo)
 
-
-## ----message=FALSE, warning=FALSE------------------------------------------------
+# Standardize variable
 music_data$tempo_std <- (music_data$tempo - mean(music_data$tempo))/sd(music_data$tempo)
-
-
-## ----message=FALSE, warning=FALSE,fig.align='center',fig.cap = "Histogram of standardized tempo variable"----
 hist(music_data$tempo_std)
 
-
-## ----message=FALSE, warning=FALSE------------------------------------------------
+# Standardize using the scale() function
 music_data$tempo_std <- scale(music_data$tempo)
 
-
-## ----message=FALSE, warning=FALSE------------------------------------------------
+# Normal distribution function can be used to determine the probability of observations
 pnorm(-1.96)
-
-
-## ----message=FALSE, warning=FALSE------------------------------------------------
-pnorm(-1.96)*2
-
-
-## ----message=FALSE, warning=FALSE------------------------------------------------
+pnorm(-1.96) * 2
 min(music_data$tempo_std)
-
-
-## ----message=FALSE, warning=FALSE------------------------------------------------
-pnorm(min(music_data$tempo_std))*2
-
-
-## ----echo=FALSE,out.width = '70%',fig.align='center',fig.cap = "The 68, 95, 99.7 rule (source: Wikipedia)"----
-knitr::include_graphics("./images/prob_rule.JPG")
-
+pnorm(min(music_data$tempo_std)) * 2

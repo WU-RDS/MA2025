@@ -27,7 +27,7 @@ classoption:
 <br>
 Welcome to the course **Marketing Analytics**! This course covers the conceptual foundations of data analysis techniques for marketing managers and applications of these methods to different data sets. The course will be delivered in parts using the **flipped classroom** teaching method. This means that students are required to familiarize themselves with the contents by means of **self-study** *before* each session (i.e., by going through the assigned materials on their own). This website is intended to aid the self-study process by providing you with explanations regarding the relevant concepts and methods in text and video format along with code files and commented outputs that will show you how to implement these methods using the **statistical software R**. 
 <br><br>
-The self-learning process will be complemented with compulsory in-person **weekly interactive sessions** in the PC lab, which provide ample opportunities to train the acquired knowledge and clarify points that require further discussion. 
+The self-learning process will be complemented with compulsory in-person **weekly interactive sessions**, which provide ample opportunities to train the acquired knowledge and clarify points that require further discussion. 
 <br><br>
 The following pages outline the course schedule and explain how to use this tutorial in detail. If you have any questions, feel free to send me a short email.
 <br>
@@ -36,28 +36,25 @@ Nils Wlömert
 <br>
 [nils.wloemert@wu.ac.at](mailto:nils.wloemert@wu.ac.at)
 <br>
-Daniel Winkler
-<br>
-[daniel.winkler@wu.ac.at](mailto:daniel.winkler@wu.ac.at)
 
 
 # Introduction {-}
 
 ## Course structure {-}
 
-This course combines asynchronous teaching elements (e.g., texts and pre-recorded videos on this website) with synchronous elements (e.g., weekly in-person interactive sessions in the PC Lab). The syllabus consists of three main parts, as reflected by the structure of this website: 
+This course combines asynchronous teaching elements (e.g., texts and pre-recorded videos on this website) with synchronous elements (e.g., weekly in-person interactive sessions). The syllabus consists of three main parts, as reflected by the structure of this website: 
 
 1. **Lecture notes**: the lecture part will explain the theory behind the concepts and methods and provide you with example applications using the statistical software R.
 2. **Individual assignments**: the individual assignments require you to apply the acquired knowledge to new data sets.
 3. **Group project**: in the group you will design and conduct your own market research project and transfer the knowledge to a real business setting.
 
-The general approach is that students will first familiarize themselves with the contents by going through the materials on their own. This **self-study** process is complemented with in-person **weekly interactive sessions** in the PC lab, which provide ample opportunities to ask questions and clarify points that require further discussion. The schedule for each of the three parts will be explained below. 
+The general approach is that students will first familiarize themselves with the contents by going through the materials on their own. This **self-study** process is complemented with in-person **weekly interactive sessions**, which provide ample opportunities to ask questions and clarify points that require further discussion. The schedule for each of the three parts will be explained below. 
 
 ### Schedule {-}
 
 #### In-person lecture {-}
 
-The contents on this website are divided into weekly readings. To be able to follow the curriculum and complete the assignments, you need to read the materials assigned for the respective week. The relevant chapters are indicated in the table below. The weekly readings will be complemented with weekly interactive sessions in the PC lab, which provide you with an opportunity to ask questions about the assigned readings. **Please note that you need to go through the materials on your own in the week before the respective session.** For example, chapters 2, 3 & 4 will be discussed in the second session. The dates and times for the classroom sessions are indicated in the table below for each group separately. It is highly recommended to prepare questions or comments about the materials for these sessions that you think might be interesting and helpful to the class. As a preparation for the in-class discussions, you should go through the **Learning check** section at the end of each chapter. By working through these questions, you may self-assess your progress and identify knowledge gaps regarding the materials that were assigned for the previous week.        
+The contents on this website are divided into weekly readings. To be able to follow the curriculum and complete the assignments, you need to read the materials assigned for the respective week. The relevant chapters are indicated in the table below. The weekly readings will be complemented with weekly interactive sessions, which provide you with an opportunity to ask questions about the assigned readings. **Please note that you need to go through the materials on your own in the week before the respective session.** For example, chapters 2, 3 & 4 will be discussed in the second session. The dates and times for the classroom sessions are indicated in the table below for each group separately. It is highly recommended to prepare questions or comments about the materials for these sessions that you think might be interesting and helpful to the class. As a preparation for the in-class discussions, you should go through the **Learning check** section at the end of each chapter. By working through these questions, you may self-assess your progress and identify knowledge gaps regarding the materials that were assigned for the previous week.        
 
 <br>
 **Lecture dates - Group A**
@@ -75,58 +72,58 @@ The contents on this website are divided into weekly readings. To be able to fol
  </thead>
 <tbody>
   <tr>
-   <td style="text-align:left;"> Oct. 1 </td>
-   <td style="text-align:left;"> Tuesday </td>
+   <td style="text-align:left;"> Sep. 29 </td>
+   <td style="text-align:left;"> Monday </td>
    <td style="text-align:left;"> 01:00PM - 05:00PM </td>
-   <td style="text-align:left;"> TC.4.01 </td>
+   <td style="text-align:left;"> TC.3.21 </td>
    <td style="text-align:left;"> Introduction to the course <br>Basic concepts </td>
    <td style="text-align:left;"> 1 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> Oct. 7 </td>
+   <td style="text-align:left;"> Oct. 6 </td>
    <td style="text-align:left;"> Monday </td>
    <td style="text-align:left;"> 01:00PM - 05:00PM </td>
-   <td style="text-align:left;"> D5.1.001 </td>
+   <td style="text-align:left;"> TC.3.21 </td>
    <td style="text-align:left;"> Introduction to R &amp; R Markdown </td>
    <td style="text-align:left;"> 2, 3, 4 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> Oct. 14 </td>
+   <td style="text-align:left;"> Oct. 13 </td>
    <td style="text-align:left;"> Monday </td>
    <td style="text-align:left;"> 01:00PM - 05:00PM </td>
-   <td style="text-align:left;"> D5.1.001 </td>
+   <td style="text-align:left;"> TC.3.21 </td>
    <td style="text-align:left;"> Introduction to inferential statistics <br>Hypothesis testing I </td>
    <td style="text-align:left;"> 5, 6.1, 6.2, 6.3 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> Oct. 21 </td>
+   <td style="text-align:left;"> Oct. 20 </td>
    <td style="text-align:left;"> Monday </td>
    <td style="text-align:left;"> 01:00PM - 05:00PM </td>
-   <td style="text-align:left;"> D5.1.001 </td>
+   <td style="text-align:left;"> TC.3.21 </td>
    <td style="text-align:left;"> Hypothesis testing II </td>
    <td style="text-align:left;"> 6.4, 6.5, 6.6 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> Oct. 28 </td>
+   <td style="text-align:left;"> Oct. 27 </td>
    <td style="text-align:left;"> Monday </td>
    <td style="text-align:left;"> 01:00PM - 05:00PM </td>
-   <td style="text-align:left;"> D5.1.001 </td>
+   <td style="text-align:left;"> TC.3.21 </td>
    <td style="text-align:left;"> Regression I </td>
    <td style="text-align:left;"> 7.1, 7.2, 7.3 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> Nov. 4 </td>
+   <td style="text-align:left;"> Nov. 3 </td>
    <td style="text-align:left;"> Monday </td>
    <td style="text-align:left;"> 01:00PM - 05:00PM </td>
-   <td style="text-align:left;"> D5.1.001 </td>
+   <td style="text-align:left;"> TC.3.21 </td>
    <td style="text-align:left;"> Regression II </td>
    <td style="text-align:left;"> 7.4, 7.5, 7.6 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> Nov. 11 </td>
+   <td style="text-align:left;"> Nov. 10 </td>
    <td style="text-align:left;"> Monday </td>
    <td style="text-align:left;"> 01:00PM - 05:00PM </td>
-   <td style="text-align:left;"> D5.1.001 </td>
+   <td style="text-align:left;"> TC.3.21 </td>
    <td style="text-align:left;"> Regression III </td>
    <td style="text-align:left;"> 7.7 </td>
   </tr>
@@ -150,58 +147,58 @@ The contents on this website are divided into weekly readings. To be able to fol
  </thead>
 <tbody>
   <tr>
-   <td style="text-align:left;"> Oct. 2 </td>
+   <td style="text-align:left;"> Oct. 1 </td>
    <td style="text-align:left;"> Wednesday </td>
-   <td style="text-align:left;"> 12:30PM - 04:30PM </td>
-   <td style="text-align:left;"> D4.0.022 </td>
+   <td style="text-align:left;"> 11:30AM - 03:30PM </td>
+   <td style="text-align:left;"> TC.5.01 </td>
    <td style="text-align:left;"> Introduction to the course <br>Basic concepts </td>
    <td style="text-align:left;"> 1 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> Oct. 9 </td>
+   <td style="text-align:left;"> Oct. 8 </td>
    <td style="text-align:left;"> Wednesday </td>
-   <td style="text-align:left;"> 12:30PM - 04:30PM </td>
-   <td style="text-align:left;"> D4.0.022 </td>
+   <td style="text-align:left;"> 11:30AM - 03:30PM </td>
+   <td style="text-align:left;"> TC.5.01 </td>
    <td style="text-align:left;"> Introduction to R &amp; R Markdown </td>
    <td style="text-align:left;"> 2, 3, 4 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> Oct. 16 </td>
+   <td style="text-align:left;"> Oct. 15 </td>
    <td style="text-align:left;"> Wednesday </td>
-   <td style="text-align:left;"> 12:30PM - 04:30PM </td>
-   <td style="text-align:left;"> D4.0.022 </td>
+   <td style="text-align:left;"> 11:30AM - 03:30PM </td>
+   <td style="text-align:left;"> TC.5.01 </td>
    <td style="text-align:left;"> Introduction to inferential statistics <br>Hypothesis testing I </td>
    <td style="text-align:left;"> 5, 6.1, 6.2, 6.3 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> Oct. 23 </td>
+   <td style="text-align:left;"> Oct. 22 </td>
    <td style="text-align:left;"> Wednesday </td>
-   <td style="text-align:left;"> 12:30PM - 04:30PM </td>
-   <td style="text-align:left;"> D4.0.022 </td>
+   <td style="text-align:left;"> 11:30AM - 03:30PM </td>
+   <td style="text-align:left;"> TC.5.01 </td>
    <td style="text-align:left;"> Hypothesis testing II </td>
    <td style="text-align:left;"> 6.4, 6.5, 6.6 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> Oct. 30 </td>
+   <td style="text-align:left;"> Oct. 29 </td>
    <td style="text-align:left;"> Wednesday </td>
-   <td style="text-align:left;"> 12:30PM - 04:30PM </td>
-   <td style="text-align:left;"> D4.0.022 </td>
+   <td style="text-align:left;"> 11:30AM - 03:30PM </td>
+   <td style="text-align:left;"> TC.5.01 </td>
    <td style="text-align:left;"> Regression I </td>
    <td style="text-align:left;"> 7.1, 7.2, 7.3 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> Nov. 6 </td>
+   <td style="text-align:left;"> Nov. 5 </td>
    <td style="text-align:left;"> Wednesday </td>
-   <td style="text-align:left;"> 12:30PM - 04:30PM </td>
-   <td style="text-align:left;"> D4.0.022 </td>
+   <td style="text-align:left;"> 13:30PM - 05:30PM </td>
+   <td style="text-align:left;"> TC.2,02 </td>
    <td style="text-align:left;"> Regression II </td>
    <td style="text-align:left;"> 7.4, 7.5, 7.6 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> Nov. 13 </td>
+   <td style="text-align:left;"> Nov. 12 </td>
    <td style="text-align:left;"> Wednesday </td>
-   <td style="text-align:left;"> 12:30PM - 04:30PM </td>
-   <td style="text-align:left;"> D4.0.022 </td>
+   <td style="text-align:left;"> 11:30AM - 03:30PM </td>
+   <td style="text-align:left;"> TC.5.01 </td>
    <td style="text-align:left;"> Regression III </td>
    <td style="text-align:left;"> 7.7 </td>
   </tr>
@@ -219,7 +216,7 @@ We understand that the self-study format might pose challenges to the learning p
 #### Individual assignments {-}
 
 There will be 4 individual assignments complemented with optional coaching sessions. Note that the assignments need to be submitted in the [R Markdown format](https://rmarkdown.rstudio.com/) (see chapter 10) via CANVAS WU. There will be a coaching session dedicated to the R Markdown reporting format in the second session, when the first homework is assigned. 
-Your main point of contact for the individual assignments will be Elizaveta Patrikeeva  ([elizaveta.patrikeeva@wu.ac.at](elizaveta.patrikeeva@wu.ac.at)). You may contact Elizaveta to schedule individual coaching sessions during the times indicated in the table below. These coaching sessions will be held online. However, please make sure that you have exhausted all other resources to solve a particular problem, such as the online tutorial, the forum on CANVAS WU, and other web resources (see below) before you schedule a coaching session. If you feel that other students might have similar questions and would benefit from an answer to a particular question, you should post the question in the forum on CANVAS WU.
+Your main point of contact for the individual assignments will be Katrin Wasmayer  ([katrin.wasmayer@wu.ac.at](katrin.wasmayer@wu.ac.at)). You may contact Katrin to schedule individual coaching sessions during the times indicated in the table below. These coaching sessions will be held online. However, please make sure that you have exhausted all other resources to solve a particular problem, such as the online tutorial, the forum on CANVAS WU, and other web resources (see below) before you schedule a coaching session. If you feel that other students might have similar questions and would benefit from an answer to a particular question, you should post the question in the forum on CANVAS WU.
 
 <br>
 **Assignment schedule - Group A**
@@ -236,31 +233,31 @@ Your main point of contact for the individual assignments will be Elizaveta Patr
 <tbody>
   <tr>
    <td style="text-align:left;"> Assignment 1: R Basics </td>
-   <td style="text-align:left;"> Oct. 7 </td>
-   <td style="text-align:left;"> Oct. 11, 02:00PM-04:00PM (online)* </td>
-   <td style="text-align:left;"> Oct. 13, 11:59PM </td>
+   <td style="text-align:left;"> Oct. 06 </td>
+   <td style="text-align:left;"> Oct. 09, 04:00PM-06:00PM (online)* </td>
+   <td style="text-align:left;"> Oct. 12, 11:59PM </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Assignment 2: Hypothesis testing </td>
-   <td style="text-align:left;"> Oct. 14 </td>
-   <td style="text-align:left;"> Oct. 18, 04:00PM-06:00PM (online)* </td>
-   <td style="text-align:left;"> Oct. 27, 11:59PM </td>
+   <td style="text-align:left;"> Oct. 13 </td>
+   <td style="text-align:left;"> Oct. 20, 04:00PM-06:00PM (online)* </td>
+   <td style="text-align:left;"> Oct. 26, 11:59PM </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Assignment 3: Regression </td>
-   <td style="text-align:left;"> Oct. 28 </td>
-   <td style="text-align:left;"> Nov. 8, 02:00PM-04:00PM (online)* </td>
-   <td style="text-align:left;"> Nov. 10, 11:59PM </td>
+   <td style="text-align:left;"> Oct. 27 </td>
+   <td style="text-align:left;"> Nov. 03, 04:00PM-06:00PM (online)* </td>
+   <td style="text-align:left;"> Nov. 09, 11:59PM </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Assignment 4: Causal Modeling &amp; Mediation Analysis (Regression III) </td>
-   <td style="text-align:left;"> Nov. 11 </td>
-   <td style="text-align:left;"> Nov. 22, 03:00PM-05:00PM (online)* </td>
-   <td style="text-align:left;"> Nov. 24, 11:59PM </td>
+   <td style="text-align:left;"> Nov. 10 </td>
+   <td style="text-align:left;"> Nov. 17, 04:00PM-06:00PM (online)* </td>
+   <td style="text-align:left;"> Nov. 23, 11:59PM </td>
   </tr>
 </tbody>
 <tfoot><tr><td style="padding: 0; " colspan="100%">
-<span style="font-style: italic;">Note: </span> <sup></sup> Dates and times are indicated for group A. <br>           Dates indicated with '*' are optional time slots for individual online video coaching sessions with Elizaveta.<br>           If you need to schedule a meeting, please contact Elizaveta at least one day in advance (elizaveta.patrikeeva@wu.ac.at).</td></tr></tfoot>
+<span style="font-style: italic;">Note: </span> <sup></sup> Dates and times are indicated for group A. <br>           Dates indicated with '*' are optional time slots for individual online video coaching sessions with Katrin.<br>           If you need to schedule a meeting, please contact Katrin at least one day in advance (katrin.wasmayer@wu.ac.at).</td></tr></tfoot>
 </table>
 
 <br>
@@ -278,31 +275,31 @@ Your main point of contact for the individual assignments will be Elizaveta Patr
 <tbody>
   <tr>
    <td style="text-align:left;"> Assignment 1: R Basics </td>
-   <td style="text-align:left;"> Oct. 09 </td>
-   <td style="text-align:left;"> Oct. 11, 04:00PM-06:00PM (online)* </td>
-   <td style="text-align:left;"> Oct. 15, 11:59PM </td>
+   <td style="text-align:left;"> Oct. 08 </td>
+   <td style="text-align:left;"> Oct. 10, 06:00PM-08:00PM (online)* </td>
+   <td style="text-align:left;"> Oct. 14, 11:59PM </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Assignment 2: Hypothesis testing </td>
-   <td style="text-align:left;"> Oct. 16 </td>
-   <td style="text-align:left;"> Oct. 25, 02:00PM-04:00PM (online)* </td>
-   <td style="text-align:left;"> Oct. 29, 11:59PM </td>
+   <td style="text-align:left;"> Oct. 15 </td>
+   <td style="text-align:left;"> Oct. 22, 04:00PM-06:00PM (online)* </td>
+   <td style="text-align:left;"> Oct. 28, 11:59PM </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Assignment 3: Regression </td>
-   <td style="text-align:left;"> Oct. 30 </td>
-   <td style="text-align:left;"> Nov. 8, 04:00PM-06:00PM (online)* </td>
-   <td style="text-align:left;"> Nov. 12, 11:59PM </td>
+   <td style="text-align:left;"> Oct. 29 </td>
+   <td style="text-align:left;"> Nov. 05, 04:00PM-06:00PM (online)* </td>
+   <td style="text-align:left;"> Nov. 11, 11:59PM </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Assignment 4: Causal Modeling &amp; Mediation Analysis (Regression III) </td>
-   <td style="text-align:left;"> Nov. 13 </td>
-   <td style="text-align:left;"> Nov. 22, 05:00PM-07:00PM (online)* </td>
-   <td style="text-align:left;"> Nov. 26, 11:59PM </td>
+   <td style="text-align:left;"> Nov. 12 </td>
+   <td style="text-align:left;"> Nov. 19, 04:00PM-06:00PM (online)* </td>
+   <td style="text-align:left;"> Nov. 25, 11:59PM </td>
   </tr>
 </tbody>
 <tfoot><tr><td style="padding: 0; " colspan="100%">
-<span style="font-style: italic;">Note: </span> <sup></sup> Dates and times are indicated for group B. <br>           Dates indicated with '*' are optional time slots for individual online video coaching sessions with Elizaveta.<br>           If you need to schedule a meeting, please contact Elizaveta at least one day in advance (elizaveta.patrikeeva@wu.ac.at).</td></tr></tfoot>
+<span style="font-style: italic;">Note: </span> <sup></sup> Dates and times are indicated for group B. <br>           Dates indicated with '*' are optional time slots for individual online video coaching sessions with Katrin.<br>           If you need to schedule a meeting, please contact Katrin at least one day in advance (katrin.wasmayer@wu.ac.at).</td></tr></tfoot>
 </table>
 
 <br>
@@ -318,10 +315,7 @@ The marketing research group project consists of multiple consecutive steps:
 
 We will offer coaching sessions throughout this process, providing feedback and allowing you to ask questions. The submission dates and the dates and times for the coaching sessions are summarized in the table below. 
 
-Your main point of contact for the group project will be Daniel Winkler ([daniel.winkler@wu.ac.at](mailto:daniel.winkler@wu.ac.at)). You may contact Daniel at least one week in advance to schedule individual coaching sessions for your groups (in-person or online) during the following times:
-
-* Thursdays 09:00AM - 05:00PM
-* Fridays 01:00PM - 05:00PM
+Your main point of contact for the group project am I ([nils.wloemert@wu.ac.at](mailto:nils.wloemert@wu.ac.at)). 
 
 Again, please make sure that you have exhausted all other resources to solve a particular problem, such as the online tutorial, the forum on CANVAS WU, and other web resources (see below) before you schedule a coaching session. If you feel that other students might have similar questions and would benefit from an answer to a particular question, you should post the question in the forum on CANVAS WU.
 
@@ -339,22 +333,22 @@ Again, please make sure that you have exhausted all other resources to solve a p
 <tbody>
   <tr>
    <td style="text-align:left;"> Intro to Questionnaire design </td>
-   <td style="text-align:left;"> Nov. 18, 01:00PM - 05:00PM </td>
-   <td style="text-align:left;"> D5.1.001 </td>
+   <td style="text-align:left;"> Nov. 17, 01:00PM - 05:00PM </td>
+   <td style="text-align:left;"> TC.3.21 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Questionnaire coaching* </td>
-   <td style="text-align:left;"> Nov. 25, 01:00PM - 05:00PM </td>
-   <td style="text-align:left;"> D2.2.491 </td>
+   <td style="text-align:left;"> Nov. 24, 01:00PM - 05:00PM </td>
+   <td style="text-align:left;"> TC.3.21 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Data analysis coaching </td>
-   <td style="text-align:left;"> Dec. 09, 01:00PM - 05:00PM </td>
-   <td style="text-align:left;"> D5.1.001 </td>
+   <td style="text-align:left;"> Dec. 09, 03:30PM - 07:30PM </td>
+   <td style="text-align:left;"> D5.0.002 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> (Pre-recorded) presentation submission </td>
-   <td style="text-align:left;"> Jan. 5, 11:59PM </td>
+   <td style="text-align:left;"> Jan. 11, 11:59PM </td>
    <td style="text-align:left;"> --- </td>
   </tr>
 </tbody>
@@ -377,22 +371,22 @@ Again, please make sure that you have exhausted all other resources to solve a p
 <tbody>
   <tr>
    <td style="text-align:left;"> Intro to Questionnaire design </td>
-   <td style="text-align:left;"> Nov. 20, 12:30PM - 04:30PM </td>
-   <td style="text-align:left;"> D4.0.022 </td>
+   <td style="text-align:left;"> Nov. 19, 11:30AM - 03:30PM </td>
+   <td style="text-align:left;"> TC.5.01 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Questionnaire coaching* </td>
    <td style="text-align:left;"> Nov. 27, 02:00PM - 06:00PM </td>
-   <td style="text-align:left;"> D2.1.491 </td>
+   <td style="text-align:left;"> D4.0.022 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Data analysis coaching </td>
-   <td style="text-align:left;"> Dec. 13, 01:00PM - 05:00PM </td>
-   <td style="text-align:left;"> TC.3.01 </td>
+   <td style="text-align:left;"> Dec. 11, 12:00PM - 06:00PM </td>
+   <td style="text-align:left;"> D5.0.001 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> (Pre-recorded) presentation submission </td>
-   <td style="text-align:left;"> Jan. 5, 11:59PM </td>
+   <td style="text-align:left;"> Jan. 11, 11:59PM </td>
    <td style="text-align:left;"> --- </td>
   </tr>
 </tbody>
@@ -413,7 +407,7 @@ Grading is based on the following components:
 
 These grading components will be weighted with the respective weights to arrive at the final grade percentage.
 
-The **final exam** will take place online at 10AM on December 17, 2024 (Tue). The exam covers questions about the concepts and methods (no coding) and we will provide example exams from the previous years to give you an idea about what type of questions you can expect.   
+The **final exam** will take place at 10AM on December 16, 2025 (Tue) in TC.1.02. The exam covers questions about the concepts and methods (no coding) and we will provide example exams from the previous years to give you an idea about what type of questions you can expect.   
 
 To ensure an equal contribution of group members for the group assignment, a **peer assessment** will be conducted among group members, which enters into the computation of the individual grades for the project. This means that the members of a group are required to assess other students regarding their relative contribution. 
 
@@ -498,7 +492,7 @@ In case you would like to learn more about the capabilities of R related to the 
 
 ### Contact {-}
 
-We are happy to answer your questions, so feel free to send us a short email - either to Daniel Winkler ([daniel.winkler\@wu.ac.at](mailto:daniel.winkler\@wu.ac.at)), Elizaveta Patrikeeva ([elizaveta.patrikeeva@wu.ac.at](mailto:elizaveta.patrikeeva@wu.ac.at)), or myself ([nils.wloemert@wu.ac.at](mailto:nils.wloemert@wu.ac.at)). We will be available during the weekly sessions to clarify your questions. Daniel will be your point of contact for questions regarding the group project and Elizaveta will be your point of contact for the individual assignments. **However, please note that before you contact us, you should try to solve problems on your own first (e.g., by using the online tutorial, doing research online, asking questions via the online forum, or discussion with your class mates).** 
+We are happy to answer your questions, so feel free to send us a short email - Katrin Wasmayer ([katrin.wasmayer@wu.ac.at](mailto:katrin.wasmayer@wu.ac.at)), or myself ([nils.wloemert@wu.ac.at](mailto:nils.wloemert@wu.ac.at)). We will be available during the weekly sessions to clarify your questions. I will be your point of contact for questions regarding the lectures or the group project and Katrin will be your point of contact for the individual assignments. **However, please note that before you contact us, you should try to solve problems on your own first (e.g., by using the online tutorial, doing research online, asking questions via the online forum, or discussion with your class mates).** 
 
 ### Acknowledgements {-}
 

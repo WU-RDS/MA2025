@@ -93,7 +93,7 @@ The data set contains information about all songs that appeared in the Top200 ch
 * streams: the number of streams of the song received globally between 2017-2021
 * weeks_in_charts: the number of weeks the song was in the top200 charts in this period
 * n_regions: the number of markets where the song appeared in the top200 charts
-* audio features, see: (see: https://developer.spotify.com/documentation/web-api/reference/*category-tracks) 
+* audio features, see: (see: https://developer.spotify.com/documentation/web-api/reference/get-audio-features) 
     * danceability
     * energy
     * speechiness

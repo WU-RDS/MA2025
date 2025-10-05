@@ -178,7 +178,7 @@ summary(cars)
 ```
 
 ``` r
-plot(dist~speed, cars)
+plot(dist ~ speed, cars)
 ```
 
 <img src="14-rmdIntro_files/figure-html/cars2-1.png" width="672" />
@@ -391,7 +391,7 @@ str(music_data)
 ```
 
 ``` r
-head(music_data, 2) 
+head(music_data, 2)
 ```
 
 <div data-pagedtable="false">
@@ -408,12 +408,11 @@ head(music_data, 2)
 
 
 ``` r
-# provide your code here 
-## 1.
+# provide your code here 1.
 music_data |>
-  filter(artistName == "BTS") |>
-  slice_max(order_by = streams, n = 1) |>
-  select(artistName, trackName)
+    filter(artistName == "BTS") |>
+    slice_max(order_by = streams, n = 1) |>
+    select(artistName, trackName)
 ```
 
 <div data-pagedtable="false">
@@ -425,8 +424,8 @@ music_data |>
 ``` r
 ## 2.
 bts_data <- music_data |>
-  filter(str_detect(artistName, "BTS")) |>
-  arrange(desc(streams))
+    filter(str_detect(artistName, "BTS")) |>
+    arrange(desc(streams))
 distinct(bts_data, artistName)
 ```
 
@@ -462,8 +461,9 @@ Create a new `data.frame` containing the 100 most streamed songs.
 
 
 ``` r
-# provide your code here 
-top100 <- slice_max(music_data, order_by = streams, n = 100)
+# provide your code here
+top100 <- slice_max(music_data, order_by = streams,
+    n = 100)
 range(top100$streams)
 ```
 
@@ -483,11 +483,11 @@ range(top100$streams)
 
 
 ``` r
-# provide your code here 
+# provide your code here
 genre_data <- music_data |>
-  summarize(.by = genre, total_streams = sum(streams)) |>
-  arrange(desc(total_streams)) |>
-  mutate(genre = fct_reorder(as.factor(genre), total_streams))
+    summarize(.by = genre, total_streams = sum(streams)) |>
+    arrange(desc(total_streams)) |>
+    mutate(genre = fct_reorder(as.factor(genre), total_streams))
 head(genre_data)
 ```
 
@@ -499,7 +499,7 @@ head(genre_data)
 
 ``` r
 ggplot(genre_data, aes(y = genre, x = total_streams)) +
-  geom_bar(stat="identity")
+    geom_bar(stat = "identity")
 ```
 
 <img src="14-rmdIntro_files/figure-html/question_3_a1-1.png" width="672" />
@@ -513,19 +513,15 @@ ggplot(genre_data, aes(y = genre, x = total_streams)) +
 
 
 ``` r
-# provide your code here 
+# provide your code here
 label_data <- music_data |>
-  summarize(
-    .by = label, 
-    total_streams = sum(streams), 
-    avg_streams = mean(streams), 
-    med_streams = median(streams), 
-    top_song_artist = artistName[which.max(streams)],
-    top_song_title = trackName[which.max(streams)],
-    top_song_streams = max(streams)
-    ) |>
-  mutate(label_rank = dense_rank(-total_streams)) |>
-  arrange(desc(total_streams))
+    summarize(.by = label, total_streams = sum(streams),
+        avg_streams = mean(streams), med_streams = median(streams),
+        top_song_artist = artistName[which.max(streams)],
+        top_song_title = trackName[which.max(streams)],
+        top_song_streams = max(streams)) |>
+    mutate(label_rank = dense_rank(-total_streams)) |>
+    arrange(desc(total_streams))
 label_data
 ```
 
@@ -548,14 +544,10 @@ label_data
 ``` r
 # provide your code here
 music_data |>
-  summarize(.by = genre, across(danceability:explicit, 
-                                list("avg" = mean,
-                                     "std.dev" = sd,
-                                     "median" = median, 
-                                     "pct_10" = \(x) quantile(x, 0.1), 
-                                     "pct_90" = \(x) quantile(x, 0.9))
-                                )
-            )
+    summarize(.by = genre, across(danceability:explicit,
+        list(avg = mean, std.dev = sd, median = median,
+            pct_10 = \(x) quantile(x, 0.1),
+            pct_90 = \(x) quantile(x, 0.9))))
 ```
 
 <div data-pagedtable="false">
@@ -565,10 +557,9 @@ music_data |>
 </div>
 
 ``` r
-ggplot(music_data, aes(x = fct_reorder(factor(genre), energy, median), y = energy)) +
-    geom_boxplot() +
-    theme(axis.title.x = element_blank()) +
-    scale_x_discrete(guide = guide_axis(n.dodge=2))
+ggplot(music_data, aes(x = fct_reorder(factor(genre),
+    energy, median), y = energy)) + geom_boxplot() +
+    theme(axis.title.x = element_blank()) + scale_x_discrete(guide = guide_axis(n.dodge = 2))
 ```
 
 <img src="14-rmdIntro_files/figure-html/question_5_a1-1.png" width="672" />
@@ -580,12 +571,11 @@ Visualize the number of songs by label.
 
 
 ``` r
-# provide your code here 
+# provide your code here
 music_data |>
-  summarize(.by = label, n_songs = n_distinct(isrc)) |>
-  mutate(label = fct_reorder(as.factor(label), n_songs)) |>
-  ggplot(aes(y = label, x = n_songs)) +
-    geom_bar(stat = "identity")
+    summarize(.by = label, n_songs = n_distinct(isrc)) |>
+    mutate(label = fct_reorder(as.factor(label), n_songs)) |>
+    ggplot(aes(y = label, x = n_songs)) + geom_bar(stat = "identity")
 ```
 
 <img src="14-rmdIntro_files/figure-html/question_6_a1-1.png" width="672" />
@@ -597,13 +587,12 @@ Visualize the average monthly artist listeners (`monthly_listeners_artist`) by g
 
 
 ``` r
-# provide your code here 
+# provide your code here
 music_data |>
-  summarize(.by = genre, avg_m_listeners = mean(monthly_listeners_artist)) |>
-  mutate(genre = fct_reorder(factor(genre), avg_m_listeners)) |>
-ggplot(aes(x = avg_m_listeners, y = genre)) +
-  geom_bar(stat = "identity") +
-  labs(x = "Average monthly artist listeners")
+    summarize(.by = genre, avg_m_listeners = mean(monthly_listeners_artist)) |>
+    mutate(genre = fct_reorder(factor(genre), avg_m_listeners)) |>
+    ggplot(aes(x = avg_m_listeners, y = genre)) + geom_bar(stat = "identity") +
+    labs(x = "Average monthly artist listeners")
 ```
 
 <img src="14-rmdIntro_files/figure-html/question_7_a1-1.png" width="672" />
@@ -614,13 +603,12 @@ Create a histogram of the variable "valence".
 
 
 ``` r
-# provide your code here 
-ggplot(music_data, aes(x = valence)) +
-  geom_histogram()
+# provide your code here
+ggplot(music_data, aes(x = valence)) + geom_histogram()
 ```
 
 ```
-## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+## `stat_bin()` using `bins = 30`. Pick better value `binwidth`.
 ```
 
 <img src="14-rmdIntro_files/figure-html/question_8_a1-1.png" width="672" />
@@ -631,10 +619,9 @@ Create a scatter plot showing `youtube_views` and `shazam_counts` (Bonus: add a 
 
 
 ``` r
-# provide your code here 
+# provide your code here
 ggplot(music_data, aes(x = youtube_views, y = shazam_counts)) +
-  geom_point() +
-  geom_smooth(method = "lm")
+    geom_point() + geom_smooth(method = "lm")
 ```
 
 ```
@@ -683,9 +670,8 @@ Use R and appropriate methods to answer the following questions:
 
 
 ``` r
-app_user_data <- read.table("https://raw.githubusercontent.com/WU-RDS/MA2024/main/user_data_q1.csv", 
-                          sep = ",", 
-                          header = TRUE) #read in data
+app_user_data <- read.table("https://raw.githubusercontent.com/WU-RDS/MA2024/main/user_data_q1.csv",
+    sep = ",", header = TRUE)  #read in data
 head(app_user_data)
 ```
 
@@ -726,7 +712,8 @@ suppressPackageStartupMessages(library(ggstatsplot))
 
 
 ``` r
-#First let's have a look at the purchases in the app in the data
+# First let's have a look at the purchases in the
+# app in the data
 psych::describe(app_user_data$in_app_purchases)
 ```
 
@@ -737,23 +724,23 @@ psych::describe(app_user_data$in_app_purchases)
 </div>
 
 ``` r
-ggplot(app_user_data, aes(in_app_purchases)) + 
-  geom_histogram(col = "white", fill = "lavenderblush3", bins = 50) + 
-  geom_vline(data = app_user_data %>% dplyr::summarise(mean = mean(in_app_purchases)),aes(xintercept = mean), 
-             linewidth = 0.7, color = "gray19") +
-  labs(x = "Purchases", y = "Frequency") + 
-  ggtitle("Distribution of purchases per customer") +
-  theme_minimal()
+ggplot(app_user_data, aes(in_app_purchases)) + geom_histogram(col = "white",
+    fill = "lavenderblush3", bins = 50) + geom_vline(data = app_user_data %>%
+    dplyr::summarise(mean = mean(in_app_purchases)),
+    aes(xintercept = mean), linewidth = 0.7, color = "gray19") +
+    labs(x = "Purchases", y = "Frequency") + ggtitle("Distribution of purchases per customer") +
+    theme_minimal()
 ```
 
 <img src="14-rmdIntro_files/figure-html/question_1_1-1.png" width="672" />
 
 ``` r
-# Compute mean, standard error, and confidence interval for in-app purchases
+# Compute mean, standard error, and confidence
+# interval for in-app purchases
 mean_purchases <- mean(app_user_data$in_app_purchases)
 sd_purchases <- sd(app_user_data$in_app_purchases)
 n <- nrow(app_user_data)
-se_purchases <- sd_purchases / sqrt(n)
+se_purchases <- sd_purchases/sqrt(n)
 df <- n - 1
 t_crit <- qt(0.975, df)
 
@@ -777,7 +764,8 @@ print(ci_upper)
 ```
 
 ``` r
-# Alternatively: get confidence interval from t.test
+# Alternatively: get confidence interval from
+# t.test
 t.test(app_user_data$in_app_purchases)$conf.int
 ```
 
@@ -1004,10 +992,12 @@ Given the effect size = 0.1, significance level = 0.05, and power = 0.8, sample 
 
 
 ``` r
-# provide your code here (you can use multiple code chunks per question if you like)
+# provide your code here (you can use multiple
+# code chunks per question if you like)
 
 # Power analysis for sample size calculation
-sample_size <- pwr.t.test(d = 0.1, sig.level = 0.05, power = 0.8, type = "two.sample")
+sample_size <- pwr.t.test(d = 0.1, sig.level = 0.05,
+    power = 0.8, type = "two.sample")
 print(sample_size)
 ```
 
@@ -1046,9 +1036,8 @@ Use R and appropriate methods to answer the following question:
 
 
 ``` r
-app_user_data_time <- read.table("https://raw.githubusercontent.com/WU-RDS/MA2024/main/user_data_q2.csv", 
-                          sep = ",", 
-                          header = TRUE) #read in data
+app_user_data_time <- read.table("https://raw.githubusercontent.com/WU-RDS/MA2024/main/user_data_q2.csv",
+    sep = ",", header = TRUE)  #read in data
 head(app_user_data_time)
 ```
 
@@ -1077,13 +1066,15 @@ We start our analysis with looking at the descriptive statistics and at the plot
 
 
 ``` r
-# provide your code here (you can use multiple code chunks per question if you like)
+# provide your code here (you can use multiple
+# code chunks per question if you like)
 
 suppressPackageStartupMessages(library(Rmisc))
 library(tidyr)
 
-#Descriptive statistics
-psych::describe(app_user_data_time[!is.na(app_user_data_time$time_in_app_2), c("time_in_app_1","time_in_app_2")])
+# Descriptive statistics
+psych::describe(app_user_data_time[!is.na(app_user_data_time$time_in_app_2),
+    c("time_in_app_1", "time_in_app_2")])
 ```
 
 <div data-pagedtable="false">
@@ -1093,26 +1084,27 @@ psych::describe(app_user_data_time[!is.na(app_user_data_time$time_in_app_2), c("
 </div>
 
 ``` r
-#Boxplot
+# Boxplot
 
 time_data <- app_user_data_time |>
-  drop_na(time_in_app_2) |>
-  select(time_in_app_1, time_in_app_2) |>
-  pivot_longer(
-    cols = c(time_in_app_1, time_in_app_2), 
-    names_to = "push_notifications", values_to = "time_in_app")
+    drop_na(time_in_app_2) |>
+    select(time_in_app_1, time_in_app_2) |>
+    pivot_longer(cols = c(time_in_app_1, time_in_app_2),
+        names_to = "push_notifications", values_to = "time_in_app")
 
-ggplot(time_data, aes(x = push_notifications, y = time_in_app)) + geom_boxplot() +
-    geom_jitter(alpha = 0.2, color = "lavenderblush4") + 
-    labs(x = "", y = "Time spent in app", title = "Boxplot of time in app by group") + 
+ggplot(time_data, aes(x = push_notifications, y = time_in_app)) +
+    geom_boxplot() + geom_jitter(alpha = 0.2, color = "lavenderblush4") +
+    labs(x = "", y = "Time spent in app", title = "Boxplot of time in app by group") +
     theme_minimal()
 ```
 
 <img src="14-rmdIntro_files/figure-html/a2_question_4_1-1.png" width="672" />
 
 ``` r
-# Paired t-test for time spent in app before and after push notifications
-t_test_result <- t.test(app_user_data_time$time_in_app_2, app_user_data_time$time_in_app_1, paired = TRUE)
+# Paired t-test for time spent in app before and
+# after push notifications
+t_test_result <- t.test(app_user_data_time$time_in_app_2,
+    app_user_data_time$time_in_app_1, paired = TRUE)
 print(t_test_result)
 ```
 
@@ -1132,7 +1124,8 @@ print(t_test_result)
 
 ``` r
 # Compute Cohen's d for paired samples
-cohen_d_result <- cohensD(app_user_data_time$time_in_app_2, app_user_data_time$time_in_app_1, method = "paired")
+cohen_d_result <- cohensD(app_user_data_time$time_in_app_2,
+    app_user_data_time$time_in_app_1, method = "paired")
 print(cohen_d_result)
 ```
 
@@ -1141,18 +1134,12 @@ print(cohen_d_result)
 ```
 
 ``` r
-#Visualization of the test
-ggwithinstats(
-  data = time_data,
-  x = push_notifications,
-  y = time_in_app,
-  path.point = FALSE,
-  path.mean = TRUE,
-  title = "Time on site with or without push notifications",
-  messages = FALSE,
-  bf.message = FALSE,
-  mean.ci = TRUE,
-  effsize.type = "d" # display effect size (Cohen's d in output)
+# Visualization of the test
+ggwithinstats(data = time_data, x = push_notifications,
+    y = time_in_app, path.point = FALSE, path.mean = TRUE,
+    title = "Time on site with or without push notifications",
+    messages = FALSE, bf.message = FALSE, mean.ci = TRUE,
+    effsize.type = "d"  # display effect size (Cohen's d in output)
 )
 ```
 
@@ -1197,9 +1184,8 @@ Use R and appropriate methods to answer the following question:
 
 
 ``` r
-targeting_data <- read.table("https://raw.githubusercontent.com/WU-RDS/MA2024/main/user_targeting_data.csv", 
-                          sep = ",", 
-                          header = TRUE) #read in data
+targeting_data <- read.table("https://raw.githubusercontent.com/WU-RDS/MA2024/main/user_targeting_data.csv",
+    sep = ",", header = TRUE)  #read in data
 head(targeting_data)
 ```
 
@@ -1594,9 +1580,8 @@ You obtain a new data set with the following variables:
 
 
 ``` r
-conversion_data <- read.table("https://raw.githubusercontent.com/WU-RDS/MA2024/main/conversion_data.csv", 
-                          sep = ",", 
-                          header = TRUE) #read in data
+conversion_data <- read.table("https://raw.githubusercontent.com/WU-RDS/MA2024/main/conversion_data.csv",
+    sep = ",", header = TRUE)  #read in data
 head(conversion_data)
 ```
 
@@ -1777,8 +1762,8 @@ When you have completed your analysis, click the “Knit to HTML” button above
 
 
 ``` r
-sales_data <- read.csv("https://raw.githubusercontent.com/WU-RDS/MA2024/main/data/assignment3.csv", 
-                          header = TRUE) #read in data
+sales_data <- read.csv("https://raw.githubusercontent.com/WU-RDS/MA2024/main/data/assignment3.csv",
+    header = TRUE)  #read in data
 head(sales_data)
 ```
 
@@ -1840,7 +1825,8 @@ With the following code we are saving the formula:
 
 
 ``` r
-formula <- Sales ~ Price + MarketingContribution + SalesReps + RetailMediaPOS
+formula <- Sales ~ Price + MarketingContribution +
+    SalesReps + RetailMediaPOS
 ```
 
 
@@ -1851,7 +1837,8 @@ Inspecting the variables with descriptive statistics:
 
 
 ``` r
-#descriptive statistics can be checked with the following code
+# descriptive statistics can be checked with the
+# following code
 psych::describe(sales_data)
 ```
 
@@ -1865,7 +1852,8 @@ Inspecting the correlation matrix reveals that the sales variable is positively 
 
 
 ``` r
-rcorr(as.matrix(sales_data[,c("Sales","Price","MarketingContribution","SalesReps", "RetailMediaPOS")]))
+rcorr(as.matrix(sales_data[, c("Sales", "Price", "MarketingContribution",
+    "SalesReps", "RetailMediaPOS")]))
 ```
 
 ```
@@ -1903,11 +1891,15 @@ rcorr(as.matrix(sales_data[,c("Sales","Price","MarketingContribution","SalesReps
 
 
 ``` r
-#Since we have continuous variables, we use scatterplots to investigate the relationship between sales and each of the predictor variables.
+# Since we have continuous variables, we use
+# scatterplots to investigate the relationship
+# between sales and each of the predictor
+# variables.
 
 # relationship of Price and Sales
-ggplot(sales_data, aes(x = Price, y = Sales)) + geom_point(shape = 1) + geom_smooth(method = "lm", 
-    fill = "gray", color = "lavenderblush3", alpha = 0.1) + theme_minimal()
+ggplot(sales_data, aes(x = Price, y = Sales)) + geom_point(shape = 1) +
+    geom_smooth(method = "lm", fill = "gray", color = "lavenderblush3",
+        alpha = 0.1) + theme_minimal()
 ```
 
 ```
@@ -1917,9 +1909,11 @@ ggplot(sales_data, aes(x = Price, y = Sales)) + geom_point(shape = 1) + geom_smo
 <img src="14-rmdIntro_files/figure-html/unnamed-chunk-10-1.png" width="672" />
 
 ``` r
-#relationship of MarketingContribution and Sales
-ggplot(sales_data, aes(x = MarketingContribution, y = Sales)) + geom_point(shape = 1) + geom_smooth(method = "lm", 
-    fill = "gray", color = "lavenderblush3", alpha = 0.1) + theme_minimal()
+# relationship of MarketingContribution and Sales
+ggplot(sales_data, aes(x = MarketingContribution, y = Sales)) +
+    geom_point(shape = 1) + geom_smooth(method = "lm",
+    fill = "gray", color = "lavenderblush3", alpha = 0.1) +
+    theme_minimal()
 ```
 
 ```
@@ -1929,9 +1923,11 @@ ggplot(sales_data, aes(x = MarketingContribution, y = Sales)) + geom_point(shape
 <img src="14-rmdIntro_files/figure-html/unnamed-chunk-10-2.png" width="672" />
 
 ``` r
-#relationship of SalesReps and Sales
-ggplot(sales_data, aes(x = SalesReps, y = Sales)) + geom_point(shape = 1) + geom_smooth(method = "lm", 
-    fill = "gray", color = "lavenderblush3", alpha = 0.1) + theme_minimal()
+# relationship of SalesReps and Sales
+ggplot(sales_data, aes(x = SalesReps, y = Sales)) +
+    geom_point(shape = 1) + geom_smooth(method = "lm",
+    fill = "gray", color = "lavenderblush3", alpha = 0.1) +
+    theme_minimal()
 ```
 
 ```
@@ -1941,9 +1937,11 @@ ggplot(sales_data, aes(x = SalesReps, y = Sales)) + geom_point(shape = 1) + geom
 <img src="14-rmdIntro_files/figure-html/unnamed-chunk-10-3.png" width="672" />
 
 ``` r
-#relationship of RetailMediaPOS
-ggplot(sales_data, aes(x = RetailMediaPOS, y = Sales)) + geom_point(shape = 1) + geom_smooth(method = "lm", 
-    fill = "gray", color = "lavenderblush3", alpha = 0.1) + theme_minimal()
+# relationship of RetailMediaPOS
+ggplot(sales_data, aes(x = RetailMediaPOS, y = Sales)) +
+    geom_point(shape = 1) + geom_smooth(method = "lm",
+    fill = "gray", color = "lavenderblush3", alpha = 0.1) +
+    theme_minimal()
 ```
 
 ```
@@ -1965,7 +1963,7 @@ First, we estimate the model with the lm() function. But before we can inspect a
 
 
 ``` r
-#Estimate linear model
+# Estimate linear model
 linear_model <- lm(formula, data = sales_data)
 summary(linear_model)
 ```
@@ -1997,10 +1995,11 @@ summary(linear_model)
 
 
 ``` r
-#Outliers
+# Outliers
 sales_data$stud_resid <- rstudent(linear_model)
-plot(1:nrow(sales_data),sales_data$stud_resid, ylim=c(-3.3,3.3)) #create scatterplot 
-abline(h=c(-3,3),col="red",lty=2) #add reference lines
+plot(1:nrow(sales_data), sales_data$stud_resid, ylim = c(-3.3,
+    3.3))  #create scatterplot 
+abline(h = c(-3, 3), col = "red", lty = 2)  #add reference lines
 ```
 
 <img src="14-rmdIntro_files/figure-html/unnamed-chunk-12-1.png" width="672" />
@@ -2009,14 +2008,14 @@ To check for outliers, we extract the studentized residuals from our model and t
 
 
 ``` r
-#influential observation
-plot(linear_model,4)
+# influential observation
+plot(linear_model, 4)
 ```
 
 <img src="14-rmdIntro_files/figure-html/unnamed-chunk-13-1.png" width="672" />
 
 ``` r
-plot(linear_model,5)
+plot(linear_model, 5)
 ```
 
 <img src="14-rmdIntro_files/figure-html/unnamed-chunk-13-2.png" width="672" />
@@ -2027,7 +2026,7 @@ To test for influential observations, we use Cook’s Distance. To identify infl
 
 
 ``` r
-#Heteroscedasticity
+# Heteroscedasticity
 
 plot(linear_model, 1)
 ```
@@ -2035,7 +2034,7 @@ plot(linear_model, 1)
 <img src="14-rmdIntro_files/figure-html/unnamed-chunk-14-1.png" width="672" />
 
 ``` r
-#Breusch Pagan test
+# Breusch Pagan test
 bptest(linear_model)
 ```
 
@@ -2057,9 +2056,9 @@ Next, we test if the residuals are approximately normally distributed using the 
 
 
 ``` r
-#Non-normally distributed errors
+# Non-normally distributed errors
 
-plot(linear_model,2)
+plot(linear_model, 2)
 ```
 
 <img src="14-rmdIntro_files/figure-html/unnamed-chunk-15-1.png" width="672" />
@@ -2146,7 +2145,8 @@ In this case, a multiplicative model might be a better representation of the dat
 
 
 ``` r
-log_reg <- lm(log(Sales) ~ log(Price) + log(MarketingContribution) + log(SalesReps) + log(RetailMediaPOS), data = sales_data)
+log_reg <- lm(log(Sales) ~ log(Price) + log(MarketingContribution) +
+    log(SalesReps) + log(RetailMediaPOS), data = sales_data)
 summary(log_reg)
 ```
 
@@ -2179,23 +2179,24 @@ We can check again the assumptions to see if the multiplicative specification fi
 
 
 ``` r
-#Outliers
+# Outliers
 sales_data$stud_resid_1 <- rstudent(log_reg)
-plot(1:nrow(sales_data),sales_data$stud_resid_1, ylim=c(-3.3,3.3)) #create scatterplot 
-abline(h=c(-3,3),col="red",lty=2) #add reference lines
+plot(1:nrow(sales_data), sales_data$stud_resid_1, ylim = c(-3.3,
+    3.3))  #create scatterplot 
+abline(h = c(-3, 3), col = "red", lty = 2)  #add reference lines
 ```
 
 <img src="14-rmdIntro_files/figure-html/unnamed-chunk-18-1.png" width="672" />
 
 ``` r
-#influential observation
-plot(log_reg,4)
+# influential observation
+plot(log_reg, 4)
 ```
 
 <img src="14-rmdIntro_files/figure-html/unnamed-chunk-18-2.png" width="672" />
 
 ``` r
-plot(log_reg,5)
+plot(log_reg, 5)
 ```
 
 <img src="14-rmdIntro_files/figure-html/unnamed-chunk-18-3.png" width="672" />
@@ -2207,7 +2208,7 @@ We check now if the assumption of constant variance is met, which was not the ca
 
 
 ``` r
-#Heteroscedasticity
+# Heteroscedasticity
 
 plot(log_reg, 1)
 ```
@@ -2215,7 +2216,7 @@ plot(log_reg, 1)
 <img src="14-rmdIntro_files/figure-html/unnamed-chunk-19-1.png" width="672" />
 
 ``` r
-#Breusch Pagan test
+# Breusch Pagan test
 bptest(log_reg)
 ```
 
@@ -2233,9 +2234,9 @@ Next we check if the residuals are normally distributed, which wasn't the case i
 
 
 ``` r
-#Non-normally distributed errors
+# Non-normally distributed errors
 
-plot(log_reg,2)
+plot(log_reg, 2)
 ```
 
 <img src="14-rmdIntro_files/figure-html/unnamed-chunk-20-1.png" width="672" />
@@ -2259,7 +2260,7 @@ Looking at the added variable plots, we can conclude that each predictor appears
 
 
 ``` r
-#Non-linear relationships
+# Non-linear relationships
 avPlots(log_reg, col.lines = palette()[2])
 ```
 
@@ -2269,7 +2270,7 @@ And finally, we check for multicollinearity,
 
 
 ``` r
-#Multicollinearity
+# Multicollinearity
 
 vif(log_reg)
 ```
@@ -2422,19 +2423,23 @@ SalesReps <- 6000
 RetailMediaPOS <- 3000
 
 # Get the coefficients from the model summary
-intercept <- summary(log_reg)$coefficients[1,1]
-coef_log_Price <- summary(log_reg)$coefficients[2,1]
-coef_log_MarketingContribution <- summary(log_reg)$coefficients[3,1]
-coef_log_SalesReps <- summary(log_reg)$coefficients[4,1]
-coef_log_RetailMediaPOS <- summary(log_reg)$coefficients[5,1]
+intercept <- summary(log_reg)$coefficients[1, 1]
+coef_log_Price <- summary(log_reg)$coefficients[2,
+    1]
+coef_log_MarketingContribution <- summary(log_reg)$coefficients[3,
+    1]
+coef_log_SalesReps <- summary(log_reg)$coefficients[4,
+    1]
+coef_log_RetailMediaPOS <- summary(log_reg)$coefficients[5,
+    1]
 
-# Calculate the log(Sales) prediction using the log-log model formula
-log_sales_prediction <- intercept + 
-                        coef_log_Price * log(Price) + 
-                        coef_log_MarketingContribution * log(MarketingContribution) + 
-                        coef_log_SalesReps * log(SalesReps) + 
-                        coef_log_RetailMediaPOS * log(RetailMediaPOS) 
-                  
+# Calculate the log(Sales) prediction using the
+# log-log model formula
+log_sales_prediction <- intercept + coef_log_Price *
+    log(Price) + coef_log_MarketingContribution * log(MarketingContribution) +
+    coef_log_SalesReps * log(SalesReps) + coef_log_RetailMediaPOS *
+    log(RetailMediaPOS)
+
 
 # Exponentiate to get the predicted sales
 sales_prediction <- exp(log_sales_prediction)
@@ -2495,7 +2500,9 @@ From the inspection of the plot, we can already see that there are only very sli
 
 
 ``` r
-log_reg_with_region <- lm(log(Sales) ~ log(Price) + log(MarketingContribution) + log(SalesReps) + log(RetailMediaPOS) + Region + log(Price)*Region, data = sales_data)
+log_reg_with_region <- lm(log(Sales) ~ log(Price) +
+    log(MarketingContribution) + log(SalesReps) + log(RetailMediaPOS) +
+    Region + log(Price) * Region, data = sales_data)
 
 summary(log_reg_with_region)
 ```
@@ -2601,7 +2608,7 @@ library(dplyr)
 options(scipen = 999)
 set.seed(123)
 music_data <- read.csv2("https://raw.githubusercontent.com/WU-RDS/RMA2022/main/data/music_data_group.csv",
-                        sep = ";", header = TRUE, dec = ",")
+    sep = ";", header = TRUE, dec = ",")
 music_data$genre <- as.factor(music_data$genre)
 music_data$label <- as.factor(music_data$label)
 str(music_data)
@@ -2657,7 +2664,8 @@ We should create the model using glm() and have a look at the summary
 
 
 ``` r
-mult_logit_model <- glm(top10 ~ weeks_in_charts + song_age + label, family = binomial (link = 'logit'), data = music_data)
+mult_logit_model <- glm(top10 ~ weeks_in_charts + song_age +
+    label, family = binomial(link = "logit"), data = music_data)
 summary(mult_logit_model)
 ```
 
@@ -2715,18 +2723,21 @@ From the summary of the model we can see that weeks in charts, age of song, and 
 
 ``` r
 logisticPseudoR2s <- function(LogModel) {
-  dev <- LogModel$deviance 
-  nullDev <- LogModel$null.deviance 
-  modelN <- length(LogModel$fitted.values)
-  R.l <-  1 -  dev / nullDev
-  R.cs <- 1- exp(-(nullDev - dev) / modelN)
-  R.n <- R.cs / ( 1 - (exp(-(nullDev / modelN))))
-  cat("Pseudo R^2 for logistic regression\n")
-  cat("Hosmer and Lemeshow R^2  ", round(R.l, 3), "\n")
-  cat("Cox and Snell R^2        ", round(R.cs, 3), "\n")
-  cat("Nagelkerke R^2           ", round(R.n, 3),    "\n")
+    dev <- LogModel$deviance
+    nullDev <- LogModel$null.deviance
+    modelN <- length(LogModel$fitted.values)
+    R.l <- 1 - dev/nullDev
+    R.cs <- 1 - exp(-(nullDev - dev)/modelN)
+    R.n <- R.cs/(1 - (exp(-(nullDev/modelN))))
+    cat("Pseudo R^2 for logistic regression\n")
+    cat("Hosmer and Lemeshow R^2  ", round(R.l, 3),
+        "\n")
+    cat("Cox and Snell R^2        ", round(R.cs, 3),
+        "\n")
+    cat("Nagelkerke R^2           ", round(R.n, 3),
+        "\n")
 }
-#Inspect Pseudo R2s
+# Inspect Pseudo R2s
 logisticPseudoR2s(mult_logit_model)
 ```
 
@@ -2758,13 +2769,11 @@ We should visualize the relationship between IVs and DV:
 
 
 ``` r
-#Relationship of weeks in charts and top10
+# Relationship of weeks in charts and top10
 
-ggplot(music_data, aes(weeks_in_charts, top10)) +  
-  geom_point(shape = 1) +
-  geom_smooth(method = "glm", 
-              method.args = list(family = "binomial"), 
-              se = FALSE, color = "lavenderblush3") + theme_minimal()
+ggplot(music_data, aes(weeks_in_charts, top10)) + geom_point(shape = 1) +
+    geom_smooth(method = "glm", method.args = list(family = "binomial"),
+        se = FALSE, color = "lavenderblush3") + theme_minimal()
 ```
 
 ```
@@ -2777,13 +2786,11 @@ ggplot(music_data, aes(weeks_in_charts, top10)) +
 
 
 ``` r
-#Relationship of song age and top10
+# Relationship of song age and top10
 
-ggplot(music_data, aes(song_age, top10)) +  
-  geom_point(shape = 1) +
-  geom_smooth(method = "glm", 
-              method.args = list(family = "binomial"), 
-              se = FALSE, color = "lavenderblush3") + theme_minimal()
+ggplot(music_data, aes(song_age, top10)) + geom_point(shape = 1) +
+    geom_smooth(method = "glm", method.args = list(family = "binomial"),
+        se = FALSE, color = "lavenderblush3") + theme_minimal()
 ```
 
 ```
@@ -2796,25 +2803,24 @@ ggplot(music_data, aes(song_age, top10)) +
 
 
 ``` r
-#Relationship of label and top10
+# Relationship of label and top10
 
 library(forcats)
-labels <- as.factor(c("Warner Music", "Sony Music", "Independent", "Universal Music"))
-top10_predictions <- data.frame(pred = 
-                                  predict(glm(top10 ~ label, data = music_data), 
-                                          data.frame(label = labels), type = "response"), 
-                                label = labels)
+labels <- as.factor(c("Warner Music", "Sony Music",
+    "Independent", "Universal Music"))
+top10_predictions <- data.frame(pred = predict(glm(top10 ~
+    label, data = music_data), data.frame(label = labels),
+    type = "response"), label = labels)
 top10_counts <- table(music_data$top10, music_data$label)
 top10_share <- prop.table(top10_counts, margin = 2)
 data.frame(top10_share) |>
-  filter(Var1 == 1) |> 
-  left_join(top10_predictions, by = c("Var2" = "label")) |>
-  dplyr::rename(`Top 10 share` = Freq) |>
-  ggplot(aes(fct_reorder(Var2, `Top 10 share`), `Top 10 share`)) +
-  geom_bar(stat = 'identity', fill = "lavenderblush3") +
-  geom_point(aes(x = Var2, y = pred), color = 'red4') +
-  theme_minimal() +
-  theme(axis.title.x = element_blank())
+    filter(Var1 == 1) |>
+    left_join(top10_predictions, by = c(Var2 = "label")) |>
+    dplyr::rename(`Top 10 share` = Freq) |>
+    ggplot(aes(fct_reorder(Var2, `Top 10 share`), `Top 10 share`)) +
+    geom_bar(stat = "identity", fill = "lavenderblush3") +
+    geom_point(aes(x = Var2, y = pred), color = "red4") +
+    theme_minimal() + theme(axis.title.x = element_blank())
 ```
 
 <img src="14-rmdIntro_files/figure-html/unnamed-chunk-36-1.png" width="672" />
@@ -3419,7 +3425,8 @@ summary(base_model)
 
 
 ``` r
-engagement_model <- lm(sales ~ follower_count + engagement_rate, data = influencer)
+engagement_model <- lm(sales ~ follower_count + engagement_rate,
+    data = influencer)
 summary(engagement_model)
 ```
 
@@ -3446,7 +3453,8 @@ summary(engagement_model)
 ```
 
 ``` r
-frequency_model <- lm(sales ~ follower_count + post_frequency, data = influencer)
+frequency_model <- lm(sales ~ follower_count + post_frequency,
+    data = influencer)
 summary(frequency_model)
 ```
 
@@ -3474,7 +3482,8 @@ summary(frequency_model)
 
 
 ``` r
-content_model <- lm(sales ~ follower_count + content_quality, data = influencer)
+content_model <- lm(sales ~ follower_count + content_quality,
+    data = influencer)
 summary(content_model)
 ```
 
@@ -3502,7 +3511,8 @@ summary(content_model)
 
 
 ``` r
-awareness_model <- lm(sales ~ follower_count + brand_awareness, data = influencer)
+awareness_model <- lm(sales ~ follower_count + brand_awareness,
+    data = influencer)
 summary(awareness_model)
 ```
 
@@ -3535,7 +3545,7 @@ b) Describe briefly what roles each of the variables in you DAG play (mediator, 
 
 
 ``` r
-#Engagement rate is a confounder
+# Engagement rate is a confounder
 
 library(DiagrammeR)
 
@@ -3548,8 +3558,8 @@ graph LR
 ```
 
 ```{=html}
-<div class="DiagrammeR html-widget html-fill-item" id="htmlwidget-1b4ff99564eb6e8884a5" style="width:672px;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-1b4ff99564eb6e8884a5">{"x":{"diagram":"\ngraph LR\n   engagement_rate --> follower_count\n   engagement_rate --> sales\n   follower_count --> sales\n"},"evals":[],"jsHooks":[]}</script>
+<div class="DiagrammeR html-widget html-fill-item" id="htmlwidget-f99564eb6e8884a58f83" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-f99564eb6e8884a58f83">{"x":{"diagram":"\ngraph LR\n   engagement_rate --> follower_count\n   engagement_rate --> sales\n   follower_count --> sales\n"},"evals":[],"jsHooks":[]}</script>
 ```
 
 
@@ -3567,12 +3577,14 @@ library(corrplot)
 ```
 
 ``` r
-#Variable selection
-variables <- influencer[, c("follower_count", "sales", "engagement_rate", 
-                              "brand_awareness", "content_quality", "post_frequency")]
+# Variable selection
+variables <- influencer[, c("follower_count", "sales",
+    "engagement_rate", "brand_awareness", "content_quality",
+    "post_frequency")]
 
 # Calculate correlation matrix
-cor_matrix <- cor(variables, use = "complete.obs", method = "pearson")
+cor_matrix <- cor(variables, use = "complete.obs",
+    method = "pearson")
 
 # Print the correlation matrix
 print(cor_matrix)
@@ -3597,8 +3609,8 @@ print(cor_matrix)
 
 ``` r
 # Visualize the correlation matrix using corrplot
-corrplot(cor_matrix, method = "circle", type = "upper", 
-         tl.col = "black", tl.srt = 45, addCoef.col = "black")
+corrplot(cor_matrix, method = "circle", type = "upper",
+    tl.col = "black", tl.srt = 45, addCoef.col = "black")
 ```
 
 <img src="14-rmdIntro_files/figure-html/unnamed-chunk-51-1.png" width="672" />
@@ -3608,7 +3620,7 @@ d) Run and interpret the appropriate model given your answers in a) - c) (hint: 
 
 
 ``` r
-#Confounder - engagement rate
+# Confounder - engagement rate
 
 base_model <- lm(sales ~ follower_count, data = influencer)
 summary(base_model)
@@ -3636,7 +3648,8 @@ summary(base_model)
 ```
 
 ``` r
-engagement_model <- lm(sales ~ follower_count + engagement_rate, data = influencer)
+engagement_model <- lm(sales ~ follower_count + engagement_rate,
+    data = influencer)
 summary(engagement_model)
 ```
 
@@ -3716,10 +3729,11 @@ a) Please estimate and interpret a model that shows the causal impact of authent
 
 
 ``` r
-# provide your code here 
+# provide your code here
 
 model_correct <- lm(sales_impact ~ authenticity, influencer2)
-model_collider <-  lm(sales_impact ~ authenticity + selected, influencer2)
+model_collider <- lm(sales_impact ~ authenticity +
+    selected, influencer2)
 
 summary(model_correct)
 ```
@@ -3775,10 +3789,11 @@ b) Draw the DAG for the model (feel free to draw it by hand and insert an image)
 
 
 ``` r
-#collider
+# collider
 library(DiagrammeR)
 
-## Model the situation assumed by the company (=collider) 
+## Model the situation assumed by the company
+## (=collider)
 mermaid("
 graph LR
    authenticity--> select
@@ -3788,8 +3803,8 @@ graph LR
 ```
 
 ```{=html}
-<div class="DiagrammeR html-widget html-fill-item" id="htmlwidget-8f836166d559454ecd73" style="width:672px;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-8f836166d559454ecd73">{"x":{"diagram":"\ngraph LR\n   authenticity--> select\n   sales--> select\n   authenticity-->sales\n"},"evals":[],"jsHooks":[]}</script>
+<div class="DiagrammeR html-widget html-fill-item" id="htmlwidget-6166d559454ecd730d7d" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-6166d559454ecd730d7d">{"x":{"diagram":"\ngraph LR\n   authenticity--> select\n   sales--> select\n   authenticity-->sales\n"},"evals":[],"jsHooks":[]}</script>
 ```
 
 #### Task 3: Moderation
@@ -3866,7 +3881,8 @@ a) Calculate and interpret all of the coefficients in the appropriate model give
 
 
 ``` r
-moderation_gender <- lm(in_app_purchases ~ campaign_exposure*gender, data = in_app_purchases)
+moderation_gender <- lm(in_app_purchases ~ campaign_exposure *
+    gender, data = in_app_purchases)
 summary(moderation_gender)
 ```
 
@@ -3947,19 +3963,21 @@ The IKEA effect describes a psychological process through which consumers value 
 
 
 ``` r
-# provide your code here 
+# provide your code here
 
-#Mediation - engagement rate
+# Mediation - engagement rate
 
-#Step 1: Run regression just with X and Y
-total_effect_ikea <- lm(valuation ~ self_assembly, data = ikea)
+# Step 1: Run regression just with X and Y
+total_effect_ikea <- lm(valuation ~ self_assembly,
+    data = ikea)
 
-#Step 2: Run regression just with M1
+# Step 2: Run regression just with M1
 X_on_M_ikea <- lm(accomplishment ~ self_assembly, data = ikea)
 
 
 # Step 3: Run regression with Y on X and M1
-avg_direct_effect_M_ikea <- lm(valuation ~ self_assembly + accomplishment, data = ikea)
+avg_direct_effect_M_ikea <- lm(valuation ~ self_assembly +
+    accomplishment, data = ikea)
 
 summary(total_effect_ikea)
 ```
@@ -4037,8 +4055,10 @@ summary(avg_direct_effect_M_ikea)
 ```
 
 ``` r
-# Indirect effect: self_assembly -> accomplishment -> valuation
-indirect_effect <- coef(X_on_M_ikea)["self_assembly"] * coef(avg_direct_effect_M_ikea)["accomplishment"]
+# Indirect effect: self_assembly ->
+# accomplishment -> valuation
+indirect_effect <- coef(X_on_M_ikea)["self_assembly"] *
+    coef(avg_direct_effect_M_ikea)["accomplishment"]
 
 # Print the indirect effect
 indirect_effect

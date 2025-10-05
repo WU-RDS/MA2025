@@ -274,6 +274,15 @@ Note the correct interpretation of the confidence interval: If we’d collected 
 
 This is illustrated in the plot below that shows the mean of the first 100 samples and their confidence intervals:
 
+
+```
+## Warning: `geom_errobarh()` was deprecated in ggplot2 4.0.0.
+## ℹ Please use the `orientation` argument of `geom_errorbar()` instead.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+## generated.
+```
+
 <img src="06-statistical_inference_files/figure-html/unnamed-chunk-15-1.png" width="960" />
 
 

@@ -35,7 +35,8 @@ Most of the data sets we will be working with in this course will be stored in t
 
 
 ``` r
-readLines("https://short.wu.ac.at/ma22_musicdata", n = 3)
+readLines("https://short.wu.ac.at/ma22_musicdata",
+    n = 3)
 ```
 
 ```
@@ -45,9 +46,8 @@ readLines("https://short.wu.ac.at/ma22_musicdata", n = 3)
 ```
 
 ``` r
-test_data <- read.csv("https://short.wu.ac.at/ma22_musicdata", 
-                        sep = ";", 
-                        header = TRUE)
+test_data <- read.csv("https://short.wu.ac.at/ma22_musicdata",
+    sep = ";", header = TRUE)
 head(test_data)
 ```
 
@@ -61,7 +61,8 @@ Note that it is also possible to download the data, placing it in the working di
 
 
 ``` r
-test_data <- read.csv("data/music_data_fin.csv", header=TRUE, sep = ";")
+test_data <- read.csv("data/music_data_fin.csv", header = TRUE,
+    sep = ";")
 head(test_data)
 ```
 
@@ -77,14 +78,14 @@ Sometimes, you may need to import data files created by other software packages,
 
 
 ``` r
-#import excel files
-library(readxl) #load package to import Excel files
+# import excel files
+library(readxl)  #load package to import Excel files
 excel_sheets("test_data.xlsx")
-survey_data_xlsx <- read_excel("test_data.xlsx", sheet = "mrda_2016_survey") # "sheet=x"" specifies which sheet to import
+survey_data_xlsx <- read_excel("test_data.xlsx", sheet = "mrda_2016_survey")  # 'sheet=x'' specifies which sheet to import
 head(survey_data_xlsx)
 
-library(haven) #load package to import SPSS files
-#import SPSS files
+library(haven)  #load package to import SPSS files
+# import SPSS files
 survey_data_spss <- read_sav("test_data.sav")
 head(survey_data_spss)
 ```
@@ -98,7 +99,7 @@ There is also a dedicated package 'qualtRics' which lets you conveniently import
 
 ``` r
 library(qualtRics)
-qualtrics <- read_survey('qualtrics_survey.csv')
+qualtrics <- read_survey("qualtrics_survey.csv")
 head(qualtrics)
 ```
 
@@ -116,7 +117,7 @@ Exporting to different formats is also easy, as you can just replace "read" with
 
 
 ``` r
-write.csv(music_data, "musicData.csv", row.names = FALSE) #writes to a comma-separated value file 
+write.csv(music_data, "musicData.csv", row.names = FALSE)  #writes to a comma-separated value file 
 write_sav(music_data, "musicData.sav")
 ```
 
@@ -130,27 +131,28 @@ Sometimes you may come across interesting data on websites that you would like t
 ``` r
 library(rvest)
 url <- "https://en.wikipedia.org/wiki/List_of_countries_and_dependencies_by_population"
-population <- read_html(url) 
+population <- read_html(url)
 population <- html_nodes(population, "table.wikitable")
 print(population)
 ```
 
 ```
 ## {xml_nodeset (1)}
-## [1] <table class="wikitable sortable sticky-header sort-under mw-datatable co ...
+## [1] <table class="wikitable sortable mw-datatable sort-under static-row-numbe ...
 ```
 
 The output shows that there are two tables on the website and the first one appears to contain the relevant information. So let's read the first table using the  ```html_table()``` function. Note that ```population``` is of class "list". A list is a vector that has other R objects (e.g., other vectors, data frames, matrices, etc.) as its elements. If we want to access the data of one of the elements, we have to use two square brackets on each side instead of just one (e.g., ```population[[1]]``` gets us the first table from the list of tables on the website; the argument ```fill = TRUE``` ensures that empty cells are replaced with missing values when reading the table).
 
 
 ``` r
-population <- population[[1]] %>% html_table(fill = TRUE)
-head(population) #checks if we scraped the desired data
+population <- population[[1]] %>%
+    html_table(fill = TRUE)
+head(population)  #checks if we scraped the desired data
 ```
 
 <div data-pagedtable="false">
   <script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":[1],"type":["chr"],"align":["left"]},{"label":["Location"],"name":[2],"type":["chr"],"align":["left"]},{"label":["Population"],"name":[3],"type":["chr"],"align":["left"]},{"label":["% ofworld"],"name":[4],"type":["chr"],"align":["left"]},{"label":["Date"],"name":[5],"type":["chr"],"align":["left"]},{"label":["Source (official or fromthe United Nations)"],"name":[6],"type":["chr"],"align":["left"]},{"label":["Notes"],"name":[7],"type":["chr"],"align":["left"]}],"data":[{"1":"–","2":"World","3":"8,119,000,000","4":"100%","5":"1 Jul 2024","6":"UN projection[1][3]","7":""},{"1":"1/2 [b]","2":"China","3":"1,409,670,000","4":"17.3%","5":"31 Dec 2023","6":"Official estimate[5]","7":"[c]"},{"1":"1/2 [b]","2":"India","3":"1,404,910,000","4":"17.3%","5":"1 Jul 2024","6":"Official projection[6]","7":"[d]"},{"1":"3","2":"United States","3":"335,893,238","4":"4.1%","5":"1 Jan 2024","6":"Official projection[7]","7":"[e]"},{"1":"4","2":"Indonesia","3":"282,477,584","4":"3.5%","5":"31 Jun 2024","6":"National annual projection[8]","7":""},{"1":"5","2":"Pakistan","3":"241,499,431","4":"3.0%","5":"1 Mar 2023","6":"2023 census result[9]","7":"[f]"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["Location"],"name":[1],"type":["chr"],"align":["left"]},{"label":["Population"],"name":[2],"type":["chr"],"align":["left"]},{"label":["% ofworld"],"name":[3],"type":["chr"],"align":["left"]},{"label":["Date"],"name":[4],"type":["chr"],"align":["left"]},{"label":["Source (official or fromthe United Nations)"],"name":[5],"type":["chr"],"align":["left"]},{"label":["Notes"],"name":[6],"type":["chr"],"align":["left"]}],"data":[{"1":"World","2":"8,232,000,000","3":"100%","4":"13 Jun 2025","5":"UN projection[1][3]","6":""},{"1":"India","2":"1,417,492,000","3":"17.3%","4":"1 Jul 2025","5":"Official projection[4]","6":"[b]"},{"1":"China","2":"1,408,280,000","3":"17.2%","4":"31 Dec 2024","5":"Official estimate[5]","6":"[c]"},{"1":"United States","2":"340,110,988","3":"4.1%","4":"1 Jul 2024","5":"Official estimate[6]","6":"[d]"},{"1":"Indonesia","2":"284,438,782","3":"3.5%","4":"30 Jun 2025","5":"National annual projection[7]","6":""},{"1":"Pakistan","2":"241,499,431","3":"2.9%","4":"1 Mar 2023","5":"2023 census result[8]","6":"[e]"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 
@@ -170,13 +172,14 @@ If we wanted to use this variable for some kind of analysis, we would first need
 
 ``` r
 library(stringr)
-population$Population <- as.numeric(str_replace_all(population$Population, pattern = ",", replacement = "")) #convert to numeric
-head(population) #checks if we scraped the desired data
+population$Population <- as.numeric(str_replace_all(population$Population,
+    pattern = ",", replacement = ""))  #convert to numeric
+head(population)  #checks if we scraped the desired data
 ```
 
 <div data-pagedtable="false">
   <script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":[1],"type":["chr"],"align":["left"]},{"label":["Location"],"name":[2],"type":["chr"],"align":["left"]},{"label":["Population"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["% ofworld"],"name":[4],"type":["chr"],"align":["left"]},{"label":["Date"],"name":[5],"type":["chr"],"align":["left"]},{"label":["Source (official or fromthe United Nations)"],"name":[6],"type":["chr"],"align":["left"]},{"label":["Notes"],"name":[7],"type":["chr"],"align":["left"]}],"data":[{"1":"–","2":"World","3":"8119000000","4":"100%","5":"1 Jul 2024","6":"UN projection[1][3]","7":""},{"1":"1/2 [b]","2":"China","3":"1409670000","4":"17.3%","5":"31 Dec 2023","6":"Official estimate[5]","7":"[c]"},{"1":"1/2 [b]","2":"India","3":"1404910000","4":"17.3%","5":"1 Jul 2024","6":"Official projection[6]","7":"[d]"},{"1":"3","2":"United States","3":"335893238","4":"4.1%","5":"1 Jan 2024","6":"Official projection[7]","7":"[e]"},{"1":"4","2":"Indonesia","3":"282477584","4":"3.5%","5":"31 Jun 2024","6":"National annual projection[8]","7":""},{"1":"5","2":"Pakistan","3":"241499431","4":"3.0%","5":"1 Mar 2023","6":"2023 census result[9]","7":"[f]"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["Location"],"name":[1],"type":["chr"],"align":["left"]},{"label":["Population"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["% ofworld"],"name":[3],"type":["chr"],"align":["left"]},{"label":["Date"],"name":[4],"type":["chr"],"align":["left"]},{"label":["Source (official or fromthe United Nations)"],"name":[5],"type":["chr"],"align":["left"]},{"label":["Notes"],"name":[6],"type":["chr"],"align":["left"]}],"data":[{"1":"World","2":"8232000000","3":"100%","4":"13 Jun 2025","5":"UN projection[1][3]","6":""},{"1":"India","2":"1417492000","3":"17.3%","4":"1 Jul 2025","5":"Official projection[4]","6":"[b]"},{"1":"China","2":"1408280000","3":"17.2%","4":"31 Dec 2024","5":"Official estimate[5]","6":"[c]"},{"1":"United States","2":"340110988","3":"4.1%","4":"1 Jul 2024","5":"Official estimate[6]","6":"[d]"},{"1":"Indonesia","2":"284438782","3":"3.5%","4":"30 Jun 2025","5":"National annual projection[7]","6":""},{"1":"Pakistan","2":"241499431","3":"2.9%","4":"1 Mar 2023","5":"2023 census result[8]","6":"[e]"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 
@@ -212,8 +215,8 @@ Let's assume that you would like to obtain population data again. The World Bank
 
 ``` r
 library(jsonlite)
-url <- "http://api.worldbank.org/v2/countries/AT/indicators/SP.POP.TOTL/?date=1960:2019&format=json&per_page=100" #specifies url
-ctrydata <- fromJSON(url) #parses the data 
+url <- "http://api.worldbank.org/v2/countries/AT/indicators/SP.POP.TOTL/?date=1960:2019&format=json&per_page=100"  #specifies url
+ctrydata <- fromJSON(url)  #parses the data 
 str(ctrydata)
 ```
 
@@ -225,7 +228,7 @@ str(ctrydata)
 ##   ..$ per_page   : int 100
 ##   ..$ total      : int 60
 ##   ..$ sourceid   : chr "2"
-##   ..$ lastupdated: chr "2024-11-13"
+##   ..$ lastupdated: chr "2025-07-01"
 ##  $ :'data.frame':	60 obs. of  8 variables:
 ##   ..$ indicator      :'data.frame':	60 obs. of  2 variables:
 ##   .. ..$ id   : chr [1:60] "SP.POP.TOTL" "SP.POP.TOTL" "SP.POP.TOTL" "SP.POP.TOTL" ...
@@ -242,7 +245,7 @@ str(ctrydata)
 ```
 
 ``` r
-head(ctrydata[[2]][,c("value","date")]) #checks if we scraped the desired data
+head(ctrydata[[2]][, c("value", "date")])  #checks if we scraped the desired data
 ```
 
 <div data-pagedtable="false">
@@ -258,9 +261,11 @@ An even more convenient way to obtain data from web APIs is to use existing R pa
 
 ``` r
 library(gtrendsR)
-#specify search term, area, source and time frame
-google_trends <- gtrends("data science", geo = c("US"), gprop = c("web"), time = "2012-09-01 2024-10-06")
-#inspect trend over time data frame
+# specify search term, area, source and time
+# frame
+google_trends <- gtrends("data science", geo = c("US"),
+    gprop = c("web"), time = "2012-09-01 2024-10-06")
+# inspect trend over time data frame
 head(google_trends$interest_over_time)
 ```
 
@@ -269,7 +274,8 @@ Although we haven't covered data visualization yet (see chapter 5), you could al
 
 ``` r
 # plot data
-plot(google_trends$interest_over_time[,c("date","hits")],type = "b")
+plot(google_trends$interest_over_time[, c("date", "hits")],
+    type = "b")
 ```
 
 Another advantage of R is that it is open to user contributions. This often means that packages that allow users to collect data to investigate timely issues are available fairly quickly. As an example, consider the recent pandemic where many resources were made available via R packages to researchers (see [here](https://mine-cetinkaya-rundel.github.io/covid19-r/) for an overview). For example, we might want to get information on the number of daily confirmed cases in the US on the state level. We could obtain this information in just one line of code using the 'COVID19' package. 
@@ -277,7 +283,7 @@ Another advantage of R is that it is open to user contributions. This often mean
 
 ``` r
 library(COVID19)
-covid_data <- covid19(country = "US",level = 2,start = "2020-01-01")
+covid_data <- covid19(country = "US", level = 2, start = "2020-01-01")
 ```
 
 ```
@@ -314,7 +320,8 @@ Again, we could plot this data easily. In the following example, we first subset
 
 ``` r
 # plot data
-plot(covid_data[covid_data$administrative_area_level_2=="New York",c("date","confirmed")],type = "l")
+plot(covid_data[covid_data$administrative_area_level_2 ==
+    "New York", c("date", "confirmed")], type = "l")
 ```
 
 <img src="03-data_import_files/figure-html/unnamed-chunk-17-1.png" width="672" />
@@ -341,10 +348,10 @@ plot(covid_data[covid_data$administrative_area_level_2=="New York",c("date","con
 
 
 ``` r
-student <- c('Max','Jonas','Saskia','Victoria')
-grade <- c(3,2,1,2)
-date <- as.Date(c('2020-10-06','2020-10-08','2020-10-09'))
-df <- data.frame(student,grade,date)
+student <- c("Max", "Jonas", "Saskia", "Victoria")
+grade <- c(3, 2, 1, 2)
+date <- as.Date(c("2020-10-06", "2020-10-08", "2020-10-09"))
+df <- data.frame(student, grade, date)
 ```
 
 - [ ] Error because a data frame can not have different data types.

@@ -562,7 +562,6 @@ A typical dataset with a **confounder** will exhibit correlation between the tre
 <td headers="p.value" class="gt_row gt_right">0.0000</td></tr>
   </tbody>
   
-  
 </table>
 </div>
 ```
@@ -1053,7 +1052,6 @@ However once we take the confounder into account the association vanishes which 
 <td headers="p.value" class="gt_row gt_right">0.5006</td></tr>
   </tbody>
   
-  
 </table>
 </div>
 ```
@@ -1540,7 +1538,6 @@ If we have a mediator in our data the picture looks very similar to the previous
 <td headers="statistic" class="gt_row gt_right">9.7944</td>
 <td headers="p.value" class="gt_row gt_right">0.0000</td></tr>
   </tbody>
-  
   
 </table>
 </div>
@@ -2031,7 +2028,6 @@ If we have a mediator in our data the picture looks very similar to the previous
 <td headers="p.value" class="gt_row gt_right">0.7776</td></tr>
   </tbody>
   
-  
 </table>
 </div>
 ```
@@ -2516,7 +2512,6 @@ The collider is a special case. There is no association between $X$ and $y$ as l
 <td headers="p.value" class="gt_row gt_right">0.4997</td></tr>
   </tbody>
   
-  
 </table>
 </div>
 ```
@@ -2999,7 +2994,6 @@ The collider is a special case. There is no association between $X$ and $y$ as l
 <td headers="statistic" class="gt_row gt_right">−19.9822</td>
 <td headers="p.value" class="gt_row gt_right">0.0000</td></tr>
   </tbody>
-  
   
 </table>
 </div>
@@ -3746,7 +3740,6 @@ proportion_mediated <- avg_causal_mediation_effect / total_effect_alternative
 <td headers="stub_1_5 value" class="gt_row gt_right">0.886</td></tr>
   </tbody>
   
-  
 </table>
 </div>
 ```
@@ -4010,7 +4003,7 @@ process(moderation_df, y = "y", x = "x", w="w", model=1, jn=1, seed=123)
 ##     56.6579   -0.0301    0.0077   -3.8998    0.0001   -0.0452   -0.0150
 ##     63.0982   -0.0164    0.0084   -1.9602    0.0500   -0.0328    0.0000
 ##     71.4514    0.0013    0.0092    0.1460    0.8840   -0.0168    0.0195
-##     80.1945    0.0199    0.0102    1.9602    0.0500    0.0000    0.0399
+##     80.1945    0.0199    0.0102    1.9602    0.0500   -0.0000    0.0399
 ##     86.2449    0.0328    0.0108    3.0303    0.0024    0.0116    0.0540
 ##    101.0383    0.0643    0.0124    5.1628    0.0000    0.0399    0.0887
 ##    115.8318    0.0957    0.0141    6.7916    0.0000    0.0681    0.1233

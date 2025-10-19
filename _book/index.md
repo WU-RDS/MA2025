@@ -101,7 +101,7 @@ The contents on this website are divided into weekly readings. To be able to fol
    <td style="text-align:left;"> 01:00PM - 05:00PM </td>
    <td style="text-align:left;"> TC.3.21 </td>
    <td style="text-align:left;"> Hypothesis testing II </td>
-   <td style="text-align:left;"> 6.4, 6.5, 6.6 </td>
+   <td style="text-align:left;"> 6.4, 6.5, 6.6, 6.7 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Oct. 27 </td>
@@ -176,7 +176,7 @@ The contents on this website are divided into weekly readings. To be able to fol
    <td style="text-align:left;"> 11:30AM - 03:30PM </td>
    <td style="text-align:left;"> TC.5.01 </td>
    <td style="text-align:left;"> Hypothesis testing II </td>
-   <td style="text-align:left;"> 6.4, 6.5, 6.6 </td>
+   <td style="text-align:left;"> 6.4, 6.5, 6.6, 6.7 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Oct. 29 </td>

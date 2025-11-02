@@ -1013,7 +1013,7 @@ The output tells us that we need 1.3809\times 10^{4} observations per group to d
 
 **(LC6.11) When should you use an ANOVA rather than a t-test?**   
 
-- [ ] To compare the means for more than two populations
+- [x] To compare the means for more than two populations
 - [ ] To compare the means of two groups
 - [ ] To adjust the variance of different sets
 - [ ] To test for causality
@@ -1023,7 +1023,7 @@ The output tells us that we need 1.3809\times 10^{4} observations per group to d
 
 - [ ] H0:μ1≠μ2≠μ3
 - [ ] H1:μ1=μ2=μ3
-- [ ] H0:μ1=μ2=μ3
+- [x] H0:μ1=μ2=μ3
 - [ ] H0:μ1≠μ2=μ3
 - [ ] None of the above 
 
@@ -1032,61 +1032,61 @@ The output tells us that we need 1.3809\times 10^{4} observations per group to d
 - [ ] Because the parametric assumptions of the t-test are not met
 - [ ] Because of deflated Type III Error rates
 - [ ] Due to the family-wise error rate the Type II Error is inflated
-- [ ] Because the Type I Error rate (alpha) wouldn't be 0.05
+- [x] Because the Type I Error rate (alpha) wouldn't be 0.05
 - [ ] None of the above 
 
 **(LC6.14) Which assumptions have to be satisfied to be able to use ANOVA on data from a between-subject design with three groups?**   
 
 - [ ] Same mean for all groups
-- [ ] Normal distribution of data
-- [ ] Homogeneity of variances
-- [ ] Independence of observation
+- [x] Normal distribution of data
+- [x] Homogeneity of variances
+- [x] Independence of observation
 - [ ] None of the above 
 
 **(LC6.15) What procedures are designed to correct of family-wise error rate in ANOVA?**   
 
-- [ ] Bonferroni correction
-- [ ] Tukey’s HSD
+- [x] Bonferroni correction
+- [x] Tukey’s HSD
 - [ ] t-test
-- [ ] Post-hoc tests
+- [x] Post-hoc tests
 - [ ] None of the above 
 
 **(LC6.16) Which of the following are examples for non-parametric tests?**   
 
-- [ ] Chi-Squared test
+- [x] Chi-Squared test
 - [ ] ANOVA
-- [ ] Kruskal-Wilcoxon test
+- [x] Kruskal-Wilcoxon test
 - [ ] T-test
 - [ ] None of the above 
 
 **(LC6.17) When should you use non-parametric tests?**   
 
-- [ ] When the assumptions of parametric tests are not met (e.g., normally distributed sampling distribution)
-- [ ] You have a very small sample size
-- [ ] When your dependent variable is measured on an ordinal scale
-- [ ] When your data is better represented by the median
+- [x] When the assumptions of parametric tests are not met (e.g., normally distributed sampling distribution)
+- [x] You have a very small sample size
+- [x] When your dependent variable is measured on an ordinal scale
+- [x] When your data is better represented by the median
 - [ ] None of the above 
 
 **(LC6.18) When should you use a Wilcoxon Rank Sum Test (= Mann-Whitney U Test)?**   
 
-- [ ] When the assumptions of the t-test have been violated
+- [x] When the assumptions of the t-test have been violated
 - [ ] The variances are not significantly different between groups
-- [ ] As a non-parametric alternative to the independent-means t-test
+- [x] As a non-parametric alternative to the independent-means t-test
 - [ ] When the assumptions of the ANOVA have been violated
 - [ ] None of the above 
 
 **(LC6.19) What does a Chi squared test do?**   
 
-- [ ] Tests the statistical significance of the observed association in a cross-tabulation
+- [x] Tests the statistical significance of the observed association in a cross-tabulation
 - [ ] Tests whether group A affects group B
-- [ ] Produces a test statistic that is Chi Squared distributed
-- [ ] Tests for the association between two or more categorical variables
+- [x] Produces a test statistic that is Chi Squared distributed
+- [x] Tests for the association between two or more categorical variables
 - [ ] None of the above 
 
 **(LC6.20) Which R-function would be suitable if you wanted to perform a test with ranked (ordinal) data in a two-group between-subject design?**   
 
 - [ ] `kruskal.test(x, ...)`
-- [ ] `wilcox.test(x, ...)`
+- [x] `wilcox.test(x, ...)`
 - [ ] `aov(formula, data = ,...)`
 - [ ] `t.test(x, ...)`
 - [ ] None of the above 

@@ -1150,9 +1150,9 @@ psych::describe(app_user_data_time[!is.na(app_user_data_time$time_in_app_2),
 ``` r
 # Boxplot
 
-time_data <- app_user_data_time |>
-    drop_na(time_in_app_2) |>
-    select(time_in_app_1, time_in_app_2) |>
+time_data <- app_user_data_time %>%
+    drop_na(time_in_app_2) %>%
+    select(time_in_app_1, time_in_app_2) %>%
     pivot_longer(cols = c(time_in_app_1, time_in_app_2),
         names_to = "push_notifications", values_to = "time_in_app")
 
@@ -1778,4 +1778,1617 @@ We can see in the contingency table and in the plot that the conversion rate in 
 
 From the managerial perspective, it makes sense to include the new email subscription pop-up feature since it significantly increases the coversion rate, although the effect size is rather small.
 
+## Assignment 3 (solutions)
 
+### Assignment A
+
+As a marketing manager at a consumer electronics company, you have been assigned the task of evaluating the effectiveness of various marketing activities on the sales of smart home devices (smart speakers). The company wants to understand the relative influence of leaflet promotions, in-store sales representatives, and radio advertising, as well as the impact of pricing on overall sales.
+
+The dataset provided contains data from multiple stores over the past year. Each row in the dataset corresponds to a different store, detailing the sales performance of smart home devices alongside the store’s marketing investments and product pricing.
+
+The following variables are available to you:
+
+* Sales: Number of units sold in each store
+* Price: Sale price of the product (in Euros)
+* Marketing Contribution: Promotion costs for including the product in leaflets distributed by the store (in Euros)
+* Sales Reps: Expenditure on in-store promotions managed by the company’s sales representatives (in Euros)
+* Retail Media POS: Advertising expenses for marketing placements at the point of sale (in Euros)
+* Region: Categorical variable indicating the region where the store is located (rural, suburban, or urban)
+
+**Task Instructions**
+
+Please conduct the following analyses:
+
+1. Regression Equation: Formally state the regression equation you will use to determine the relative influence of each marketing activity and price on sales. Save the equation as a "formula" object in the R code chunk.
+
+2. Variable Description: Describe the model variables using appropriate summary statistics and visualizations to provide a clear understanding of each variable’s distribution and scale.
+
+3. Multiple Linear Regression Model: Estimate a multiple linear regression model to evaluate the relative influence of each variable. Before interpreting the results, assess whether the model meets the assumptions of linear regression. Use appropriate diagnostic tests and plots to evaluate these assumptions.
+
+4. Alternative Model Specifications: If the model assumptions are not fully met, evaluate alternative model specifications using different functional forms. Justify your choice of model based on diagnostic criteria and model properties.
+
+5. Model Interpretation: Interpret the results of the chosen model:
+
+* Which variables have a significant influence on sales, and what do the coefficients imply about each variable’s effect?
+* What is the relative importance of each predictor?
+* Interpret the F-test results.
+* How would you assess the fit of the model? Include a visualization of model fit for clarity.
+
+6. Sales Prediction: Based on your chosen model, predict the sales quantity for a store planning the following marketing activities: Price: €350, Marketing Contribution: €10,000, Sales Reps: €6,000, Retail Media POS: €3,000. Provide the equation you used for the prediction.
+
+7. Assess to what extent customers from different regions differ regarding their price sensitivity. Are customers from urban and suburban areas more or less price-sensitive compared to rural areas? Provide a detailed explanation of your analysis and results.
+
+When you have completed your analysis, click the “Knit to HTML” button above the code editor. This will generate an HTML document of your results in the folder where the "assignment3.Rmd" file is stored. Open the HTML file in your Internet browser to verify the output. Once verified, submit the HTML file via Canvas. Name the file: “assignment3_studentID_name.html”.
+
+### Data analysis
+
+### Load data
+
+
+``` r
+sales_data <- read.csv("https://raw.githubusercontent.com/WU-RDS/MA2024/main/data/assignment3.csv",
+    header = TRUE)  #read in data
+head(sales_data)
+```
+
+<div data-pagedtable="false">
+  <script data-pagedtable-source type="application/json">
+{"columns":[{"label":["StoreID"],"name":[1],"type":["int"],"align":["right"]},{"label":["Sales"],"name":[2],"type":["int"],"align":["right"]},{"label":["Price"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["MarketingContribution"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["SalesReps"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["RetailMediaPOS"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["Region"],"name":[7],"type":["chr"],"align":["left"]}],"data":[{"1":"1","2":"89","3":"391.48","4":"8006.62","5":"2361.92","6":"1413.25","7":"Rural"},{"1":"2","2":"137","3":"393.71","4":"8964.35","5":"6236.37","6":"2711.37","7":"Rural"},{"1":"3","2":"112","3":"328.61","4":"7485.83","5":"2983.50","6":"1150.83","7":"Suburban"},{"1":"4","2":"59","3":"383.04","4":"4040.16","5":"3060.82","6":"1950.54","7":"Urban"},{"1":"5","2":"125","3":"364.17","4":"8791.86","5":"5065.14","6":"1984.27","7":"Suburban"},{"1":"6","2":"104","3":"351.91","4":"8644.35","5":"4031.30","6":"1667.79","7":"Urban"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+
+``` r
+str(sales_data)
+```
+
+```
+## 'data.frame':	1460 obs. of  7 variables:
+##  $ StoreID              : int  1 2 3 4 5 6 7 8 9 10 ...
+##  $ Sales                : int  89 137 112 59 125 104 74 131 121 145 ...
+##  $ Price                : num  391 394 329 383 364 ...
+##  $ MarketingContribution: num  8007 8964 7486 4040 8792 ...
+##  $ SalesReps            : num  2362 6236 2984 3061 5065 ...
+##  $ RetailMediaPOS       : num  1413 2711 1151 1951 1984 ...
+##  $ Region               : chr  "Rural" "Rural" "Suburban" "Urban" ...
+```
+
+``` r
+library(tidyverse)
+library(psych)
+library(Hmisc)
+library(ggstatsplot)
+library(ggcorrplot)
+library(car)
+library(lmtest)
+```
+
+```
+## Loading required package: zoo
+```
+
+``` r
+library(lm.beta)
+options(scipen = 999)
+set.seed(123)
+```
+
+### Question 1
+
+
+
+In a first step, we specify the regression equation. In this case, sales of home devices is the dependent variable, and predictors for store i are 1) price, 2) promotion costs, 3) expenditures on sales representatives, 4) costs for marketing placements at POS.
+
+
+$$
+Sales_i=\beta_0 + \beta_1 * Price_i + \beta_2 * MarketingContribution_i + \beta_3 * SalesReps_i + \beta_4 * RetailMediaPOS_i + \epsilon_i
+$$
+
+This equation will be used later to turn the output of the regression analysis (namely the coefficients: β0 - intersect coefficient, and β1, β2, and β3 that represent the unknown relationship between sales and Price, MarketingContribution, SalesReps, SalesMediaPOS to the “managerial” form and draw marketing conclusions.
+
+With the following code we are saving the formula:
+
+
+``` r
+formula <- Sales ~ Price + MarketingContribution +
+    SalesReps + RetailMediaPOS
+```
+
+
+
+### Question 2
+
+Inspecting the variables with descriptive statistics:
+
+
+``` r
+# descriptive statistics can be checked with the
+# following code
+psych::describe(sales_data)
+```
+
+<div data-pagedtable="false">
+  <script data-pagedtable-source type="application/json">
+{"columns":[{"label":["vars"],"name":[1],"type":["int"],"align":["right"]},{"label":["n"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["mean"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["sd"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["median"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["trimmed"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["mad"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["min"],"name":[8],"type":["dbl"],"align":["right"]},{"label":["max"],"name":[9],"type":["dbl"],"align":["right"]},{"label":["range"],"name":[10],"type":["dbl"],"align":["right"]},{"label":["skew"],"name":[11],"type":["dbl"],"align":["right"]},{"label":["kurtosis"],"name":[12],"type":["dbl"],"align":["right"]},{"label":["se"],"name":[13],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"1460","3":"730.500000","4":"421.6100094","5":"730.500","6":"730.500000","7":"541.14900","8":"1.00","9":"1460.00","10":"1459.00","11":"0.00000000","12":"-1.20246603","13":"11.03403825"},{"1":"2","2":"1460","3":"131.278767","4":"29.7819991","5":"128.000","6":"129.782534","7":"29.65200","8":"57.00","9":"250.00","10":"193.00","11":"0.48299957","12":"0.04463889","13":"0.77943054"},{"1":"3","2":"1460","3":"348.855219","4":"29.1391074","5":"348.070","6":"348.699675","7":"37.65063","8":"300.02","9":"399.94","10":"99.92","11":"0.04064067","12":"-1.21817760","13":"0.76260529"},{"1":"4","2":"1460","3":"7550.748096","4":"2637.6067793","5":"7650.520","6":"7557.892628","7":"3417.94897","8":"3003.36","9":"11997.87","10":"8994.51","11":"-0.03812799","12":"-1.23926459","13":"69.02932433"},{"1":"5","2":"1460","3":"5075.157644","4":"1749.5662514","5":"5081.560","6":"5088.025839","7":"2253.35185","8":"2002.30","9":"7998.99","10":"5996.69","11":"-0.04156755","12":"-1.24701453","13":"45.78824151"},{"1":"6","2":"1460","3":"3028.719418","4":"1152.8164744","5":"3074.765","6":"3033.752663","7":"1447.17327","8":"1002.75","9":"4998.96","10":"3996.21","11":"-0.04237390","12":"-1.15931275","13":"30.17058605"},{"1":"7","2":"1460","3":"1.989726","4":"0.8055862","5":"2.000","6":"1.987158","7":"1.48260","8":"1.00","9":"3.00","10":"2.00","11":"0.01858430","12":"-1.45992653","13":"0.02108315"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+
+Inspecting the correlation matrix reveals that the sales variable is positively correlated with MarketingContribution, SalesReps and RetailMediaPOS.
+
+
+``` r
+rcorr(as.matrix(sales_data[, c("Sales", "Price", "MarketingContribution",
+    "SalesReps", "RetailMediaPOS")]))
+```
+
+```
+##                       Sales Price MarketingContribution SalesReps
+## Sales                  1.00 -0.51                  0.52      0.43
+## Price                 -0.51  1.00                 -0.01     -0.04
+## MarketingContribution  0.52 -0.01                  1.00      0.01
+## SalesReps              0.43 -0.04                  0.01      1.00
+## RetailMediaPOS         0.32 -0.03                  0.02      0.03
+##                       RetailMediaPOS
+## Sales                           0.32
+## Price                          -0.03
+## MarketingContribution           0.02
+## SalesReps                       0.03
+## RetailMediaPOS                  1.00
+## 
+## n= 1460 
+## 
+## 
+## P
+##                       Sales  Price  MarketingContribution SalesReps
+## Sales                        0.0000 0.0000                0.0000   
+## Price                 0.0000        0.7766                0.1232   
+## MarketingContribution 0.0000 0.7766                       0.7751   
+## SalesReps             0.0000 0.1232 0.7751                         
+## RetailMediaPOS        0.0000 0.2149 0.4726                0.2988   
+##                       RetailMediaPOS
+## Sales                 0.0000        
+## Price                 0.2149        
+## MarketingContribution 0.4726        
+## SalesReps             0.2988        
+## RetailMediaPOS
+```
+
+
+
+``` r
+# Since we have continuous variables, we use
+# scatterplots to investigate the relationship
+# between sales and each of the predictor
+# variables.
+
+# relationship of Price and Sales
+ggplot(sales_data, aes(x = Price, y = Sales)) + geom_point(shape = 1) +
+    geom_smooth(method = "lm", fill = "gray", color = "lavenderblush3",
+        alpha = 0.1) + theme_minimal()
+```
+
+```
+## `geom_smooth()` using formula = 'y ~ x'
+```
+
+<img src="14-rmdIntro_files/figure-html/unnamed-chunk-10-1.png" width="672" />
+
+``` r
+# relationship of MarketingContribution and Sales
+ggplot(sales_data, aes(x = MarketingContribution, y = Sales)) +
+    geom_point(shape = 1) + geom_smooth(method = "lm",
+    fill = "gray", color = "lavenderblush3", alpha = 0.1) +
+    theme_minimal()
+```
+
+```
+## `geom_smooth()` using formula = 'y ~ x'
+```
+
+<img src="14-rmdIntro_files/figure-html/unnamed-chunk-10-2.png" width="672" />
+
+``` r
+# relationship of SalesReps and Sales
+ggplot(sales_data, aes(x = SalesReps, y = Sales)) +
+    geom_point(shape = 1) + geom_smooth(method = "lm",
+    fill = "gray", color = "lavenderblush3", alpha = 0.1) +
+    theme_minimal()
+```
+
+```
+## `geom_smooth()` using formula = 'y ~ x'
+```
+
+<img src="14-rmdIntro_files/figure-html/unnamed-chunk-10-3.png" width="672" />
+
+``` r
+# relationship of RetailMediaPOS
+ggplot(sales_data, aes(x = RetailMediaPOS, y = Sales)) +
+    geom_point(shape = 1) + geom_smooth(method = "lm",
+    fill = "gray", color = "lavenderblush3", alpha = 0.1) +
+    theme_minimal()
+```
+
+```
+## `geom_smooth()` using formula = 'y ~ x'
+```
+
+<img src="14-rmdIntro_files/figure-html/unnamed-chunk-10-4.png" width="672" />
+
+
+The plots including the fitted lines from a simple linear model suggest that there might be a positive relationship between sales and the predictors. However, the relationships between sales and independent variables appear to be rather weak. It appears more that the effect of independent variables is decreasing with increasing budget spent on these marketing activities.
+
+Further steps include estimate of a multiple linear regression model in order to determine if linear specification fits the model.
+
+
+### Question 3
+
+First, we estimate the model with the lm() function. But before we can inspect and interpret the results, we need to test if there might be potential problems with our model specification.
+
+
+
+``` r
+# Estimate linear model
+linear_model <- lm(formula, data = sales_data)
+summary(linear_model)
+```
+
+```
+## 
+## Call:
+## lm(formula = formula, data = sales_data)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -44.724  -9.856  -0.440   8.901  61.537 
+## 
+## Coefficients:
+##                          Estimate  Std. Error t value            Pr(>|t|)    
+## (Intercept)           201.7441553   4.9359563   40.87 <0.0000000000000002 ***
+## Price                  -0.4886969   0.0129089  -37.86 <0.0000000000000002 ***
+## MarketingContribution   0.0056953   0.0001425   39.98 <0.0000000000000002 ***
+## SalesReps               0.0068560   0.0002150   31.89 <0.0000000000000002 ***
+## RetailMediaPOS          0.0073364   0.0003262   22.49 <0.0000000000000002 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 14.35 on 1455 degrees of freedom
+## Multiple R-squared:  0.7685,	Adjusted R-squared:  0.7679 
+## F-statistic:  1208 on 4 and 1455 DF,  p-value: < 0.00000000000000022
+```
+
+
+
+``` r
+# Outliers
+sales_data$stud_resid <- rstudent(linear_model)
+plot(1:nrow(sales_data), sales_data$stud_resid, ylim = c(-3.3,
+    3.3))  #create scatterplot
+abline(h = c(-3, 3), col = "red", lty = 2)  #add reference lines
+```
+
+<img src="14-rmdIntro_files/figure-html/unnamed-chunk-12-1.png" width="672" />
+
+To check for outliers, we extract the studentized residuals from our model and test if there are any absolute values larger than 3. Since there are many residuals with absolute values larger than 3, we conclude that there are many outliers.
+
+
+``` r
+# influential observation
+plot(linear_model, 4)
+```
+
+<img src="14-rmdIntro_files/figure-html/unnamed-chunk-13-1.png" width="672" />
+
+``` r
+plot(linear_model, 5)
+```
+
+<img src="14-rmdIntro_files/figure-html/unnamed-chunk-13-2.png" width="672" />
+
+To test for influential observations, we use Cook’s Distance. To identify influential observations, we should look at values above 1 in the first plot. It is easy to see that all of the Cook’s distance values are below the cutoff of 1.  In the second plot we should watch out for the outlying values at the upper right corner or at the lower right corner of the plot. Those spots are the places where cases can be influential against a regression line. In our example, both plots show that there are no influential cases.
+
+
+
+
+``` r
+# Heteroscedasticity
+
+plot(linear_model, 1)
+```
+
+<img src="14-rmdIntro_files/figure-html/unnamed-chunk-14-1.png" width="672" />
+
+``` r
+# Breusch Pagan test
+bptest(linear_model)
+```
+
+```
+## 
+## 	studentized Breusch-Pagan test
+## 
+## data:  linear_model
+## BP = 95.594, df = 4, p-value < 0.00000000000000022
+```
+
+
+Next, we test if a linear specification appears feasible. We can look at the residuals plot to see if the linear specification is appropriate. This plot helps us to determine if error variances are equal, which is an assumption of the linear model. The red line is a smoothed curve through the residuals plot and if it deviates from the dashed grey horizontal line a lot, it means that the linear model specification is not a correct choice. In this example, the red line is rather far from the dashed grey line, so this assumption seems to be not met.
+
+Also, the residual variance (i.e., the spread of the values on the y-axis) should be similar across the scale of the fitted values on the x-axis, but we can observe a slight funnel shape, which indicates non-constant variances in the errors, so we can conduct Breusch Pagan test to confirm it. The null hypothesis for this test is that the error variances are equal, so the significant p-value <0,05 indicates that the error variances aren't equal, which indicates that the assumption of homoscedasticity is not met.
+
+
+Next, we test if the residuals are approximately normally distributed using the Q-Q plot from the output and a Shapiro Wilk test.
+
+
+``` r
+# Non-normally distributed errors
+
+plot(linear_model, 2)
+```
+
+<img src="14-rmdIntro_files/figure-html/unnamed-chunk-15-1.png" width="672" />
+
+``` r
+shapiro.test(resid(linear_model))
+```
+
+```
+## 
+## 	Shapiro-Wilk normality test
+## 
+## data:  resid(linear_model)
+## W = 0.99521, p-value = 0.0001326
+```
+
+To check for normal distribution of the residuals, we need to conduct a Shapiro-Wilk test, the null hypothesis for it is that the residuals are normally distributed. So the significant p-value <0,05 indicates that the error variances aren't equal, which indicates that the assumption of normally distributed error term is not met.
+
+Correlation of errors: We actually wouldn’t need to test this assumption here since there is not natural order in the data.
+
+
+
+``` r
+#Multicollinearity
+
+rcorr(as.matrix(sales_data[,c("Price","MarketingContribution","SalesReps", "RetailMediaPOS")]))
+```
+
+```
+##                       Price MarketingContribution SalesReps RetailMediaPOS
+## Price                  1.00                 -0.01     -0.04          -0.03
+## MarketingContribution -0.01                  1.00      0.01           0.02
+## SalesReps             -0.04                  0.01      1.00           0.03
+## RetailMediaPOS        -0.03                  0.02      0.03           1.00
+## 
+## n= 1460 
+## 
+## 
+## P
+##                       Price  MarketingContribution SalesReps RetailMediaPOS
+## Price                        0.7766                0.1232    0.2149        
+## MarketingContribution 0.7766                       0.7751    0.4726        
+## SalesReps             0.1232 0.7751                          0.2988        
+## RetailMediaPOS        0.2149 0.4726                0.2988
+```
+
+``` r
+plot(sales_data[,c("Price","MarketingContribution","SalesReps", "RetailMediaPOS")])
+```
+
+<img src="14-rmdIntro_files/figure-html/unnamed-chunk-16-1.png" width="672" />
+
+``` r
+ggcorrmat(
+  data = sales_data[,c("Price","MarketingContribution","SalesReps", "RetailMediaPOS")],
+  matrix.type = "upper",
+  colors = c("skyblue4", "white", "palevioletred4")
+  #title = "Correlalogram of independent variables",
+)
+```
+
+<img src="14-rmdIntro_files/figure-html/unnamed-chunk-16-2.png" width="672" />
+
+``` r
+vif(linear_model)
+```
+
+```
+##                 Price MarketingContribution             SalesReps 
+##              1.002665              1.000446              1.002351 
+##        RetailMediaPOS 
+##              1.002069
+```
+
+To test for linear dependence of the regressors, we first test the bivariate correlations for any extremely high correlations (i.e., >0.8). We can see that bivariate correlations are not high among independent variable, so this assumption is met.
+
+In the next step, we compute the variance inflation factor for each predictor variable. The values should be close to 1 and values larger than 4 indicate potential problems with the linear dependence of regressors, but in our model we don't see any such values.
+
+### Question 4
+
+It appears that a linear model might not represent the data well. It rather appears that the effect of an additional Euro spend on different marketing activities is decreasing with increasing levels of advertising expenditures. Thus, we can assume decreasing marginal returns.  Plus, the assumptions of linear specification like absence of outliers, homoscedasticity and normally distributed residuals.
+
+In this case, a multiplicative model might be a better representation of the data.
+
+
+``` r
+log_reg <- lm(log(Sales) ~ log(Price) + log(MarketingContribution) +
+    log(SalesReps) + log(RetailMediaPOS), data = sales_data)
+summary(log_reg)
+```
+
+```
+## 
+## Call:
+## lm(formula = log(Sales) ~ log(Price) + log(MarketingContribution) + 
+##     log(SalesReps) + log(RetailMediaPOS), data = sales_data)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.31586 -0.07091 -0.00092  0.06816  0.32443 
+## 
+## Coefficients:
+##                             Estimate Std. Error t value            Pr(>|t|)    
+## (Intercept)                 6.475026   0.213041   30.39 <0.0000000000000002 ***
+## log(Price)                 -1.304723   0.031844  -40.97 <0.0000000000000002 ***
+## log(MarketingContribution)  0.302317   0.006875   43.98 <0.0000000000000002 ***
+## log(SalesReps)              0.248789   0.006984   35.62 <0.0000000000000002 ***
+## log(RetailMediaPOS)         0.154664   0.006114   25.30 <0.0000000000000002 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.1018 on 1455 degrees of freedom
+## Multiple R-squared:  0.8009,	Adjusted R-squared:  0.8004 
+## F-statistic:  1464 on 4 and 1455 DF,  p-value: < 0.00000000000000022
+```
+
+We can check again the assumptions to see if the multiplicative specification fits the model better and if we can interpret the results of this model.
+
+
+``` r
+# Outliers
+sales_data$stud_resid_1 <- rstudent(log_reg)
+plot(1:nrow(sales_data), sales_data$stud_resid_1, ylim = c(-3.3,
+    3.3))  #create scatterplot
+abline(h = c(-3, 3), col = "red", lty = 2)  #add reference lines
+```
+
+<img src="14-rmdIntro_files/figure-html/unnamed-chunk-18-1.png" width="672" />
+
+``` r
+# influential observation
+plot(log_reg, 4)
+```
+
+<img src="14-rmdIntro_files/figure-html/unnamed-chunk-18-2.png" width="672" />
+
+``` r
+plot(log_reg, 5)
+```
+
+<img src="14-rmdIntro_files/figure-html/unnamed-chunk-18-3.png" width="672" />
+
+We can see that in comparison with the plot of the linear model, there are fewer outliers, namely values of studentized residuals more than 3 and less than -3.
+
+
+We check now if the assumption of constant variance is met, which was not the case in the linear specification.
+
+
+``` r
+# Heteroscedasticity
+
+plot(log_reg, 1)
+```
+
+<img src="14-rmdIntro_files/figure-html/unnamed-chunk-19-1.png" width="672" />
+
+``` r
+# Breusch Pagan test
+bptest(log_reg)
+```
+
+```
+## 
+## 	studentized Breusch-Pagan test
+## 
+## data:  log_reg
+## BP = 3.7846, df = 4, p-value = 0.4359
+```
+
+In the plot, we can now observe that the values are more equally distributed along the line. We also conduct Breusch Pagan test. The null hypothesis for this test is that the error variances are equal, so the significant p-value of 0.6857 indicates that we cannot reject the null hypothesis, so the error variances are equal, which indicates that the assumption of homoscedasticity is met for this model.
+
+Next we check if the residuals are normally distributed, which wasn't the case in the linear model.
+
+
+``` r
+# Non-normally distributed errors
+
+plot(log_reg, 2)
+```
+
+<img src="14-rmdIntro_files/figure-html/unnamed-chunk-20-1.png" width="672" />
+
+``` r
+shapiro.test(resid(log_reg))
+```
+
+```
+## 
+## 	Shapiro-Wilk normality test
+## 
+## data:  resid(log_reg)
+## W = 0.99932, p-value = 0.8931
+```
+
+The null hypothesis of this Shaprio Wilk test is that the residuals are normally distributed. Since the p-value of the test is 0.8898 we cannot reject the null hypothesis, so the residuals in this model are normally distributed unlike in the linear specification.
+
+Looking at the added variable plots, we can conclude that each predictor appears to have a unique contribution to explaining the variance in the dependent variable.
+
+
+
+``` r
+# Non-linear relationships
+avPlots(log_reg, col.lines = palette()[2])
+```
+
+<img src="14-rmdIntro_files/figure-html/unnamed-chunk-21-1.png" width="672" />
+
+And finally, we check for multicollinearity,
+
+
+``` r
+# Multicollinearity
+
+vif(log_reg)
+```
+
+```
+##                 log(Price) log(MarketingContribution) 
+##                   1.002559                   1.000478 
+##             log(SalesReps)        log(RetailMediaPOS) 
+##                   1.002574                   1.002015
+```
+Here, all vif values are well below the cutoff, indicating that there are no problems with multicollinearity.
+
+All assumption are met for the multiplicative model, log-log transformed model represents our data well, so we can proceed with the interpretation.
+
+### Question 5
+
+In a next step, we will investigate the results from the model.
+
+
+``` r
+summary(log_reg)
+```
+
+```
+## 
+## Call:
+## lm(formula = log(Sales) ~ log(Price) + log(MarketingContribution) + 
+##     log(SalesReps) + log(RetailMediaPOS), data = sales_data)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.31586 -0.07091 -0.00092  0.06816  0.32443 
+## 
+## Coefficients:
+##                             Estimate Std. Error t value            Pr(>|t|)    
+## (Intercept)                 6.475026   0.213041   30.39 <0.0000000000000002 ***
+## log(Price)                 -1.304723   0.031844  -40.97 <0.0000000000000002 ***
+## log(MarketingContribution)  0.302317   0.006875   43.98 <0.0000000000000002 ***
+## log(SalesReps)              0.248789   0.006984   35.62 <0.0000000000000002 ***
+## log(RetailMediaPOS)         0.154664   0.006114   25.30 <0.0000000000000002 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.1018 on 1455 degrees of freedom
+## Multiple R-squared:  0.8009,	Adjusted R-squared:  0.8004 
+## F-statistic:  1464 on 4 and 1455 DF,  p-value: < 0.00000000000000022
+```
+
+The intercept tells us the amount of sales if all the marketing expenditures would be 0. The following variables have a significant influence on sales because for them the p-value is <0.05: log(Price), log(MarketingContribution), log(SalesReps), log(RetailMediaPOS).
+
+The interpretation of the coefficients is as follows:
+- A 1% increase in the sales price of the product leads to 1.3% decrease in sales holding other predictors constant.
+- A 1% increase in promotion costs for including the product in leaflets distributed by the store leads to 0.3% increase in sales holding other predictors constant.
+- A 1% increase in expenditures on in-store promotions managed by the sales reps leads to 0.25% increase in sales holding other predictors constant.
+- A 1% increase in advertising expenses for marketing placements at POS leads to 0.15% increase in sales holding other predictors constant.
+
+We should always provide a measure of uncertainty that is associated with the estimates. You could compute the confidence intervals around the coefficients using the confint() function.
+
+
+
+``` r
+confint(log_reg)
+```
+
+```
+##                                 2.5 %     97.5 %
+## (Intercept)                 6.0571256  6.8929263
+## log(Price)                 -1.3671878 -1.2422587
+## log(MarketingContribution)  0.2888318  0.3158021
+## log(SalesReps)              0.2350898  0.2624880
+## log(RetailMediaPOS)         0.1426709  0.1666564
+```
+
+The results show that, for instance, with 95% confidence the true effect of the marketing contributions lies between 0.29 and 0.32.
+
+Although the variables are measured on the same scale, you should still test the relative influence by inspecting the standardized coefficients that express the effects in terms of standard deviations.
+
+
+
+``` r
+lm.beta(log_reg)
+```
+
+```
+## 
+## Call:
+## lm(formula = log(Sales) ~ log(Price) + log(MarketingContribution) + 
+##     log(SalesReps) + log(RetailMediaPOS), data = sales_data)
+## 
+## Standardized Coefficients::
+##                (Intercept)                 log(Price) 
+##                         NA                 -0.4798452 
+## log(MarketingContribution)             log(SalesReps) 
+##                  0.5144836                  0.4172141 
+##        log(RetailMediaPOS) 
+##                  0.2961886
+```
+Here, we conclude that marketing contribution has the largest ROI followed by price (negative effect) and costs on sales reps.
+
+Another significance test is the F-test. It tests the null hypothesis: H0:R-squared=0
+
+This is equivalent to the following null hypothesis: H0:β1=β2=β3=βk=0
+
+The result of the test is provided in the output above (F-statistic: 1464 on 4 and 1455 DF, p-value: <0,05). Since the p-value is smaller than 0.05, we reject the null hypothesis that all coefficients are zero.
+
+Regarding the model fit, the R2 statistic tells us that approximately 80% of the variance can be explained by the model.
+
+The results of the model and model fit can be also visualized with the following plots:
+
+
+``` r
+ggcoefstats(x = log_reg, k = 3, title = "Sales predicted by marketing expenditures")
+```
+
+<img src="14-rmdIntro_files/figure-html/unnamed-chunk-26-1.png" width="672" />
+
+``` r
+# Create the predictions (yhat) from the log-log model
+sales_data$yhat <- predict(log_reg)
+
+# Create a scatter plot of predicted vs. observed log(Sales)
+ggplot(sales_data, aes(x = yhat, y = log(Sales))) +
+  geom_point(size = 2, shape = 1) +  # scatter plot of predicted vs observed log(Sales)
+  scale_x_continuous(name = "Predicted log(Sales)") +  # label for the x-axis
+  scale_y_continuous(name = "Observed log(Sales)") +  # label for the y-axis
+  geom_abline(intercept = 0, slope = 1, color = "red", linetype = "dashed") +  # identity line (45-degree)
+  theme_minimal() +  # minimal theme
+  labs(title = "Predicted vs. Observed log(Sales) - Log-Log Model")  # add title
+```
+
+<img src="14-rmdIntro_files/figure-html/unnamed-chunk-26-2.png" width="672" />
+
+
+
+
+### Question 6
+
+Provide a description of your steps here! Below is a template for your equation:
+
+$$log(Sales) = \beta_0 + \beta_1*log(Price)+ \beta_2*log(MarketingContribution)+\beta_3*log(SalesReps)+\beta_4*log(RetailMediaPOS)$$
+
+$$log(Sales) = 6.474 + (-1.305)*log(350)+0.302*log(10000)+0.249*log(6000)+0.155+log(3000) $$
+
+
+
+``` r
+Price <- 350
+MarketingContribution <- 10000
+SalesReps <- 6000
+RetailMediaPOS <- 3000
+
+# Get the coefficients from the model summary
+intercept <- summary(log_reg)$coefficients[1, 1]
+coef_log_Price <- summary(log_reg)$coefficients[2,
+    1]
+coef_log_MarketingContribution <- summary(log_reg)$coefficients[3,
+    1]
+coef_log_SalesReps <- summary(log_reg)$coefficients[4,
+    1]
+coef_log_RetailMediaPOS <- summary(log_reg)$coefficients[5,
+    1]
+
+# Calculate the log(Sales) prediction using the
+# log-log model formula
+log_sales_prediction <- intercept + coef_log_Price *
+    log(Price) + coef_log_MarketingContribution * log(MarketingContribution) +
+    coef_log_SalesReps * log(SalesReps) + coef_log_RetailMediaPOS *
+    log(RetailMediaPOS)
+
+
+# Exponentiate to get the predicted sales
+sales_prediction <- exp(log_sales_prediction)
+
+# Output the predicted sales
+sales_prediction
+```
+
+```
+## [1] 151.2786
+```
+
+The predicted sales with the given marketing expenditures are 151 units.
+
+### Question 7
+
+First we visualize the relationship between the 3 variables and then formally test the effect in the model.
+
+
+``` r
+#boxplots of sales by regions
+ggplot(sales_data, aes(x = Region, y = Sales)) +
+  geom_boxplot(fill = "gray", color = "lavenderblush3") +  # Fill and color matching scatter plot
+  labs(title = "Sales by Region", x = "Region", y = "Sales") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+<img src="14-rmdIntro_files/figure-html/unnamed-chunk-28-1.png" width="672" />
+
+``` r
+# Transform data to log scale for the scatter plot
+sales_data$log_Sales <- log(sales_data$Sales)
+sales_data$log_Price <- log(sales_data$Price)
+
+# Create a scatter plot of log(Sales) vs log(Price) by Region
+ggplot(sales_data, aes(x = log_Price, y = log_Sales, color = Region)) +
+  geom_point(alpha = 0.6) +   # Scatter points with some transparency
+  geom_smooth(method = "lm", se = FALSE, aes(color = Region)) +  # Add regression lines
+  labs(
+    title = "Log-Log Relationship Between Sales and Price by Region",
+    x = "Log(Price)",
+    y = "Log(Sales)",
+    color = "Region"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "top")
+```
+
+```
+## `geom_smooth()` using formula = 'y ~ x'
+```
+
+<img src="14-rmdIntro_files/figure-html/unnamed-chunk-28-2.png" width="672" />
+
+From the inspection of the plot, we can already see that there are only very slight differences in price sensitivity between regions. We can see the more exact result in the model.
+
+
+
+``` r
+log_reg_with_region <- lm(log(Sales) ~ log(Price) +
+    log(MarketingContribution) + log(SalesReps) + log(RetailMediaPOS) +
+    Region + log(Price) * Region, data = sales_data)
+
+summary(log_reg_with_region)
+```
+
+```
+## 
+## Call:
+## lm(formula = log(Sales) ~ log(Price) + log(MarketingContribution) + 
+##     log(SalesReps) + log(RetailMediaPOS) + Region + log(Price) * 
+##     Region, data = sales_data)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.31230 -0.07264  0.00052  0.06944  0.31913 
+## 
+## Coefficients:
+##                             Estimate Std. Error t value             Pr(>|t|)
+## (Intercept)                 5.677941   0.342629  16.572 < 0.0000000000000002
+## log(Price)                 -1.166913   0.056300 -20.727 < 0.0000000000000002
+## log(MarketingContribution)  0.301407   0.006879  43.813 < 0.0000000000000002
+## log(SalesReps)              0.248714   0.006978  35.645 < 0.0000000000000002
+## log(RetailMediaPOS)         0.154474   0.006108  25.292 < 0.0000000000000002
+## RegionSuburban              1.092507   0.450905   2.423              0.01552
+## RegionUrban                 1.289724   0.467221   2.760              0.00585
+## log(Price):RegionSuburban  -0.186507   0.077056  -2.420              0.01563
+## log(Price):RegionUrban     -0.220242   0.079819  -2.759              0.00587
+##                               
+## (Intercept)                ***
+## log(Price)                 ***
+## log(MarketingContribution) ***
+## log(SalesReps)             ***
+## log(RetailMediaPOS)        ***
+## RegionSuburban             *  
+## RegionUrban                ** 
+## log(Price):RegionSuburban  *  
+## log(Price):RegionUrban     ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.1016 on 1451 degrees of freedom
+## Multiple R-squared:  0.8022,	Adjusted R-squared:  0.8011 
+## F-statistic: 735.5 on 8 and 1451 DF,  p-value: < 0.00000000000000022
+```
+From inspecting the model, we can conclude that region indeed has an effect on price sensitivity.
+
+The coefficient for RegionSuburban indicates that in the Suburban region the sales are expected to be 1.09% higher than in the Rural region. This effect is significant (p<0.05). Similarly, for the RegionUrban sales are expected to be 1.29% higher than in the Rural region, and this effect is also statistically significant (p<0.05).
+
+The interaction effect: The coefficient log(Price) of -1.167 demonstrates the base price sensitivity in the rural region. This means that in the rural region a 1% increase in price will lead to a 1.167% decrease in sales. In the suburban region, customers are more price sensitive by 0.187. This means that a 1% increase in price will lead to (-1.167-0.187=) 1.354% decrease in sales. In urban region, people are the most price sensitive, by 0.22 more than in the rural region. A 1% increase in price will lead to (-1.167-0.22 =) 1.387% decrease in sales.
+
+This result could indicate that in urban areas consumers have access to more alternatives and hence, react stronger to price changes.
+
+
+### Assignment B
+
+As a marketing manager of a music streaming service, you are set the task to derive insights from data using different quantitative analyses.
+
+The following variables are available to you:
+
+The data set contains the following variables:
+
+* isrc = unique song id
+* artist_id = unique artist ID
+* streams = the number of streams of the song received globally between 2017-2021
+* weeks_in_charts = the number of weeks the song was in the top200 charts in this period
+* n_regions = the number of markets where the song appeared in the top200 charts
+* danceability
+* energy
+* speechiness
+* instrumentalness
+* liveness
+* valence
+* tempo
+* song_length = the duration of the song (in minutes)
+* song_age = the age of the song (in weeks since release)
+* explicit = indicator for explicit lyrics
+* n_playlists = number of playlists a song is featured on
+* sp_popularity = the Spotify popularity index of an artist
+* youtube_views = the number of views the song received on YouTube
+* tiktok_counts = the number of Tiktok views the song received on TikTok
+* ins_followers_artist = the number of Instagram followers of the artist
+* monthly_listeners_artist = the number of monthly listeners of an artist
+* playlist_total_reach_artist = the number of playlist followers of the playlists the song is on
+* sp_fans_artist = the number of fans of the artist on Spotify
+* shazam_counts = the number of times a song is shazamed
+* artistName = name of the artist
+* trackName = name of the song
+* release_date = release date of song
+* genre = genre associated with the song
+* label = music label associated with the song
+* top10 = indicator variable, indicating if a song made it to the top10
+
+1. Build and estimate a classification model (i.e., logistic regression) to explain the success of songs in terms of the chart position (i.e., if a song made it to the top 10 or not). This means, the variable "top10"" is your dependent variable. As independent (explanatory) variables, you should include the variables "weeks_in_charts", "song_age" and "label". In addition to these 3 variables you should identify 5 more variables that have a significant effect on the chart performance. Please visualize the relationship between the top10 variable and the independent variables using appropriate plots and interpret the model coefficients.
+
+### Data analysis
+
+### Load data
+
+
+``` r
+library(ggplot2)
+library(psych)
+library(dplyr)
+options(scipen = 999)
+set.seed(123)
+music_data <- read.csv2("https://raw.githubusercontent.com/WU-RDS/RMA2022/main/data/music_data_group.csv",
+    sep = ";", header = TRUE, dec = ",")
+music_data$genre <- as.factor(music_data$genre)
+music_data$label <- as.factor(music_data$label)
+str(music_data)
+```
+
+```
+## 'data.frame':	66796 obs. of  30 variables:
+##  $ isrc                       : chr  "BRRGE1603547" "USUM71808193" "ES5701800181" "ITRSE2000050" ...
+##  $ artist_id                  : int  3679 5239 776407 433730 526471 1939 210184 212546 4938 119985 ...
+##  $ streams                    : num  11944813 8934097 38835 46766 2930573 ...
+##  $ weeks_in_charts            : int  141 51 1 1 7 226 13 1 64 7 ...
+##  $ n_regions                  : int  1 21 1 1 4 8 1 1 5 1 ...
+##  $ danceability               : num  50.9 35.3 68.3 70.4 84.2 35.2 73 55.6 71.9 34.6 ...
+##  $ energy                     : num  80.3 75.5 67.6 56.8 57.8 91.1 69.6 24.5 85 43.3 ...
+##  $ speechiness                : num  4 73.3 14.7 26.8 13.8 7.47 35.5 3.05 3.17 6.5 ...
+##  $ instrumentalness           : num  0.05 0 0 0.000253 0 0 0 0 0.02 0 ...
+##  $ liveness                   : num  46.3 39 7.26 8.91 22.8 9.95 32.1 9.21 11.4 10.1 ...
+##  $ valence                    : num  65.1 43.7 43.4 49.5 19 23.6 58.4 27.6 36.7 76.8 ...
+##  $ tempo                      : num  166 191.2 99 91 74.5 ...
+##  $ song_length                : num  3.12 3.23 3.02 3.45 3.95 ...
+##  $ song_age                   : num  228.3 144.3 112.3 50.7 58.3 ...
+##  $ explicit                   : int  0 0 0 0 0 0 0 0 1 0 ...
+##  $ n_playlists                : int  450 768 48 6 475 20591 6 105 547 688 ...
+##  $ sp_popularity              : int  51 54 32 44 52 81 44 8 59 68 ...
+##  $ youtube_views              : num  145030723 13188411 6116639 0 0 ...
+##  $ tiktok_counts              : int  9740 358700 0 13 515 67300 0 0 653 3807 ...
+##  $ ins_followers_artist       : int  29613108 3693566 623778 81601 11962358 1169284 1948850 39381 9751080 343 ...
+##  $ monthly_listeners_artist   : int  4133393 18367363 888273 143761 15551876 16224250 2683086 1318874 4828847 3088232 ...
+##  $ playlist_total_reach_artist: int  24286416 143384531 4846378 156521 90841884 80408253 7332603 24302331 8914977 8885252 ...
+##  $ sp_fans_artist             : int  3308630 465412 23846 1294 380204 1651866 214001 10742 435457 1897685 ...
+##  $ shazam_counts              : int  73100 588550 0 0 55482 5281161 0 0 39055 0 ...
+##  $ artistName                 : chr  "Luan Santana" "Alessia Cara" "Ana Guerra" "Claver Gold feat. Murubutu" ...
+##  $ trackName                  : chr  "Eu, Você, O Mar e Ela" "Growing Pains" "El Remedio" "Ulisse" ...
+##  $ release_date               : chr  "2016-06-20" "2018-06-14" "2018-04-26" "2020-03-31" ...
+##  $ genre                      : Factor w/ 11 levels "Classics/Jazz",..: 6 7 7 5 5 10 5 7 7 7 ...
+##  $ label                      : Factor w/ 4 levels "Independent",..: 1 3 3 1 3 3 3 1 1 3 ...
+##  $ top10                      : int  1 0 0 0 0 1 0 0 0 0 ...
+```
+
+### Question 1
+
+
+For this model, we need to consider the logistic function, so the final mathematical representation (with three main predictors of interest so far) would look as follows:
+
+
+$$f(\mathbf{X}) = P(y_i = 1) = \frac{1}{1
++ e^{-(\beta_0 + \beta_1 * x_{1,i} + \beta_2 * x_{2,i} +\beta_3 *
+x_{3,i})}}$$
+
+where β0 is the intercept coefficient, and β1, β2, and β3represent the parameters of our model: weeks in charts, age of song, and label.
+
+We should create the model using glm() and have a look at the summary
+
+
+``` r
+mult_logit_model <- glm(top10 ~ weeks_in_charts + song_age +
+    label, family = binomial(link = "logit"), data = music_data)
+summary(mult_logit_model)
+```
+
+```
+## 
+## Call:
+## glm(formula = top10 ~ weeks_in_charts + song_age + label, family = binomial(link = "logit"), 
+##     data = music_data)
+## 
+## Coefficients:
+##                         Estimate  Std. Error z value            Pr(>|z|)    
+## (Intercept)          -3.78534560  0.03989841  -94.88 <0.0000000000000002 ***
+## weeks_in_charts       0.01254730  0.00013573   92.45 <0.0000000000000002 ***
+## song_age             -0.00122201  0.00009152  -13.35 <0.0000000000000002 ***
+## labelSony Music       0.59344756  0.04967676   11.95 <0.0000000000000002 ***
+## labelUniversal Music  0.86912676  0.04284308   20.29 <0.0000000000000002 ***
+## labelWarner Music     0.52810825  0.05383487    9.81 <0.0000000000000002 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 43430  on 66795  degrees of freedom
+## Residual deviance: 27523  on 66790  degrees of freedom
+## AIC: 27535
+## 
+## Number of Fisher Scoring iterations: 6
+```
+
+
+
+
+
+
+``` r
+confint(mult_logit_model)
+```
+
+```
+## Waiting for profiling to be done...
+```
+
+```
+##                             2.5 %       97.5 %
+## (Intercept)          -3.864138137 -3.707725224
+## weeks_in_charts       0.012282716  0.012814786
+## song_age             -0.001404812 -0.001046036
+## labelSony Music       0.496029832  0.690783386
+## labelUniversal Music  0.785399531  0.953358727
+## labelWarner Music     0.422364414  0.633423323
+```
+
+From the summary of the model we can see that weeks in charts, age of song, and label can be used to predict if a song will end up in top-10 or not. We can also assess the model fit:
+
+
+``` r
+logisticPseudoR2s <- function(LogModel) {
+    dev <- LogModel$deviance
+    nullDev <- LogModel$null.deviance
+    modelN <- length(LogModel$fitted.values)
+    R.l <- 1 - dev/nullDev
+    R.cs <- 1 - exp(-(nullDev - dev)/modelN)
+    R.n <- R.cs/(1 - (exp(-(nullDev/modelN))))
+    cat("Pseudo R^2 for logistic regression\n")
+    cat("Hosmer and Lemeshow R^2  ", round(R.l, 3),
+        "\n")
+    cat("Cox and Snell R^2        ", round(R.cs, 3),
+        "\n")
+    cat("Nagelkerke R^2           ", round(R.n, 3),
+        "\n")
+}
+# Inspect Pseudo R2s
+logisticPseudoR2s(mult_logit_model)
+```
+
+```
+## Pseudo R^2 for logistic regression
+## Hosmer and Lemeshow R^2   0.366 
+## Cox and Snell R^2         0.212 
+## Nagelkerke R^2            0.443
+```
+
+To make conclusions about the effect that predictors have on success, we should convert the log-odds ratios to odds ratios using exp() function:
+
+
+``` r
+exp(coef(mult_logit_model))
+```
+
+```
+##          (Intercept)      weeks_in_charts             song_age 
+##           0.02270102           1.01262635           0.99877873 
+##      labelSony Music labelUniversal Music    labelWarner Music 
+##           1.81021850           2.38482742           1.69572138
+```
+
+
+The results tell us, for example, that for each extra week in charts, the odds of the song to be in the top 10 are 1.0126 times higher, or equivalently, the likelihood of the outcome is increased by 1.26%. Or songs from Universal are 2.38 times more likely to appear in the top-10 chart in comparison with songs from independent labels, or equivalently, the likelihood of the outcome is increased by 138.5% compared to independent labels.
+
+We should visualize the relationship between IVs and DV:
+
+
+``` r
+# Relationship of weeks in charts and top10
+
+ggplot(music_data, aes(weeks_in_charts, top10)) + geom_point(shape = 1) +
+    geom_smooth(method = "glm", method.args = list(family = "binomial"),
+        se = FALSE, color = "lavenderblush3") + theme_minimal()
+```
+
+```
+## `geom_smooth()` using formula = 'y ~ x'
+```
+
+<img src="14-rmdIntro_files/figure-html/unnamed-chunk-34-1.png" width="672" />
+
+
+
+
+``` r
+# Relationship of song age and top10
+
+ggplot(music_data, aes(song_age, top10)) + geom_point(shape = 1) +
+    geom_smooth(method = "glm", method.args = list(family = "binomial"),
+        se = FALSE, color = "lavenderblush3") + theme_minimal()
+```
+
+```
+## `geom_smooth()` using formula = 'y ~ x'
+```
+
+<img src="14-rmdIntro_files/figure-html/unnamed-chunk-35-1.png" width="672" />
+
+
+
+
+``` r
+# Relationship of label and top10
+
+library(forcats)
+labels <- as.factor(c("Warner Music", "Sony Music",
+    "Independent", "Universal Music"))
+top10_predictions <- data.frame(pred = predict(glm(top10 ~
+    label, data = music_data), data.frame(label = labels),
+    type = "response"), label = labels)
+top10_counts <- table(music_data$top10, music_data$label)
+top10_share <- prop.table(top10_counts, margin = 2)
+data.frame(top10_share) %>%
+    filter(Var1 == 1) %>%
+    left_join(top10_predictions, by = c(Var2 = "label")) %>%
+    dplyr::rename(`Top 10 share` = Freq) %>%
+    ggplot(aes(fct_reorder(Var2, `Top 10 share`), `Top 10 share`)) +
+    geom_bar(stat = "identity", fill = "lavenderblush3") +
+    geom_point(aes(x = Var2, y = pred), color = "red4") +
+    theme_minimal() + theme(axis.title.x = element_blank())
+```
+
+<img src="14-rmdIntro_files/figure-html/unnamed-chunk-36-1.png" width="672" />
+
+To find out which other variables might have a significant effect on the chart performance, we can either load variables one-by-one manually or use a step-wise approach. For the latter, we basically need a model to start with (usually it’s a “null” model, however, we already have a model that works for us, i.e., mult_logit_model) and the most loaded model that includes all the variables (we will only drop all character and date variables). Let’s create it in the next step (please note that we already drop some variables that potentially might be influenced if a song appears in top-10: streams, sp_popularity, n_regions, etc.)
+
+
+``` r
+music_data$explicit <- factor(music_data$explicit,
+                                    levels = c(0,1), labels = c("not explicit", "explicit"))
+
+full_model <- glm(top10 ~ weeks_in_charts + song_age + label + #our basic model. Next we add the rest of the variables to it:
+                    danceability + energy + speechiness + instrumentalness + liveness + valence + tempo +
+                    song_length + explicit + n_playlists + genre,
+                  family = binomial(link = 'logit'), data = music_data)
+```
+
+Let’s have a look at the fullest model possible:
+
+
+``` r
+summary(full_model)
+```
+
+```
+## 
+## Call:
+## glm(formula = top10 ~ weeks_in_charts + song_age + label + danceability + 
+##     energy + speechiness + instrumentalness + liveness + valence + 
+##     tempo + song_length + explicit + n_playlists + genre, family = binomial(link = "logit"), 
+##     data = music_data)
+## 
+## Coefficients:
+##                          Estimate   Std. Error z value             Pr(>|z|)    
+## (Intercept)          -8.234476683  6.600555763  -1.248               0.2122    
+## weeks_in_charts       0.012805679  0.000146602  87.350 < 0.0000000000000002 ***
+## song_age             -0.001926650  0.000114801 -16.783 < 0.0000000000000002 ***
+## labelSony Music       0.309879886  0.053399277   5.803        0.00000000651 ***
+## labelUniversal Music  0.499093803  0.048106669  10.375 < 0.0000000000000002 ***
+## labelWarner Music     0.258651532  0.057686712   4.484        0.00000733501 ***
+## danceability          0.013853338  0.001511801   9.163 < 0.0000000000000002 ***
+## energy               -0.005334606  0.001202794  -4.435        0.00000919959 ***
+## speechiness          -0.003606707  0.001622321  -2.223               0.0262 *  
+## instrumentalness     -0.002757251  0.002982653  -0.924               0.3553    
+## liveness              0.005200933  0.001189734   4.372        0.00001233918 ***
+## valence               0.001499900  0.000934395   1.605               0.1084    
+## tempo                 0.002969109  0.000619852   4.790        0.00000166755 ***
+## song_length          -0.290130550  0.026500912 -10.948 < 0.0000000000000002 ***
+## explicitexplicit     -0.704911363  0.073710237  -9.563 < 0.0000000000000002 ***
+## n_playlists           0.000268906  0.000008005  33.593 < 0.0000000000000002 ***
+## genreCountry          6.047536675  6.599669764   0.916               0.3595    
+## genreElectro/Dance    4.619610060  6.598946035   0.700               0.4839    
+## genreGerman Folk      3.391558357  6.604926105   0.513               0.6076    
+## genreHipHop/Rap       4.562287429  6.598559475   0.691               0.4893    
+## genreother            5.425089472  6.598558812   0.822               0.4110    
+## genrePop              4.004199096  6.598387935   0.607               0.5440    
+## genreR&B              5.016578570  6.598943542   0.760               0.4471    
+## genreReggae           4.454352459  6.610053417   0.674               0.5004    
+## genreRock             4.145180994  6.598981122   0.628               0.5299    
+## genreSoundtrack       4.901752648  6.601845142   0.742               0.4578    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 43430  on 66795  degrees of freedom
+## Residual deviance: 24891  on 66770  degrees of freedom
+## AIC: 24943
+## 
+## Number of Fisher Scoring iterations: 9
+```
+
+We can pick five significant factors from the summary above. For example, we can proceed with the model as follows:
+
+
+``` r
+final_model <- glm(top10 ~ weeks_in_charts + song_age + label + #our basic model. Next we add the rest of the variables to it:
+                   danceability + liveness + tempo + song_length + n_playlists,
+                   family = binomial(link = 'logit'), data = music_data)
+
+summary(final_model)
+```
+
+```
+## 
+## Call:
+## glm(formula = top10 ~ weeks_in_charts + song_age + label + danceability + 
+##     liveness + tempo + song_length + n_playlists, family = binomial(link = "logit"), 
+##     data = music_data)
+## 
+## Coefficients:
+##                          Estimate   Std. Error z value             Pr(>|z|)    
+## (Intercept)          -4.490099261  0.172198935 -26.075 < 0.0000000000000002 ***
+## weeks_in_charts       0.012594243  0.000141167  89.215 < 0.0000000000000002 ***
+## song_age             -0.001977611  0.000117389 -16.847 < 0.0000000000000002 ***
+## labelSony Music       0.441955048  0.050888299   8.685 < 0.0000000000000002 ***
+## labelUniversal Music  0.624039605  0.044146953  14.136 < 0.0000000000000002 ***
+## labelWarner Music     0.376806825  0.055148947   6.833   0.0000000000083430 ***
+## danceability          0.017307850  0.001345825  12.860 < 0.0000000000000002 ***
+## liveness              0.008612684  0.001138928   7.562   0.0000000000000397 ***
+## tempo                 0.003637005  0.000610442   5.958   0.0000000025536638 ***
+## song_length          -0.315709255  0.025965257 -12.159 < 0.0000000000000002 ***
+## n_playlists           0.000260104  0.000007804  33.330 < 0.0000000000000002 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 43430  on 66795  degrees of freedom
+## Residual deviance: 25856  on 66785  degrees of freedom
+## AIC: 25878
+## 
+## Number of Fisher Scoring iterations: 7
+```
+
+
+``` r
+logisticPseudoR2s(final_model)
+```
+
+```
+## Pseudo R^2 for logistic regression
+## Hosmer and Lemeshow R^2   0.405 
+## Cox and Snell R^2         0.231 
+## Nagelkerke R^2            0.484
+```
+
+We can see from the table above that the model explains 50% of the variability in the likelihood of the song being in top 10 (according to Nagelkerke R-squared).
+
+
+``` r
+exp(coef(final_model))
+```
+
+```
+##          (Intercept)      weeks_in_charts             song_age 
+##           0.01121953           1.01267388           0.99802434 
+##      labelSony Music labelUniversal Music    labelWarner Music 
+##           1.55574581           1.86645257           1.45762271 
+##         danceability             liveness                tempo 
+##           1.01745850           1.00864988           1.00364363 
+##          song_length          n_playlists 
+##           0.72927145           1.00026014
+```
+
+Interpretation: The results tell us, for example, that for each one minute increase in song length, the odds of the song to be in the top 10 are 0.73 times lower, or equivalently, the likelihood of the song to be in top 10 is decreased by 27%. For each one unit increase in danceability, the odds of the song to be in top 10 are 1.02 times higher, or equivalently, the likelihood of the song being in top 10 is increased by 2%.
+
+Alternatively, average partial effect as means of model interpretation can be used:
+
+``` r
+library(mfx)
+```
+
+```
+## Loading required package: sandwich
+```
+
+```
+## Loading required package: MASS
+```
+
+```
+## Loading required package: betareg
+```
+
+``` r
+# Average partial effect
+logitmfx(final_model, data = music_data, atmean = FALSE)
+```
+
+```
+## Call:
+## logitmfx(formula = final_model, data = music_data, atmean = FALSE)
+## 
+## Marginal Effects:
+##                               dF/dx      Std. Err.        z
+## weeks_in_charts       0.00065127618  0.00001374186  47.3936
+## song_age             -0.00010226667  0.00000631172 -16.2027
+## labelSony Music       0.02493232144  0.00312422560   7.9803
+## labelUniversal Music  0.03427289513  0.00257631776  13.3031
+## labelWarner Music     0.02113194448  0.00334627810   6.3151
+## danceability          0.00089502724  0.00007104537  12.5980
+## liveness              0.00044538097  0.00005937804   7.5008
+## tempo                 0.00018807759  0.00003171436   5.9304
+## song_length          -0.01632602458  0.00136992030 -11.9175
+## n_playlists           0.00001345055  0.00000046827  28.7241
+##                                      P>|z|    
+## weeks_in_charts      < 0.00000000000000022 ***
+## song_age             < 0.00000000000000022 ***
+## labelSony Music        0.00000000000000146 ***
+## labelUniversal Music < 0.00000000000000022 ***
+## labelWarner Music      0.00000000027005798 ***
+## danceability         < 0.00000000000000022 ***
+## liveness               0.00000000000006344 ***
+## tempo                  0.00000000302271850 ***
+## song_length          < 0.00000000000000022 ***
+## n_playlists          < 0.00000000000000022 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## dF/dx is for discrete change for the following variables:
+## 
+## [1] "labelSony Music"      "labelUniversal Music" "labelWarner Music"
+```
+
+
+Interpretation of average partial effects: If a song is one week older, the probability of this song appearing in top-10 chart decreases by 0.01 percentage points.
+
+If we still want to choose a parsimonious model using step-wise comparisons, we can do it as follows: the function below takes the “base” model, adds variables from the fullest model one-by-one to it, and shows the new models’ performance.
+
+AIC values can be compared, we want the model with lowest possible AIC. As a second measure for variable selection, we can use the pseudo R-squared, that gives a value for explanatory power of the model.
+
+
+``` r
+step(mult_logit_model, #our base model
+     scope = list(upper = full_model),
+     direction = "both",
+     test = "Chisq",
+     data = music_data)
+```
+
+```
+## Start:  AIC=27535.11
+## top10 ~ weeks_in_charts + song_age + label
+## 
+##                    Df Deviance   AIC     LRT              Pr(>Chi)    
+## + n_playlists       1    26335 26349  1187.9 < 0.00000000000000022 ***
+## + genre            10    26504 26536  1019.5 < 0.00000000000000022 ***
+## + danceability      1    27256 27270   267.1 < 0.00000000000000022 ***
+## + song_length       1    27335 27349   187.9 < 0.00000000000000022 ***
+## + explicit          1    27376 27390   146.8 < 0.00000000000000022 ***
+## + valence           1    27445 27459    77.7 < 0.00000000000000022 ***
+## + liveness          1    27480 27494    42.9      0.00000000005728 ***
+## + tempo             1    27504 27518    19.4      0.00001085601585 ***
+## + speechiness       1    27510 27524    12.9             0.0003209 ***
+## + instrumentalness  1    27516 27530     7.2             0.0071563 ** 
+## + energy            1    27519 27533     3.8             0.0523575 .  
+## <none>                   27523 27535                                  
+## - song_age          1    27781 27791   258.3 < 0.00000000000000022 ***
+## - label             3    27963 27969   439.7 < 0.00000000000000022 ***
+## - weeks_in_charts   1    43159 43169 15635.8 < 0.00000000000000022 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Step:  AIC=26349.16
+## top10 ~ weeks_in_charts + song_age + label + n_playlists
+## 
+##                    Df Deviance   AIC     LRT              Pr(>Chi)    
+## + genre            10    25312 25346  1023.2 < 0.00000000000000022 ***
+## + song_length       1    26086 26102   248.7 < 0.00000000000000022 ***
+## + danceability      1    26112 26128   222.7 < 0.00000000000000022 ***
+## + explicit          1    26175 26191   160.3 < 0.00000000000000022 ***
+## + valence           1    26240 26256    95.2 < 0.00000000000000022 ***
+## + liveness          1    26293 26309    41.7       0.0000000001046 ***
+## + tempo             1    26314 26330    21.4       0.0000036320174 ***
+## + speechiness       1    26322 26338    13.0             0.0003193 ***
+## + instrumentalness  1    26329 26345     6.3             0.0118075 *  
+## <none>                   26335 26349                                  
+## + energy            1    26334 26350     1.1             0.2954805    
+## - label             3    26565 26573   230.1 < 0.00000000000000022 ***
+## - song_age          1    27044 27056   708.7 < 0.00000000000000022 ***
+## - n_playlists       1    27523 27535  1187.9 < 0.00000000000000022 ***
+## - weeks_in_charts   1    40541 40553 14206.0 < 0.00000000000000022 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Step:  AIC=25345.92
+## top10 ~ weeks_in_charts + song_age + label + n_playlists + genre
+## 
+##                    Df Deviance   AIC     LRT              Pr(>Chi)    
+## + song_length       1    25133 25169   178.5 < 0.00000000000000022 ***
+## + danceability      1    25185 25221   127.3 < 0.00000000000000022 ***
+## + explicit          1    25206 25242   106.0 < 0.00000000000000022 ***
+## + valence           1    25278 25314    34.4        0.000000004499 ***
+## + tempo             1    25301 25337    11.4              0.000753 ***
+## + liveness          1    25302 25338     9.8              0.001713 ** 
+## <none>                   25312 25346                                  
+## + energy            1    25310 25346     1.7              0.195014    
+## + instrumentalness  1    25310 25346     1.6              0.202913    
+## + speechiness       1    25312 25348     0.0              0.884998    
+## - label             3    25474 25502   161.7 < 0.00000000000000022 ***
+## - song_age          1    25913 25945   600.6 < 0.00000000000000022 ***
+## - genre            10    26335 26349  1023.2 < 0.00000000000000022 ***
+## - n_playlists       1    26504 26536  1191.7 < 0.00000000000000022 ***
+## - weeks_in_charts   1    39511 39543 14199.3 < 0.00000000000000022 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Step:  AIC=25169.45
+## top10 ~ weeks_in_charts + song_age + label + n_playlists + genre + 
+##     song_length
+## 
+##                    Df Deviance   AIC     LRT              Pr(>Chi)    
+## + explicit          1    25029 25067   104.2 < 0.00000000000000022 ***
+## + danceability      1    25050 25088    83.6 < 0.00000000000000022 ***
+## + valence           1    25119 25157    14.6             0.0001309 ***
+## + tempo             1    25121 25159    12.6             0.0003769 ***
+## + liveness          1    25125 25163     8.1             0.0045244 ** 
+## + instrumentalness  1    25131 25169     2.3             0.1276459    
+## + energy            1    25131 25169     2.2             0.1340637    
+## <none>                   25133 25169                                  
+## + speechiness       1    25132 25170     1.4             0.2289231    
+## - label             3    25273 25303   139.3 < 0.00000000000000022 ***
+## - song_length       1    25312 25346   178.5 < 0.00000000000000022 ***
+## - song_age          1    25647 25681   513.9 < 0.00000000000000022 ***
+## - genre            10    26086 26102   953.0 < 0.00000000000000022 ***
+## - n_playlists       1    26385 26419  1251.7 < 0.00000000000000022 ***
+## - weeks_in_charts   1    39507 39541 14373.3 < 0.00000000000000022 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Step:  AIC=25067.21
+## top10 ~ weeks_in_charts + song_age + label + n_playlists + genre + 
+##     song_length + explicit
+## 
+##                    Df Deviance   AIC     LRT              Pr(>Chi)    
+## + danceability      1    24948 24988    81.3 < 0.00000000000000022 ***
+## + valence           1    25016 25056    13.6             0.0002280 ***
+## + tempo             1    25017 25057    11.8             0.0005785 ***
+## + liveness          1    25022 25062     7.4             0.0067056 ** 
+## + energy            1    25026 25066     3.6             0.0574725 .  
+## <none>                   25029 25067                                  
+## + speechiness       1    25028 25068     1.6             0.2008558    
+## + instrumentalness  1    25028 25068     1.3             0.2576454    
+## - label             3    25130 25162   100.3 < 0.00000000000000022 ***
+## - explicit          1    25133 25169   104.2 < 0.00000000000000022 ***
+## - song_length       1    25206 25242   176.7 < 0.00000000000000022 ***
+## - song_age          1    25542 25578   513.2 < 0.00000000000000022 ***
+## - genre            10    25933 25951   904.0 < 0.00000000000000022 ***
+## - n_playlists       1    26278 26314  1248.5 < 0.00000000000000022 ***
+## - weeks_in_charts   1    39340 39376 14311.0 < 0.00000000000000022 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Step:  AIC=24987.94
+## top10 ~ weeks_in_charts + song_age + label + n_playlists + genre + 
+##     song_length + explicit + danceability
+## 
+##                    Df Deviance   AIC     LRT              Pr(>Chi)    
+## + tempo             1    24928 24970    19.6           0.000009785 ***
+## + liveness          1    24934 24976    13.5             0.0002356 ***
+## + energy            1    24940 24982     8.3             0.0039206 ** 
+## + speechiness       1    24945 24987     2.5             0.1106956    
+## <none>                   24948 24988                                  
+## + valence           1    24947 24989     0.7             0.4151639    
+## + instrumentalness  1    24947 24989     0.6             0.4396889    
+## - danceability      1    25029 25067    81.3 < 0.00000000000000022 ***
+## - explicit          1    25050 25088   101.9 < 0.00000000000000022 ***
+## - label             3    25059 25093   111.5 < 0.00000000000000022 ***
+## - song_length       1    25081 25119   133.5 < 0.00000000000000022 ***
+## - song_age          1    25405 25443   456.7 < 0.00000000000000022 ***
+## - genre            10    25804 25824   856.0 < 0.00000000000000022 ***
+## - n_playlists       1    26155 26193  1206.9 < 0.00000000000000022 ***
+## - weeks_in_charts   1    39182 39220 14233.6 < 0.00000000000000022 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Step:  AIC=24970.39
+## top10 ~ weeks_in_charts + song_age + label + n_playlists + genre + 
+##     song_length + explicit + danceability + tempo
+## 
+##                    Df Deviance   AIC     LRT              Pr(>Chi)    
+## + liveness          1    24915 24959    13.1             0.0002929 ***
+## + energy            1    24917 24961    11.1             0.0008776 ***
+## + speechiness       1    24925 24969     3.8             0.0510498 .  
+## <none>                   24928 24970                                  
+## + instrumentalness  1    24928 24972     0.5             0.4726447    
+## + valence           1    24928 24972     0.2             0.6876102    
+## - tempo             1    24948 24988    19.6           0.000009785 ***
+## - danceability      1    25017 25057    89.0 < 0.00000000000000022 ***
+## - explicit          1    25029 25069   100.8 < 0.00000000000000022 ***
+## - label             3    25042 25078   113.1 < 0.00000000000000022 ***
+## - song_length       1    25061 25101   133.0 < 0.00000000000000022 ***
+## - song_age          1    25379 25419   450.2 < 0.00000000000000022 ***
+## - genre            10    25771 25793   842.2 < 0.00000000000000022 ***
+## - n_playlists       1    26134 26174  1205.9 < 0.00000000000000022 ***
+## - weeks_in_charts   1    39149 39189 14220.7 < 0.00000000000000022 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Step:  AIC=24959.27
+## top10 ~ weeks_in_charts + song_age + label + n_playlists + genre + 
+##     song_length + explicit + danceability + tempo + liveness
+## 
+##                    Df Deviance   AIC     LRT              Pr(>Chi)    
+## + energy            1    24899 24945    16.2            0.00005738 ***
+## + speechiness       1    24911 24957     4.2             0.0393970 *  
+## <none>                   24915 24959                                  
+## + instrumentalness  1    24915 24961     0.6             0.4557895    
+## + valence           1    24915 24961     0.0             0.9239797    
+## - liveness          1    24928 24970    13.1             0.0002929 ***
+## - tempo             1    24934 24976    19.1            0.00001211 ***
+## - danceability      1    25010 25052    95.2 < 0.00000000000000022 ***
+## - explicit          1    25015 25057    99.8 < 0.00000000000000022 ***
+## - label             3    25029 25067   114.2 < 0.00000000000000022 ***
+## - song_length       1    25045 25087   129.7 < 0.00000000000000022 ***
+## - song_age          1    25363 25405   447.3 < 0.00000000000000022 ***
+## - genre            10    25719 25743   803.4 < 0.00000000000000022 ***
+## - n_playlists       1    26117 26159  1201.8 < 0.00000000000000022 ***
+## - weeks_in_charts   1    39140 39182 14224.6 < 0.00000000000000022 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Step:  AIC=24945.09
+## top10 ~ weeks_in_charts + song_age + label + n_playlists + genre + 
+##     song_length + explicit + danceability + tempo + liveness + 
+##     energy
+## 
+##                    Df Deviance   AIC     LRT              Pr(>Chi)    
+## + speechiness       1    24894 24942     4.7               0.02962 *  
+## + valence           1    24896 24944     2.6               0.10756    
+## <none>                   24899 24945                                  
+## + instrumentalness  1    24898 24946     0.8               0.36187    
+## - energy            1    24915 24959    16.2            0.00005738 ***
+## - liveness          1    24917 24961    18.2            0.00001954 ***
+## - tempo             1    24922 24966    22.5            0.00000212 ***
+## - explicit          1    25002 25046   102.5 < 0.00000000000000022 ***
+## - danceability      1    25003 25047   104.1 < 0.00000000000000022 ***
+## - label             3    25013 25053   113.8 < 0.00000000000000022 ***
+## - song_length       1    25028 25072   128.9 < 0.00000000000000022 ***
+## - song_age          1    25353 25397   454.3 < 0.00000000000000022 ***
+## - genre            10    25711 25737   811.9 < 0.00000000000000022 ***
+## - n_playlists       1    26103 26147  1204.0 < 0.00000000000000022 ***
+## - weeks_in_charts   1    39113 39157 14214.1 < 0.00000000000000022 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Step:  AIC=24942.35
+## top10 ~ weeks_in_charts + song_age + label + n_playlists + genre + 
+##     song_length + explicit + danceability + tempo + liveness + 
+##     energy + speechiness
+## 
+##                    Df Deviance   AIC     LRT              Pr(>Chi)    
+## + valence           1    24892 24942     2.7               0.10031    
+## <none>                   24894 24942                                  
+## + instrumentalness  1    24893 24943     1.0               0.31346    
+## - speechiness       1    24899 24945     4.7               0.02962 *  
+## - energy            1    24911 24957    16.7          0.0000443660 ***
+## - liveness          1    24913 24959    18.9          0.0000139497 ***
+## - tempo             1    24918 24964    24.0          0.0000009465 ***
+## - explicit          1    24997 25043   102.8 < 0.00000000000000022 ***
+## - danceability      1    25001 25047   106.3 < 0.00000000000000022 ***
+## - label             3    25006 25048   111.4 < 0.00000000000000022 ***
+## - song_length       1    25027 25073   132.4 < 0.00000000000000022 ***
+## - song_age          1    25353 25399   458.5 < 0.00000000000000022 ***
+## - genre            10    25707 25735   813.0 < 0.00000000000000022 ***
+## - n_playlists       1    26100 26146  1205.9 < 0.00000000000000022 ***
+## - weeks_in_charts   1    39038 39084 14143.7 < 0.00000000000000022 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Step:  AIC=24941.65
+## top10 ~ weeks_in_charts + song_age + label + n_playlists + genre + 
+##     song_length + explicit + danceability + tempo + liveness + 
+##     energy + speechiness + valence
+## 
+##                    Df Deviance   AIC     LRT              Pr(>Chi)    
+## <none>                   24892 24942                                  
+## - valence           1    24894 24942     2.7               0.10031    
+## + instrumentalness  1    24891 24943     0.9               0.34466    
+## - speechiness       1    24896 24944     4.8               0.02777 *  
+## - liveness          1    24910 24958    18.5           0.000016707 ***
+## - energy            1    24911 24959    19.4           0.000010799 ***
+## - tempo             1    24915 24963    23.0           0.000001661 ***
+## - danceability      1    24978 25026    86.0 < 0.00000000000000022 ***
+## - explicit          1    24995 25043   102.9 < 0.00000000000000022 ***
+## - label             3    25003 25047   111.1 < 0.00000000000000022 ***
+## - song_length       1    25018 25066   126.5 < 0.00000000000000022 ***
+## - song_age          1    25351 25399   459.3 < 0.00000000000000022 ***
+## - genre            10    25694 25724   802.2 < 0.00000000000000022 ***
+## - n_playlists       1    26100 26148  1208.5 < 0.00000000000000022 ***
+## - weeks_in_charts   1    39018 39066 14126.6 < 0.00000000000000022 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+```
+## 
+## Call:  glm(formula = top10 ~ weeks_in_charts + song_age + label + n_playlists + 
+##     genre + song_length + explicit + danceability + tempo + liveness + 
+##     energy + speechiness + valence, family = binomial(link = "logit"), 
+##     data = music_data)
+## 
+## Coefficients:
+##          (Intercept)       weeks_in_charts              song_age  
+##            -8.250268              0.012811             -0.001929  
+##      labelSony Music  labelUniversal Music     labelWarner Music  
+##             0.310207              0.500078              0.259754  
+##          n_playlists          genreCountry    genreElectro/Dance  
+##             0.000269              6.052952              4.617654  
+##     genreGerman Folk       genreHipHop/Rap            genreother  
+##             3.393965              4.565679              5.429574  
+##             genrePop              genreR&B           genreReggae  
+##             4.007876              5.019629              4.456428  
+##            genreRock       genreSoundtrack           song_length  
+##             4.142870              4.896580             -0.289024  
+##     explicitexplicit          danceability                 tempo  
+##            -0.707333              0.013872              0.002971  
+##             liveness                energy           speechiness  
+##             0.005182             -0.005303             -0.003541  
+##              valence  
+##             0.001534  
+## 
+## Degrees of Freedom: 66795 Total (i.e. Null);  66771 Residual
+## Null Deviance:	    43430 
+## Residual Deviance: 24890 	AIC: 24940
+```

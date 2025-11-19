@@ -844,9 +844,9 @@ psych::describe(app_user_data_time[!is.na(app_user_data_time$time_in_app_2), c("
 
 #Boxplot
 
-time_data <- app_user_data_time |>
-  drop_na(time_in_app_2) |>
-  select(time_in_app_1, time_in_app_2) |>
+time_data <- app_user_data_time %>%
+  drop_na(time_in_app_2) %>%
+  select(time_in_app_1, time_in_app_2) %>%
   pivot_longer(
     cols = c(time_in_app_1, time_in_app_2),
     names_to = "push_notifications", values_to = "time_in_app")
@@ -1187,4 +1187,714 @@ We can see in the contingency table and in the plot that the conversion rate in 
 
 From the managerial perspective, it makes sense to include the new email subscription pop-up feature since it significantly increases the coversion rate, although the effect size is rather small.
 
+## Assignment 3 (solutions)
 
+### Assignment A
+
+As a marketing manager at a consumer electronics company, you have been assigned the task of evaluating the effectiveness of various marketing activities on the sales of smart home devices (smart speakers). The company wants to understand the relative influence of leaflet promotions, in-store sales representatives, and radio advertising, as well as the impact of pricing on overall sales.
+
+The dataset provided contains data from multiple stores over the past year. Each row in the dataset corresponds to a different store, detailing the sales performance of smart home devices alongside the store’s marketing investments and product pricing.
+
+The following variables are available to you:
+
+* Sales: Number of units sold in each store
+* Price: Sale price of the product (in Euros)
+* Marketing Contribution: Promotion costs for including the product in leaflets distributed by the store (in Euros)
+* Sales Reps: Expenditure on in-store promotions managed by the company’s sales representatives (in Euros)
+* Retail Media POS: Advertising expenses for marketing placements at the point of sale (in Euros)
+* Region: Categorical variable indicating the region where the store is located (rural, suburban, or urban)
+
+**Task Instructions**
+
+Please conduct the following analyses:
+
+1. Regression Equation: Formally state the regression equation you will use to determine the relative influence of each marketing activity and price on sales. Save the equation as a "formula" object in the R code chunk.
+
+2. Variable Description: Describe the model variables using appropriate summary statistics and visualizations to provide a clear understanding of each variable’s distribution and scale.
+
+3. Multiple Linear Regression Model: Estimate a multiple linear regression model to evaluate the relative influence of each variable. Before interpreting the results, assess whether the model meets the assumptions of linear regression. Use appropriate diagnostic tests and plots to evaluate these assumptions.
+
+4. Alternative Model Specifications: If the model assumptions are not fully met, evaluate alternative model specifications using different functional forms. Justify your choice of model based on diagnostic criteria and model properties.
+
+5. Model Interpretation: Interpret the results of the chosen model:
+
+* Which variables have a significant influence on sales, and what do the coefficients imply about each variable’s effect?
+* What is the relative importance of each predictor?
+* Interpret the F-test results.
+* How would you assess the fit of the model? Include a visualization of model fit for clarity.
+
+6. Sales Prediction: Based on your chosen model, predict the sales quantity for a store planning the following marketing activities: Price: €350, Marketing Contribution: €10,000, Sales Reps: €6,000, Retail Media POS: €3,000. Provide the equation you used for the prediction.
+
+7. Assess to what extent customers from different regions differ regarding their price sensitivity. Are customers from urban and suburban areas more or less price-sensitive compared to rural areas? Provide a detailed explanation of your analysis and results.
+
+When you have completed your analysis, click the “Knit to HTML” button above the code editor. This will generate an HTML document of your results in the folder where the "assignment3.Rmd" file is stored. Open the HTML file in your Internet browser to verify the output. Once verified, submit the HTML file via Canvas. Name the file: “assignment3_studentID_name.html”.
+
+### Data analysis
+
+### Load data
+
+```{r load_d234ata}
+sales_data <- read.csv("https://raw.githubusercontent.com/WU-RDS/MA2024/main/data/assignment3.csv",
+                          header = TRUE) #read in data
+head(sales_data)
+str(sales_data)
+
+library(tidyverse)
+library(psych)
+library(Hmisc)
+library(ggstatsplot)
+library(ggcorrplot)
+library(car)
+library(lmtest)
+library(lm.beta)
+options(scipen = 999)
+set.seed(123)
+
+
+```
+
+### Question 1
+
+
+
+In a first step, we specify the regression equation. In this case, sales of home devices is the dependent variable, and predictors for store i are 1) price, 2) promotion costs, 3) expenditures on sales representatives, 4) costs for marketing placements at POS.
+
+
+$$
+Sales_i=\beta_0 + \beta_1 * Price_i + \beta_2 * MarketingContribution_i + \beta_3 * SalesReps_i + \beta_4 * RetailMediaPOS_i + \epsilon_i
+$$
+
+This equation will be used later to turn the output of the regression analysis (namely the coefficients: β0 - intersect coefficient, and β1, β2, and β3 that represent the unknown relationship between sales and Price, MarketingContribution, SalesReps, SalesMediaPOS to the “managerial” form and draw marketing conclusions.
+
+With the following code we are saving the formula:
+
+```{r}
+
+formula <- Sales ~ Price + MarketingContribution + SalesReps + RetailMediaPOS
+
+```
+
+
+
+### Question 2
+
+Inspecting the variables with descriptive statistics:
+
+```{r}
+
+#descriptive statistics can be checked with the following code
+psych::describe(sales_data)
+
+
+```
+
+Inspecting the correlation matrix reveals that the sales variable is positively correlated with MarketingContribution, SalesReps and RetailMediaPOS.
+
+```{r}
+
+rcorr(as.matrix(sales_data[,c("Sales","Price","MarketingContribution","SalesReps", "RetailMediaPOS")]))
+
+```
+
+
+```{r}
+
+#Since we have continuous variables, we use scatterplots to investigate the relationship between sales and each of the predictor variables.
+
+# relationship of Price and Sales
+ggplot(sales_data, aes(x = Price, y = Sales)) + geom_point(shape = 1) + geom_smooth(method = "lm",
+    fill = "gray", color = "lavenderblush3", alpha = 0.1) + theme_minimal()
+
+#relationship of MarketingContribution and Sales
+ggplot(sales_data, aes(x = MarketingContribution, y = Sales)) + geom_point(shape = 1) + geom_smooth(method = "lm",
+    fill = "gray", color = "lavenderblush3", alpha = 0.1) + theme_minimal()
+
+#relationship of SalesReps and Sales
+ggplot(sales_data, aes(x = SalesReps, y = Sales)) + geom_point(shape = 1) + geom_smooth(method = "lm",
+    fill = "gray", color = "lavenderblush3", alpha = 0.1) + theme_minimal()
+
+#relationship of RetailMediaPOS
+ggplot(sales_data, aes(x = RetailMediaPOS, y = Sales)) + geom_point(shape = 1) + geom_smooth(method = "lm",
+    fill = "gray", color = "lavenderblush3", alpha = 0.1) + theme_minimal()
+
+
+
+```
+
+
+The plots including the fitted lines from a simple linear model suggest that there might be a positive relationship between sales and the predictors. However, the relationships between sales and independent variables appear to be rather weak. It appears more that the effect of independent variables is decreasing with increasing budget spent on these marketing activities.
+
+Further steps include estimate of a multiple linear regression model in order to determine if linear specification fits the model.
+
+
+### Question 3
+
+First, we estimate the model with the lm() function. But before we can inspect and interpret the results, we need to test if there might be potential problems with our model specification.
+
+
+```{r}
+
+#Estimate linear model
+linear_model <- lm(formula, data = sales_data)
+summary(linear_model)
+
+```
+
+
+```{r}
+
+
+#Outliers
+sales_data$stud_resid <- rstudent(linear_model)
+plot(1:nrow(sales_data),sales_data$stud_resid, ylim=c(-3.3,3.3)) #create scatterplot
+abline(h=c(-3,3),col="red",lty=2) #add reference lines
+
+
+```
+
+To check for outliers, we extract the studentized residuals from our model and test if there are any absolute values larger than 3. Since there are many residuals with absolute values larger than 3, we conclude that there are many outliers.
+
+```{r}
+
+#influential observation
+plot(linear_model,4)
+plot(linear_model,5)
+
+
+```
+
+To test for influential observations, we use Cook’s Distance. To identify influential observations, we should look at values above 1 in the first plot. It is easy to see that all of the Cook’s distance values are below the cutoff of 1.  In the second plot we should watch out for the outlying values at the upper right corner or at the lower right corner of the plot. Those spots are the places where cases can be influential against a regression line. In our example, both plots show that there are no influential cases.
+
+
+
+```{r}
+
+#Heteroscedasticity
+
+plot(linear_model, 1)
+
+#Breusch Pagan test
+bptest(linear_model)
+
+```
+
+
+Next, we test if a linear specification appears feasible. We can look at the residuals plot to see if the linear specification is appropriate. This plot helps us to determine if error variances are equal, which is an assumption of the linear model. The red line is a smoothed curve through the residuals plot and if it deviates from the dashed grey horizontal line a lot, it means that the linear model specification is not a correct choice. In this example, the red line is rather far from the dashed grey line, so this assumption seems to be not met.
+
+Also, the residual variance (i.e., the spread of the values on the y-axis) should be similar across the scale of the fitted values on the x-axis, but we can observe a slight funnel shape, which indicates non-constant variances in the errors, so we can conduct Breusch Pagan test to confirm it. The null hypothesis for this test is that the error variances are equal, so the significant p-value <0,05 indicates that the error variances aren't equal, which indicates that the assumption of homoscedasticity is not met.
+
+
+Next, we test if the residuals are approximately normally distributed using the Q-Q plot from the output and a Shapiro Wilk test.
+
+```{r}
+
+#Non-normally distributed errors
+
+plot(linear_model,2)
+
+shapiro.test(resid(linear_model))
+
+```
+
+To check for normal distribution of the residuals, we need to conduct a Shapiro-Wilk test, the null hypothesis for it is that the residuals are normally distributed. So the significant p-value <0,05 indicates that the error variances aren't equal, which indicates that the assumption of normally distributed error term is not met.
+
+Correlation of errors: We actually wouldn’t need to test this assumption here since there is not natural order in the data.
+
+
+```{r}
+
+#Multicollinearity
+
+rcorr(as.matrix(sales_data[,c("Price","MarketingContribution","SalesReps", "RetailMediaPOS")]))
+
+plot(sales_data[,c("Price","MarketingContribution","SalesReps", "RetailMediaPOS")])
+
+ggcorrmat(
+  data = sales_data[,c("Price","MarketingContribution","SalesReps", "RetailMediaPOS")],
+  matrix.type = "upper",
+  colors = c("skyblue4", "white", "palevioletred4")
+  #title = "Correlalogram of independent variables",
+)
+
+vif(linear_model)
+
+```
+
+To test for linear dependence of the regressors, we first test the bivariate correlations for any extremely high correlations (i.e., >0.8). We can see that bivariate correlations are not high among independent variable, so this assumption is met.
+
+In the next step, we compute the variance inflation factor for each predictor variable. The values should be close to 1 and values larger than 4 indicate potential problems with the linear dependence of regressors, but in our model we don't see any such values.
+
+### Question 4
+
+It appears that a linear model might not represent the data well. It rather appears that the effect of an additional Euro spend on different marketing activities is decreasing with increasing levels of advertising expenditures. Thus, we can assume decreasing marginal returns.  Plus, the assumptions of linear specification like absence of outliers, homoscedasticity and normally distributed residuals.
+
+In this case, a multiplicative model might be a better representation of the data.
+
+```{r}
+
+log_reg <- lm(log(Sales) ~ log(Price) + log(MarketingContribution) + log(SalesReps) + log(RetailMediaPOS), data = sales_data)
+summary(log_reg)
+
+
+```
+
+We can check again the assumptions to see if the multiplicative specification fits the model better and if we can interpret the results of this model.
+
+```{r}
+
+#Outliers
+sales_data$stud_resid_1 <- rstudent(log_reg)
+plot(1:nrow(sales_data),sales_data$stud_resid_1, ylim=c(-3.3,3.3)) #create scatterplot
+abline(h=c(-3,3),col="red",lty=2) #add reference lines
+
+#influential observation
+plot(log_reg,4)
+plot(log_reg,5)
+
+```
+
+We can see that in comparison with the plot of the linear model, there are fewer outliers, namely values of studentized residuals more than 3 and less than -3.
+
+
+We check now if the assumption of constant variance is met, which was not the case in the linear specification.
+
+```{r}
+
+#Heteroscedasticity
+
+plot(log_reg, 1)
+
+#Breusch Pagan test
+bptest(log_reg)
+
+```
+
+In the plot, we can now observe that the values are more equally distributed along the line. We also conduct Breusch Pagan test. The null hypothesis for this test is that the error variances are equal, so the significant p-value of 0.6857 indicates that we cannot reject the null hypothesis, so the error variances are equal, which indicates that the assumption of homoscedasticity is met for this model.
+
+Next we check if the residuals are normally distributed, which wasn't the case in the linear model.
+
+```{r}
+#Non-normally distributed errors
+
+plot(log_reg,2)
+
+shapiro.test(resid(log_reg))
+
+
+```
+
+The null hypothesis of this Shaprio Wilk test is that the residuals are normally distributed. Since the p-value of the test is 0.8898 we cannot reject the null hypothesis, so the residuals in this model are normally distributed unlike in the linear specification.
+
+Looking at the added variable plots, we can conclude that each predictor appears to have a unique contribution to explaining the variance in the dependent variable.
+
+
+```{r}
+
+#Non-linear relationships
+avPlots(log_reg, col.lines = palette()[2])
+
+```
+
+And finally, we check for multicollinearity,
+
+```{r}
+
+#Multicollinearity
+
+vif(log_reg)
+
+
+```
+Here, all vif values are well below the cutoff, indicating that there are no problems with multicollinearity.
+
+All assumption are met for the multiplicative model, log-log transformed model represents our data well, so we can proceed with the interpretation.
+
+### Question 5
+
+In a next step, we will investigate the results from the model.
+
+```{r}
+
+summary(log_reg)
+
+```
+
+The intercept tells us the amount of sales if all the marketing expenditures would be 0. The following variables have a significant influence on sales because for them the p-value is <0.05: log(Price), log(MarketingContribution), log(SalesReps), log(RetailMediaPOS).
+
+The interpretation of the coefficients is as follows:
+- A 1% increase in the sales price of the product leads to 1.3% decrease in sales holding other predictors constant.
+- A 1% increase in promotion costs for including the product in leaflets distributed by the store leads to 0.3% increase in sales holding other predictors constant.
+- A 1% increase in expenditures on in-store promotions managed by the sales reps leads to 0.25% increase in sales holding other predictors constant.
+- A 1% increase in advertising expenses for marketing placements at POS leads to 0.15% increase in sales holding other predictors constant.
+
+We should always provide a measure of uncertainty that is associated with the estimates. You could compute the confidence intervals around the coefficients using the confint() function.
+
+
+```{r}
+
+confint(log_reg)
+
+```
+
+The results show that, for instance, with 95% confidence the true effect of the marketing contributions lies between 0.29 and 0.32.
+
+Although the variables are measured on the same scale, you should still test the relative influence by inspecting the standardized coefficients that express the effects in terms of standard deviations.
+
+
+```{r}
+
+lm.beta(log_reg)
+
+```
+Here, we conclude that marketing contribution has the largest ROI followed by price (negative effect) and costs on sales reps.
+
+Another significance test is the F-test. It tests the null hypothesis: H0:R-squared=0
+
+This is equivalent to the following null hypothesis: H0:β1=β2=β3=βk=0
+
+The result of the test is provided in the output above (F-statistic: 1464 on 4 and 1455 DF, p-value: <0,05). Since the p-value is smaller than 0.05, we reject the null hypothesis that all coefficients are zero.
+
+Regarding the model fit, the R2 statistic tells us that approximately 80% of the variance can be explained by the model.
+
+The results of the model and model fit can be also visualized with the following plots:
+
+```{r}
+
+ggcoefstats(x = log_reg, k = 3, title = "Sales predicted by marketing expenditures")
+
+# Create the predictions (yhat) from the log-log model
+sales_data$yhat <- predict(log_reg)
+
+# Create a scatter plot of predicted vs. observed log(Sales)
+ggplot(sales_data, aes(x = yhat, y = log(Sales))) +
+  geom_point(size = 2, shape = 1) +  # scatter plot of predicted vs observed log(Sales)
+  scale_x_continuous(name = "Predicted log(Sales)") +  # label for the x-axis
+  scale_y_continuous(name = "Observed log(Sales)") +  # label for the y-axis
+  geom_abline(intercept = 0, slope = 1, color = "red", linetype = "dashed") +  # identity line (45-degree)
+  theme_minimal() +  # minimal theme
+  labs(title = "Predicted vs. Observed log(Sales) - Log-Log Model")  # add title
+
+```
+
+
+
+
+### Question 6
+
+Provide a description of your steps here! Below is a template for your equation:
+
+$$log(Sales) = \beta_0 + \beta_1*log(Price)+ \beta_2*log(MarketingContribution)+\beta_3*log(SalesReps)+\beta_4*log(RetailMediaPOS)$$
+
+$$log(Sales) = 6.474 + (-1.305)*log(350)+0.302*log(10000)+0.249*log(6000)+0.155+log(3000) $$
+
+
+```{r}
+
+Price <- 350
+MarketingContribution <- 10000
+SalesReps <- 6000
+RetailMediaPOS <- 3000
+
+# Get the coefficients from the model summary
+intercept <- summary(log_reg)$coefficients[1,1]
+coef_log_Price <- summary(log_reg)$coefficients[2,1]
+coef_log_MarketingContribution <- summary(log_reg)$coefficients[3,1]
+coef_log_SalesReps <- summary(log_reg)$coefficients[4,1]
+coef_log_RetailMediaPOS <- summary(log_reg)$coefficients[5,1]
+
+# Calculate the log(Sales) prediction using the log-log model formula
+log_sales_prediction <- intercept +
+                        coef_log_Price * log(Price) +
+                        coef_log_MarketingContribution * log(MarketingContribution) +
+                        coef_log_SalesReps * log(SalesReps) +
+                        coef_log_RetailMediaPOS * log(RetailMediaPOS)
+
+
+# Exponentiate to get the predicted sales
+sales_prediction <- exp(log_sales_prediction)
+
+# Output the predicted sales
+sales_prediction
+
+
+```
+
+The predicted sales with the given marketing expenditures are 151 units.
+
+### Question 7
+
+First we visualize the relationship between the 3 variables and then formally test the effect in the model.
+
+```{r}
+
+#boxplots of sales by regions
+ggplot(sales_data, aes(x = Region, y = Sales)) +
+  geom_boxplot(fill = "gray", color = "lavenderblush3") +  # Fill and color matching scatter plot
+  labs(title = "Sales by Region", x = "Region", y = "Sales") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+# Transform data to log scale for the scatter plot
+sales_data$log_Sales <- log(sales_data$Sales)
+sales_data$log_Price <- log(sales_data$Price)
+
+# Create a scatter plot of log(Sales) vs log(Price) by Region
+ggplot(sales_data, aes(x = log_Price, y = log_Sales, color = Region)) +
+  geom_point(alpha = 0.6) +   # Scatter points with some transparency
+  geom_smooth(method = "lm", se = FALSE, aes(color = Region)) +  # Add regression lines
+  labs(
+    title = "Log-Log Relationship Between Sales and Price by Region",
+    x = "Log(Price)",
+    y = "Log(Sales)",
+    color = "Region"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "top")
+
+```
+
+From the inspection of the plot, we can already see that there are only very slight differences in price sensitivity between regions. We can see the more exact result in the model.
+
+
+```{r}
+
+log_reg_with_region <- lm(log(Sales) ~ log(Price) + log(MarketingContribution) + log(SalesReps) + log(RetailMediaPOS) + Region + log(Price)*Region, data = sales_data)
+
+summary(log_reg_with_region)
+
+
+```
+From inspecting the model, we can conclude that region indeed has an effect on price sensitivity.
+
+The coefficient for RegionSuburban indicates that in the Suburban region the sales are expected to be 1.09% higher than in the Rural region. This effect is significant (p<0.05). Similarly, for the RegionUrban sales are expected to be 1.29% higher than in the Rural region, and this effect is also statistically significant (p<0.05).
+
+The interaction effect: The coefficient log(Price) of -1.167 demonstrates the base price sensitivity in the rural region. This means that in the rural region a 1% increase in price will lead to a 1.167% decrease in sales. In the suburban region, customers are more price sensitive by 0.187. This means that a 1% increase in price will lead to (-1.167-0.187=) 1.354% decrease in sales. In urban region, people are the most price sensitive, by 0.22 more than in the rural region. A 1% increase in price will lead to (-1.167-0.22 =) 1.387% decrease in sales.
+
+This result could indicate that in urban areas consumers have access to more alternatives and hence, react stronger to price changes.
+
+
+### Assignment B
+
+As a marketing manager of a music streaming service, you are set the task to derive insights from data using different quantitative analyses.
+
+The following variables are available to you:
+
+The data set contains the following variables:
+
+* isrc = unique song id
+* artist_id = unique artist ID
+* streams = the number of streams of the song received globally between 2017-2021
+* weeks_in_charts = the number of weeks the song was in the top200 charts in this period
+* n_regions = the number of markets where the song appeared in the top200 charts
+* danceability
+* energy
+* speechiness
+* instrumentalness
+* liveness
+* valence
+* tempo
+* song_length = the duration of the song (in minutes)
+* song_age = the age of the song (in weeks since release)
+* explicit = indicator for explicit lyrics
+* n_playlists = number of playlists a song is featured on
+* sp_popularity = the Spotify popularity index of an artist
+* youtube_views = the number of views the song received on YouTube
+* tiktok_counts = the number of Tiktok views the song received on TikTok
+* ins_followers_artist = the number of Instagram followers of the artist
+* monthly_listeners_artist = the number of monthly listeners of an artist
+* playlist_total_reach_artist = the number of playlist followers of the playlists the song is on
+* sp_fans_artist = the number of fans of the artist on Spotify
+* shazam_counts = the number of times a song is shazamed
+* artistName = name of the artist
+* trackName = name of the song
+* release_date = release date of song
+* genre = genre associated with the song
+* label = music label associated with the song
+* top10 = indicator variable, indicating if a song made it to the top10
+
+1. Build and estimate a classification model (i.e., logistic regression) to explain the success of songs in terms of the chart position (i.e., if a song made it to the top 10 or not). This means, the variable "top10"" is your dependent variable. As independent (explanatory) variables, you should include the variables "weeks_in_charts", "song_age" and "label". In addition to these 3 variables you should identify 5 more variables that have a significant effect on the chart performance. Please visualize the relationship between the top10 variable and the independent variables using appropriate plots and interpret the model coefficients.
+
+### Data analysis
+
+### Load data
+
+```{r load_data_112, warning=FALSE, message=FALSE}
+library(ggplot2)
+library(psych)
+library(dplyr)
+options(scipen = 999)
+set.seed(123)
+music_data <- read.csv2("https://raw.githubusercontent.com/WU-RDS/RMA2022/main/data/music_data_group.csv",
+                        sep = ";", header = TRUE, dec = ",")
+music_data$genre <- as.factor(music_data$genre)
+music_data$label <- as.factor(music_data$label)
+str(music_data)
+```
+
+### Question 1
+
+
+For this model, we need to consider the logistic function, so the final mathematical representation (with three main predictors of interest so far) would look as follows:
+
+
+$$f(\mathbf{X}) = P(y_i = 1) = \frac{1}{1
++ e^{-(\beta_0 + \beta_1 * x_{1,i} + \beta_2 * x_{2,i} +\beta_3 *
+x_{3,i})}}$$
+
+where β0 is the intercept coefficient, and β1, β2, and β3represent the parameters of our model: weeks in charts, age of song, and label.
+
+We should create the model using glm() and have a look at the summary
+
+```{r}
+mult_logit_model <- glm(top10 ~ weeks_in_charts + song_age + label, family = binomial (link = 'logit'), data = music_data)
+summary(mult_logit_model)
+```
+
+
+
+
+
+```{r}
+confint(mult_logit_model)
+
+```
+
+From the summary of the model we can see that weeks in charts, age of song, and label can be used to predict if a song will end up in top-10 or not. We can also assess the model fit:
+
+```{r}
+
+logisticPseudoR2s <- function(LogModel) {
+  dev <- LogModel$deviance
+  nullDev <- LogModel$null.deviance
+  modelN <- length(LogModel$fitted.values)
+  R.l <-  1 -  dev / nullDev
+  R.cs <- 1- exp(-(nullDev - dev) / modelN)
+  R.n <- R.cs / ( 1 - (exp(-(nullDev / modelN))))
+  cat("Pseudo R^2 for logistic regression\n")
+  cat("Hosmer and Lemeshow R^2  ", round(R.l, 3), "\n")
+  cat("Cox and Snell R^2        ", round(R.cs, 3), "\n")
+  cat("Nagelkerke R^2           ", round(R.n, 3),    "\n")
+}
+#Inspect Pseudo R2s
+logisticPseudoR2s(mult_logit_model)
+
+```
+
+To make conclusions about the effect that predictors have on success, we should convert the log-odds ratios to odds ratios using exp() function:
+
+```{r}
+exp(coef(mult_logit_model))
+```
+
+
+The results tell us, for example, that for each extra week in charts, the odds of the song to be in the top 10 are 1.0126 times higher, or equivalently, the likelihood of the outcome is increased by 1.26%. Or songs from Universal are 2.38 times more likely to appear in the top-10 chart in comparison with songs from independent labels, or equivalently, the likelihood of the outcome is increased by 138.5% compared to independent labels.
+
+We should visualize the relationship between IVs and DV:
+
+```{r}
+#Relationship of weeks in charts and top10
+
+ggplot(music_data, aes(weeks_in_charts, top10)) +
+  geom_point(shape = 1) +
+  geom_smooth(method = "glm",
+              method.args = list(family = "binomial"),
+              se = FALSE, color = "lavenderblush3") + theme_minimal()
+```
+
+
+
+```{r}
+#Relationship of song age and top10
+
+ggplot(music_data, aes(song_age, top10)) +
+  geom_point(shape = 1) +
+  geom_smooth(method = "glm",
+              method.args = list(family = "binomial"),
+              se = FALSE, color = "lavenderblush3") + theme_minimal()
+```
+
+
+
+```{r}
+#Relationship of label and top10
+
+library(forcats)
+labels <- as.factor(c("Warner Music", "Sony Music", "Independent", "Universal Music"))
+top10_predictions <- data.frame(pred =
+                                  predict(glm(top10 ~ label, data = music_data),
+                                          data.frame(label = labels), type = "response"),
+                                label = labels)
+top10_counts <- table(music_data$top10, music_data$label)
+top10_share <- prop.table(top10_counts, margin = 2)
+data.frame(top10_share) %>%
+  filter(Var1 == 1) %>%
+  left_join(top10_predictions, by = c("Var2" = "label")) %>%
+  dplyr::rename(`Top 10 share` = Freq) %>%
+  ggplot(aes(fct_reorder(Var2, `Top 10 share`), `Top 10 share`)) +
+  geom_bar(stat = 'identity', fill = "lavenderblush3") +
+  geom_point(aes(x = Var2, y = pred), color = 'red4') +
+  theme_minimal() +
+  theme(axis.title.x = element_blank())
+```
+
+To find out which other variables might have a significant effect on the chart performance, we can either load variables one-by-one manually or use a step-wise approach. For the latter, we basically need a model to start with (usually it’s a “null” model, however, we already have a model that works for us, i.e., mult_logit_model) and the most loaded model that includes all the variables (we will only drop all character and date variables). Let’s create it in the next step (please note that we already drop some variables that potentially might be influenced if a song appears in top-10: streams, sp_popularity, n_regions, etc.)
+
+```{r}
+music_data$explicit <- factor(music_data$explicit,
+                                    levels = c(0,1), labels = c("not explicit", "explicit"))
+
+full_model <- glm(top10 ~ weeks_in_charts + song_age + label + #our basic model. Next we add the rest of the variables to it:
+                    danceability + energy + speechiness + instrumentalness + liveness + valence + tempo +
+                    song_length + explicit + n_playlists + genre,
+                  family = binomial(link = 'logit'), data = music_data)
+```
+
+Let’s have a look at the fullest model possible:
+
+```{r}
+summary(full_model)
+```
+
+We can pick five significant factors from the summary above. For example, we can proceed with the model as follows:
+
+```{r}
+final_model <- glm(top10 ~ weeks_in_charts + song_age + label + #our basic model. Next we add the rest of the variables to it:
+                   danceability + liveness + tempo + song_length + n_playlists,
+                   family = binomial(link = 'logit'), data = music_data)
+
+summary(final_model)
+```
+
+```{r}
+logisticPseudoR2s(final_model)
+```
+
+We can see from the table above that the model explains 50% of the variability in the likelihood of the song being in top 10 (according to Nagelkerke R-squared).
+
+```{r}
+exp(coef(final_model))
+```
+
+Interpretation: The results tell us, for example, that for each one minute increase in song length, the odds of the song to be in the top 10 are 0.73 times lower, or equivalently, the likelihood of the song to be in top 10 is decreased by 27%. For each one unit increase in danceability, the odds of the song to be in top 10 are 1.02 times higher, or equivalently, the likelihood of the song being in top 10 is increased by 2%.
+
+Alternatively, average partial effect as means of model interpretation can be used:
+```{r}
+library(mfx)
+# Average partial effect
+logitmfx(final_model, data = music_data, atmean = FALSE)
+```
+
+
+Interpretation of average partial effects: If a song is one week older, the probability of this song appearing in top-10 chart decreases by 0.01 percentage points.
+
+If we still want to choose a parsimonious model using step-wise comparisons, we can do it as follows: the function below takes the “base” model, adds variables from the fullest model one-by-one to it, and shows the new models’ performance.
+
+AIC values can be compared, we want the model with lowest possible AIC. As a second measure for variable selection, we can use the pseudo R-squared, that gives a value for explanatory power of the model.
+
+```{r}
+step(mult_logit_model, #our base model
+     scope = list(upper = full_model),
+     direction = "both",
+     test = "Chisq",
+     data = music_data)
+```

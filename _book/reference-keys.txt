@@ -302,6 +302,12 @@ assignment-b
 data-analysis-5
 load-data-5
 question-1-2
+assignment-4-solutions
+assignment-a-1
+task-1-omitted-variable-bias
+task-2-selection-bias
+task-3-moderation
+task-4-the-ikea-effect
 survey-design-analysis
 your-tasks
 topics-for-the-group-project

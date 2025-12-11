@@ -3392,3 +3392,757 @@ step(mult_logit_model, #our base model
 ## Null Deviance:	    43430 
 ## Residual Deviance: 24890 	AIC: 24940
 ```
+
+
+
+
+## Assignment 4 (solutions)
+
+### Assignment A
+
+The data-set `influencer` contains the following variables to assess the success of influencer marketing campaigns:
+
+  - `follower_count`: the number of followers of the influencer
+  - `engagement_rate`: the engagement rate measured as the number of interations divided by the influencers reach
+  - `content_quality`: an index measuring the quality of the influencer's posts
+  - `post_frequency`: the number of times the influencer posted about the brand
+  - `sales`: the number of units sold during the campaign
+  - `brand_awareness`: an index measuring how many people became aware of the brand during the campaign
+
+**Task Instructions**
+
+#### Task 1: Omitted Variable Bias
+
+
+``` r
+influencer <- readr::read_csv("https://github.com/WU-RDS/MA2024/raw/refs/heads/main/data/influencer.csv")
+```
+
+```
+## Rows: 1000 Columns: 6
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: ","
+## dbl (6): follower_count, engagement_rate, sales, post_frequency, content_qua...
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+``` r
+str(influencer)
+```
+
+```
+## spc_tbl_ [1,000 × 6] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
+##  $ follower_count : num [1:1000] 295 790 415 884 941 ...
+##  $ engagement_rate: num [1:1000] 0.0732 0.0406 0.0998 0.0708 0.0228 ...
+##  $ sales          : num [1:1000] 2643 3239 3375 4498 3898 ...
+##  $ post_frequency : num [1:1000] 3 11 6 6 3 2 4 5 7 4 ...
+##  $ content_quality: num [1:1000] 5.45 6.87 4.75 5.5 8.2 ...
+##  $ brand_awareness: num [1:1000] 45.2 72.9 52.5 36.7 36.7 ...
+##  - attr(*, "spec")=
+##   .. cols(
+##   ..   follower_count = col_double(),
+##   ..   engagement_rate = col_double(),
+##   ..   sales = col_double(),
+##   ..   post_frequency = col_double(),
+##   ..   content_quality = col_double(),
+##   ..   brand_awareness = col_double()
+##   .. )
+##  - attr(*, "problems")=<externalptr>
+```
+
+``` r
+set.seed(1234)
+```
+
+We are interested in modeling the sales during the campaigns.
+
+a) Draw a DAG that shows how you would model the causal influence of of `follower_count` on `sales` (feel free to draw it by hand and insert an image. You can add images with `![](./IMAGE.png)`)
+
+
+
+``` r
+base_model <- lm(sales ~ follower_count, data = influencer)
+summary(base_model)
+```
+
+```
+## 
+## Call:
+## lm(formula = sales ~ follower_count, data = influencer)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2236.06  -470.71    18.01   424.89  2232.78 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value            Pr(>|t|)    
+## (Intercept)    3053.54262   41.89236   72.89 <0.0000000000000002 ***
+## follower_count    0.90074    0.07257   12.41 <0.0000000000000002 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 652.8 on 998 degrees of freedom
+## Multiple R-squared:  0.1337,	Adjusted R-squared:  0.1329 
+## F-statistic: 154.1 on 1 and 998 DF,  p-value: < 0.00000000000000022
+```
+
+
+``` r
+engagement_model <- lm(sales ~ follower_count + engagement_rate,
+    data = influencer)
+summary(engagement_model)
+```
+
+```
+## 
+## Call:
+## lm(formula = sales ~ follower_count + engagement_rate, data = influencer)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -1493.87  -319.65    -9.01   346.75  1624.26 
+## 
+## Coefficients:
+##                    Estimate  Std. Error t value            Pr(>|t|)    
+## (Intercept)       887.57799    84.49382   10.51 <0.0000000000000002 ***
+## follower_count      1.99892     0.06756   29.59 <0.0000000000000002 ***
+## engagement_rate 21485.81618   777.56864   27.63 <0.0000000000000002 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 491.5 on 997 degrees of freedom
+## Multiple R-squared:  0.5094,	Adjusted R-squared:  0.5084 
+## F-statistic: 517.6 on 2 and 997 DF,  p-value: < 0.00000000000000022
+```
+
+``` r
+frequency_model <- lm(sales ~ follower_count + post_frequency,
+    data = influencer)
+summary(frequency_model)
+```
+
+```
+## 
+## Call:
+## lm(formula = sales ~ follower_count + post_frequency, data = influencer)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2213.03  -468.92    15.37   429.23  2233.67 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value            Pr(>|t|)    
+## (Intercept)    2997.48090   63.37709  47.296 <0.0000000000000002 ***
+## follower_count    0.90208    0.07257  12.431 <0.0000000000000002 ***
+## post_frequency   10.94625    9.28712   1.179               0.239    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 652.7 on 997 degrees of freedom
+## Multiple R-squared:  0.1349,	Adjusted R-squared:  0.1332 
+## F-statistic: 77.75 on 2 and 997 DF,  p-value: < 0.00000000000000022
+```
+
+
+``` r
+content_model <- lm(sales ~ follower_count + content_quality,
+    data = influencer)
+summary(content_model)
+```
+
+```
+## 
+## Call:
+## lm(formula = sales ~ follower_count + content_quality, data = influencer)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2239.57  -472.04    18.92   423.88  2235.21 
+## 
+## Coefficients:
+##                   Estimate Std. Error t value            Pr(>|t|)    
+## (Intercept)     3064.32650  121.24197  25.274 <0.0000000000000002 ***
+## follower_count     0.90091    0.07263  12.404 <0.0000000000000002 ***
+## content_quality   -1.81099   19.10544  -0.095               0.925    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 653.1 on 997 degrees of freedom
+## Multiple R-squared:  0.1337,	Adjusted R-squared:  0.132 
+## F-statistic: 76.95 on 2 and 997 DF,  p-value: < 0.00000000000000022
+```
+
+
+``` r
+awareness_model <- lm(sales ~ follower_count + brand_awareness,
+    data = influencer)
+summary(awareness_model)
+```
+
+```
+## 
+## Call:
+## lm(formula = sales ~ follower_count + brand_awareness, data = influencer)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2221.64  -465.95    10.36   426.80  2228.69 
+## 
+## Coefficients:
+##                   Estimate Std. Error t value            Pr(>|t|)    
+## (Intercept)     2994.48247   88.14965  33.970 <0.0000000000000002 ***
+## follower_count     0.89808    0.07267  12.358 <0.0000000000000002 ***
+## brand_awareness    1.21243    1.59209   0.762               0.447    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 653 on 997 degrees of freedom
+## Multiple R-squared:  0.1342,	Adjusted R-squared:  0.1325 
+## F-statistic: 77.28 on 2 and 997 DF,  p-value: < 0.00000000000000022
+```
+
+We ran several models, starting with a base model with one independent variable follower_count and sales as dependent variable. Then we added different variables in this model to see if some of them add explanatory power, and it's the case only for the variable engagement_rate. The effect of follower count on sales increases when engagement rate is added to the model from 0.9 to 1.9, suggesting that engagement rate is acting as a confounder, influencing both follower_count and sales.
+
+
+b) Describe briefly what roles each of the variables in you DAG play (mediator, moderator, collider)
+
+
+``` r
+# Engagement rate is a confounder
+
+library(DiagrammeR)
+
+mermaid("
+graph LR
+   engagement_rate --> follower_count
+   engagement_rate --> sales
+   follower_count --> sales
+")
+```
+
+```{=html}
+<div class="DiagrammeR html-widget html-fill-item" id="htmlwidget-f99564eb6e8884a58f83" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-f99564eb6e8884a58f83">{"x":{"diagram":"\ngraph LR\n   engagement_rate --> follower_count\n   engagement_rate --> sales\n   follower_count --> sales\n"},"evals":[],"jsHooks":[]}</script>
+```
+
+
+c) Calculate the correlation coefficients of the variables you expect to be correlated based on your answer in a). Briefly explain any changes (if any) you would like to make to your DAG based on the results.
+
+
+``` r
+# Load necessary libraries
+library(ggplot2)
+library(corrplot)
+```
+
+```
+## corrplot 0.95 loaded
+```
+
+``` r
+# Variable selection
+variables <- influencer[, c("follower_count", "sales",
+    "engagement_rate", "brand_awareness", "content_quality",
+    "post_frequency")]
+
+# Calculate correlation matrix
+cor_matrix <- cor(variables, use = "complete.obs",
+    method = "pearson")
+
+# Print the correlation matrix
+print(cor_matrix)
+```
+
+```
+##                 follower_count       sales engagement_rate brand_awareness
+## follower_count      1.00000000 0.365678342     -0.58822421      0.04798687
+## sales               0.36567834 1.000000000      0.28058517      0.03996302
+## engagement_rate    -0.58822421 0.280585165      1.00000000      0.02201733
+## brand_awareness     0.04798687 0.039963019      0.02201733      1.00000000
+## content_quality     0.02521806 0.006428507     -0.01827486      0.55365563
+## post_frequency     -0.01568093 0.028980269      0.03287448      0.51086960
+##                 content_quality post_frequency
+## follower_count      0.025218064    -0.01568093
+## sales               0.006428507     0.02898027
+## engagement_rate    -0.018274863     0.03287448
+## brand_awareness     0.553655632     0.51086960
+## content_quality     1.000000000     0.39864862
+## post_frequency      0.398648616     1.00000000
+```
+
+``` r
+# Visualize the correlation matrix using corrplot
+corrplot(cor_matrix, method = "circle", type = "upper",
+    tl.col = "black", tl.srt = 45, addCoef.col = "black")
+```
+
+<img src="14-rmdIntro_files/figure-html/unnamed-chunk-51-1.png" width="672" />
+
+
+d) Run and interpret the appropriate model given your answers in a) - c) (hint: you don't need anything we did not do in class)
+
+
+``` r
+# Confounder - engagement rate
+
+base_model <- lm(sales ~ follower_count, data = influencer)
+summary(base_model)
+```
+
+```
+## 
+## Call:
+## lm(formula = sales ~ follower_count, data = influencer)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2236.06  -470.71    18.01   424.89  2232.78 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value            Pr(>|t|)    
+## (Intercept)    3053.54262   41.89236   72.89 <0.0000000000000002 ***
+## follower_count    0.90074    0.07257   12.41 <0.0000000000000002 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 652.8 on 998 degrees of freedom
+## Multiple R-squared:  0.1337,	Adjusted R-squared:  0.1329 
+## F-statistic: 154.1 on 1 and 998 DF,  p-value: < 0.00000000000000022
+```
+
+``` r
+engagement_model <- lm(sales ~ follower_count + engagement_rate,
+    data = influencer)
+summary(engagement_model)
+```
+
+```
+## 
+## Call:
+## lm(formula = sales ~ follower_count + engagement_rate, data = influencer)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -1493.87  -319.65    -9.01   346.75  1624.26 
+## 
+## Coefficients:
+##                    Estimate  Std. Error t value            Pr(>|t|)    
+## (Intercept)       887.57799    84.49382   10.51 <0.0000000000000002 ***
+## follower_count      1.99892     0.06756   29.59 <0.0000000000000002 ***
+## engagement_rate 21485.81618   777.56864   27.63 <0.0000000000000002 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 491.5 on 997 degrees of freedom
+## Multiple R-squared:  0.5094,	Adjusted R-squared:  0.5084 
+## F-statistic: 517.6 on 2 and 997 DF,  p-value: < 0.00000000000000022
+```
+
+
+All the coefficients have a p-value lower than 0.05, which means they are all significant, so we can proceed with the interpretations.
+
+The coefficient for follower count is now 1.99, meaning for each additional follower, sales increase by 1.99 units, holding another predictor constant. This is higher than the previous value of 0.9 in the base model. After adjusting for engagement rate, the effect of follower count on sales becomes stronger. The coefficient for engagement rate is 2.1, meaning for each unit increase in engagement rate, sales increase by 2.1 units, holding another predictor constant.
+
+The R-squared of the model increased from 0.13 in the base model to 0.5 in the model including engagement rate. So, this model explains 50% of the variance in sales.
+
+#### Task 2: Selection Bias
+
+
+``` r
+influencer2 <- readr::read_csv("https://github.com/WU-RDS/MA2024/raw/refs/heads/main/data/influencer2.csv")
+```
+
+```
+## Rows: 100 Columns: 3
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: ","
+## dbl (3): authenticity, sales_impact, selected
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+``` r
+str(influencer2)
+```
+
+```
+## spc_tbl_ [100 × 3] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
+##  $ authenticity: num [1:100] 72.2 28.9 21.7 45.8 56.5 ...
+##  $ sales_impact: num [1:100] 60.2 79.7 59 49.1 73.9 ...
+##  $ selected    : num [1:100] 1 0 0 0 0 1 1 0 1 1 ...
+##  - attr(*, "spec")=
+##   .. cols(
+##   ..   authenticity = col_double(),
+##   ..   sales_impact = col_double(),
+##   ..   selected = col_double()
+##   .. )
+##  - attr(*, "problems")=<externalptr>
+```
+
+The data-set `influencer2` contains data from an experiment run by a company to assess whether their selection criteria for influencer campaigns are suitable to assess the impact authenticity of their posts have on sales. Instead of their usual selection criteria they select influencers at random to check if their usual selection criteria change the relationship between authenticit and sales. The data contains the following variables:
+
+ - `sales_impact`: the measured sales impact of an influencer
+ - `authenticity`: an index measuring the perceived authenticity of the influencer's posts
+ - `selected`: an indicator of whether this influencer would have been selected according to the companies usual criteria
+
+Since their usual selection criteria include the expected sales impact of a campaign as well as the authenticity index the company suspects that the selection is a collider.
+
+a) Please estimate and interpret a model that shows the causal impact of authenticity on sales assuming the company is correct and their selection is a collider
+
+
+``` r
+# provide your code here
+
+model_correct <- lm(sales_impact ~ authenticity, influencer2)
+model_collider <- lm(sales_impact ~ authenticity +
+    selected, influencer2)
+
+summary(model_correct)
+```
+
+```
+## 
+## Call:
+## lm(formula = sales_impact ~ authenticity, data = influencer2)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -53.349 -10.443   0.159  13.554  45.399 
+## 
+## Coefficients:
+##              Estimate Std. Error t value      Pr(>|t|)    
+## (Intercept)   43.4479     6.4702   6.715 0.00000000124 ***
+## authenticity   0.3215     0.1209   2.658       0.00917 ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 19.46 on 98 degrees of freedom
+## Multiple R-squared:  0.06726,	Adjusted R-squared:  0.05774 
+## F-statistic: 7.067 on 1 and 98 DF,  p-value: 0.009171
+```
+
+``` r
+summary(model_collider)
+```
+
+```
+## 
+## Call:
+## lm(formula = sales_impact ~ authenticity + selected, data = influencer2)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -47.618 -11.940   0.009  13.048  39.966 
+## 
+## Coefficients:
+##              Estimate Std. Error t value       Pr(>|t|)    
+## (Intercept)   47.4128     6.1883   7.662 0.000000000014 ***
+## authenticity   0.1275     0.1256   1.015       0.312514    
+## selected      15.2177     4.1430   3.673       0.000392 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 18.33 on 97 degrees of freedom
+## Multiple R-squared:  0.1812,	Adjusted R-squared:  0.1643 
+## F-statistic: 10.73 on 2 and 97 DF,  p-value: 0.0000617
+```
+
+b) Draw the DAG for the model (feel free to draw it by hand and insert an image)
+
+
+``` r
+# collider
+library(DiagrammeR)
+
+## Model the situation assumed by the company
+## (=collider)
+mermaid("
+graph LR
+   authenticity--> select
+   sales--> select
+   authenticity-->sales
+")
+```
+
+```{=html}
+<div class="DiagrammeR html-widget html-fill-item" id="htmlwidget-6166d559454ecd730d7d" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-6166d559454ecd730d7d">{"x":{"diagram":"\ngraph LR\n   authenticity--> select\n   sales--> select\n   authenticity-->sales\n"},"evals":[],"jsHooks":[]}</script>
+```
+
+#### Task 3: Moderation
+
+
+``` r
+in_app_purchases <- readr::read_csv("https://github.com/WU-RDS/MA2024/raw/refs/heads/main/data/in_app_purchases.csv")
+```
+
+```
+## Rows: 1000 Columns: 3
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: ","
+## chr (2): gender, campaign_exposure
+## dbl (1): in_app_purchases
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+``` r
+str(in_app_purchases)
+```
+
+```
+## spc_tbl_ [1,000 × 3] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
+##  $ gender           : chr [1:1000] "Male" "Female" "Male" "Female" ...
+##  $ campaign_exposure: chr [1:1000] "Exposed" "Exposed" "Exposed" "Not Exposed" ...
+##  $ in_app_purchases : num [1:1000] 6 16 7 5 5 8 5 10 11 11 ...
+##  - attr(*, "spec")=
+##   .. cols(
+##   ..   gender = col_character(),
+##   ..   campaign_exposure = col_character(),
+##   ..   in_app_purchases = col_double()
+##   .. )
+##  - attr(*, "problems")=<externalptr>
+```
+
+
+The data-set `in_app_purchases` includes data on a marketing campaign aimed at boosting in-app purchases. It contains the variables:
+
+- `in_app`: the number of in-app purchases of a user
+- `gender`: the gender of the user
+- `campaign_exposure`: indicator whether the user was exposed to the campaign
+
+a) Provide an appropriate visualization showing whether the effect of the campaign is moderated by gender
+
+
+``` r
+library(ggplot2)
+
+ggplot(in_app_purchases, aes(x = campaign_exposure, y = in_app_purchases, fill = gender)) +
+  geom_boxplot(alpha = 0.7, position = position_dodge(width = 0.8)) +  # Adjusted dodge for separation
+  labs(
+    title = "In-App Purchases by Campaign Exposure and Gender",
+    x = "Campaign Exposure",
+    y = "In-App Purchases",
+    fill = "Gender"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "top",
+    axis.text = element_text(size = 12),      # Improves text size
+    plot.title = element_text(size = 16, face = "bold")  # Enhances title appearance
+  )
+```
+
+<img src="14-rmdIntro_files/figure-html/unnamed-chunk-57-1.png" width="672" />
+
+From the boxplots we can already see that gender moderates the effect of the campaign. This campaign works much better on women than on men. We can check it formally by running the regression and looking at the coefficients.
+
+
+a) Calculate and interpret all of the coefficients in the appropriate model given your answer in a)
+
+
+``` r
+moderation_gender <- lm(in_app_purchases ~ campaign_exposure *
+    gender, data = in_app_purchases)
+summary(moderation_gender)
+```
+
+```
+## 
+## Call:
+## lm(formula = in_app_purchases ~ campaign_exposure * gender, data = in_app_purchases)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -10.9128  -1.9393   0.0607   2.0607  13.1297 
+## 
+## Coefficients:
+##                                         Estimate Std. Error t value
+## (Intercept)                              12.9128     0.1643   78.58
+## campaign_exposureNot Exposed             -7.7965     0.2782  -28.02
+## genderMale                               -4.0425     0.2379  -16.99
+## campaign_exposureNot Exposed:genderMale   3.8654     0.3841   10.06
+##                                                    Pr(>|t|)    
+## (Intercept)                             <0.0000000000000002 ***
+## campaign_exposureNot Exposed            <0.0000000000000002 ***
+## genderMale                              <0.0000000000000002 ***
+## campaign_exposureNot Exposed:genderMale <0.0000000000000002 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 2.944 on 996 degrees of freedom
+## Multiple R-squared:  0.5589,	Adjusted R-squared:  0.5576 
+## F-statistic: 420.7 on 3 and 996 DF,  p-value: < 0.00000000000000022
+```
+
+From the model we can see that all the coefficients are significant (p<0.05), so we can proceed with interpreting them.
+
+campaign_exposureNot Exposed - When the female customers are not exposed to the campaign, their in app purchases fall by 7.8 units in comparison with customers exposed to the campaign.
+genderMale - Men who are exposed to the campaign make 4.04 fewer in-app purchases on average compared to women who are exposed to the campaign.
+campaign_exposureNot Exposed:genderMale - Men are less negatively affected by not being exposed to the campaign compared to women.
+
+-7.8 + 3.9 = -3.9: If men are not exposed to the campaign, their in app purchases fall by 3.9 units in comparison with decrease of 7.8 among women.
+
+
+#### Task 4: The IKEA effect
+
+
+
+``` r
+ikea <- readr::read_csv("https://github.com/WU-RDS/MA2024/raw/refs/heads/main/data/ikea.csv")
+```
+
+```
+## Rows: 500 Columns: 3
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: ","
+## dbl (3): self_assembly, accomplishment, valuation
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+``` r
+str(ikea)
+```
+
+```
+## spc_tbl_ [500 × 3] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
+##  $ self_assembly : num [1:500] 1 2 1 2 2 1 2 2 2 1 ...
+##  $ accomplishment: num [1:500] 4.62 6.44 4.66 7.09 8.6 ...
+##  $ valuation     : num [1:500] 79.3 73.2 69.1 78.4 78.9 ...
+##  - attr(*, "spec")=
+##   .. cols(
+##   ..   self_assembly = col_double(),
+##   ..   accomplishment = col_double(),
+##   ..   valuation = col_double()
+##   .. )
+##  - attr(*, "problems")=<externalptr>
+```
+
+The IKEA effect describes a psychological process through which consumers value products more because they feel a sense of accomplishment after assembling the something themselves. Using the following data, analyze whether you can replicate these results. The data was created through an experiment in which some consumers were randomly given fully assembled furniture while others had to assemble it themselves (it is otherwise the same furniture; variable: `self_assembly`). The researchers asked consumers about their sense of accomplishment (variable: `accomplishment`) and how much they value the final product (variable: `valuation`). Discuss the relative magnitude of the direct and mediated effect of self assembly.
+
+
+``` r
+# provide your code here
+
+# Mediation - engagement rate
+
+# Step 1: Run regression just with X and Y
+total_effect_ikea <- lm(valuation ~ self_assembly,
+    data = ikea)
+
+# Step 2: Run regression just with M1
+X_on_M_ikea <- lm(accomplishment ~ self_assembly, data = ikea)
+
+
+# Step 3: Run regression with Y on X and M1
+avg_direct_effect_M_ikea <- lm(valuation ~ self_assembly +
+    accomplishment, data = ikea)
+
+summary(total_effect_ikea)
+```
+
+```
+## 
+## Call:
+## lm(formula = valuation ~ self_assembly, data = ikea)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -30.597  -7.481  -0.368   6.408  34.087 
+## 
+## Coefficients:
+##               Estimate Std. Error t value            Pr(>|t|)    
+## (Intercept)    53.4978     1.4707   36.38 <0.0000000000000002 ***
+## self_assembly  11.5394     0.9473   12.18 <0.0000000000000002 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 10.57 on 498 degrees of freedom
+## Multiple R-squared:  0.2295,	Adjusted R-squared:  0.228 
+## F-statistic: 148.4 on 1 and 498 DF,  p-value: < 0.00000000000000022
+```
+
+``` r
+summary(X_on_M_ikea)
+```
+
+```
+## 
+## Call:
+## lm(formula = accomplishment ~ self_assembly, data = ikea)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.77413 -0.64394  0.01379  0.70961  2.72736 
+## 
+## Coefficients:
+##               Estimate Std. Error t value            Pr(>|t|)    
+## (Intercept)    2.84229    0.13974   20.34 <0.0000000000000002 ***
+## self_assembly  2.12206    0.09001   23.57 <0.0000000000000002 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 1.005 on 498 degrees of freedom
+## Multiple R-squared:  0.5274,	Adjusted R-squared:  0.5265 
+## F-statistic: 555.8 on 1 and 498 DF,  p-value: < 0.00000000000000022
+```
+
+``` r
+summary(avg_direct_effect_M_ikea)
+```
+
+```
+## 
+## Call:
+## lm(formula = valuation ~ self_assembly + accomplishment, data = ikea)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -25.9883  -6.9040  -0.2609   5.9800  31.6184 
+## 
+## Coefficients:
+##                Estimate Std. Error t value             Pr(>|t|)    
+## (Intercept)      45.287      1.915  23.644 < 0.0000000000000002 ***
+## self_assembly     5.410      1.327   4.078       0.000052866717 ***
+## accomplishment    2.889      0.454   6.363       0.000000000449 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 10.18 on 497 degrees of freedom
+## Multiple R-squared:  0.2876,	Adjusted R-squared:  0.2847 
+## F-statistic: 100.3 on 2 and 497 DF,  p-value: < 0.00000000000000022
+```
+
+``` r
+# Indirect effect: self_assembly ->
+# accomplishment -> valuation
+indirect_effect <- coef(X_on_M_ikea)["self_assembly"] *
+    coef(avg_direct_effect_M_ikea)["accomplishment"]
+
+# Print the indirect effect
+indirect_effect
+```
+
+```
+## self_assembly 
+##      6.129904
+```
+
+
+The coefficients in all 3 models are significant (p<0.05), so we can proceed with the interpretations.
+
+First model with just the effect of self assembly on valuation: 11.54 (p<0.05) If consumers assemble the product themselves (as opposed to receiving it fully assembled), their valuation of the product increases by 11.54 units.
+
+Second model with the effect of the self assembly on the sense of accomplishment: If the furniture is self assembled, it increases the sense of accomplishment by approximately 2.12 units in comparison with furniture that doesn't have to be assembled.
+
+Third model with the effect of both self assembly and accomplishment on valuation: After including the accomplishment variable in the model, self assembly still has a positive effect on valuation, but now the effect is reduced compared to the total effect in the first step. The reduction suggests part of the effect of self assembly on valuation is mediated by accomplishment.
+
+As the next step, we calculate the indirect effect of the self assembly on valuation through sense of accomplishment by multiplying the coefficients from the first and second models: 2.122 * 2.889 = 6.13
+
+The mediated effect via accomplishment (=6.13) is slightly larger than the direct effect (5.41), suggesting that the IKEA effect (the increased valuation due to self assembly) is largely driven by the sense of accomplishment that consumers feel when assembling the product themselves.

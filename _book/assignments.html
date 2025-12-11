@@ -404,6 +404,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="8.4.13" data-path="assignments.html"><a href="assignments.html#load-data-5"><i class="fa fa-check"></i><b>8.4.13</b> Load data</a></li>
 <li class="chapter" data-level="8.4.14" data-path="assignments.html"><a href="assignments.html#question-1-2"><i class="fa fa-check"></i><b>8.4.14</b> Question 1</a></li>
 </ul></li>
+<li class="chapter" data-level="8.5" data-path="assignments.html"><a href="assignments.html#assignment-4-solutions"><i class="fa fa-check"></i><b>8.5</b> Assignment 4 (solutions)</a>
+<ul>
+<li class="chapter" data-level="8.5.1" data-path="assignments.html"><a href="assignments.html#assignment-a-1"><i class="fa fa-check"></i><b>8.5.1</b> Assignment A</a></li>
+</ul></li>
 </ul></li>
 <li class="part"><span><b>IV Group project</b></span></li>
 <li class="chapter" data-level="9" data-path="survey-design-analysis.html"><a href="survey-design-analysis.html"><i class="fa fa-check"></i><b>9</b> Survey design &amp; analysis</a>
@@ -3040,8 +3044,562 @@ x_{3,i})}}\]</span></p>
 ## Degrees of Freedom: 66795 Total (i.e. Null);  66771 Residual
 ## Null Deviance:       43430 
 ## Residual Deviance: 24890     AIC: 24940</code></pre>
+</div>
+</div>
+<div id="assignment-4-solutions" class="section level2 hasAnchor" number="8.5">
+<h2><span class="header-section-number">8.5</span> Assignment 4 (solutions)<a href="assignments.html#assignment-4-solutions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="assignment-a-1" class="section level3 hasAnchor" number="8.5.1">
+<h3><span class="header-section-number">8.5.1</span> Assignment A<a href="assignments.html#assignment-a-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The data-set <code>influencer</code> contains the following variables to assess the success of influencer marketing campaigns:</p>
+<ul>
+<li><code>follower_count</code>: the number of followers of the influencer</li>
+<li><code>engagement_rate</code>: the engagement rate measured as the number of interations divided by the influencers reach</li>
+<li><code>content_quality</code>: an index measuring the quality of the influencer’s posts</li>
+<li><code>post_frequency</code>: the number of times the influencer posted about the brand</li>
+<li><code>sales</code>: the number of units sold during the campaign</li>
+<li><code>brand_awareness</code>: an index measuring how many people became aware of the brand during the campaign</li>
+</ul>
+<p><strong>Task Instructions</strong></p>
+<div id="task-1-omitted-variable-bias" class="section level4 hasAnchor" number="8.5.1.1">
+<h4><span class="header-section-number">8.5.1.1</span> Task 1: Omitted Variable Bias<a href="assignments.html#task-1-omitted-variable-bias" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div class="sourceCode" id="cb901"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb901-1"><a href="assignments.html#cb901-1" tabindex="-1"></a>influencer <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">&quot;https://github.com/WU-RDS/MA2024/raw/refs/heads/main/data/influencer.csv&quot;</span>)</span></code></pre></div>
+<pre><code>## Rows: 1000 Columns: 6
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## dbl (6): follower_count, engagement_rate, sales, post_frequency, content_qua...
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<div class="sourceCode" id="cb903"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb903-1"><a href="assignments.html#cb903-1" tabindex="-1"></a><span class="fu">str</span>(influencer)</span></code></pre></div>
+<pre><code>## spc_tbl_ [1,000 × 6] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
+##  $ follower_count : num [1:1000] 295 790 415 884 941 ...
+##  $ engagement_rate: num [1:1000] 0.0732 0.0406 0.0998 0.0708 0.0228 ...
+##  $ sales          : num [1:1000] 2643 3239 3375 4498 3898 ...
+##  $ post_frequency : num [1:1000] 3 11 6 6 3 2 4 5 7 4 ...
+##  $ content_quality: num [1:1000] 5.45 6.87 4.75 5.5 8.2 ...
+##  $ brand_awareness: num [1:1000] 45.2 72.9 52.5 36.7 36.7 ...
+##  - attr(*, &quot;spec&quot;)=
+##   .. cols(
+##   ..   follower_count = col_double(),
+##   ..   engagement_rate = col_double(),
+##   ..   sales = col_double(),
+##   ..   post_frequency = col_double(),
+##   ..   content_quality = col_double(),
+##   ..   brand_awareness = col_double()
+##   .. )
+##  - attr(*, &quot;problems&quot;)=&lt;externalptr&gt;</code></pre>
+<div class="sourceCode" id="cb905"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb905-1"><a href="assignments.html#cb905-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span></code></pre></div>
+<p>We are interested in modeling the sales during the campaigns.</p>
+<ol style="list-style-type: lower-alpha">
+<li>Draw a DAG that shows how you would model the causal influence of of <code>follower_count</code> on <code>sales</code> (feel free to draw it by hand and insert an image. You can add images with <code>![](./IMAGE.png)</code>)</li>
+</ol>
+<div class="sourceCode" id="cb906"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb906-1"><a href="assignments.html#cb906-1" tabindex="-1"></a>base_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(sales <span class="sc">~</span> follower_count, <span class="at">data =</span> influencer)</span>
+<span id="cb906-2"><a href="assignments.html#cb906-2" tabindex="-1"></a><span class="fu">summary</span>(base_model)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = sales ~ follower_count, data = influencer)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2236.06  -470.71    18.01   424.89  2232.78 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value            Pr(&gt;|t|)    
+## (Intercept)    3053.54262   41.89236   72.89 &lt;0.0000000000000002 ***
+## follower_count    0.90074    0.07257   12.41 &lt;0.0000000000000002 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 652.8 on 998 degrees of freedom
+## Multiple R-squared:  0.1337, Adjusted R-squared:  0.1329 
+## F-statistic: 154.1 on 1 and 998 DF,  p-value: &lt; 0.00000000000000022</code></pre>
+<div class="sourceCode" id="cb908"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb908-1"><a href="assignments.html#cb908-1" tabindex="-1"></a>engagement_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(sales <span class="sc">~</span> follower_count <span class="sc">+</span> engagement_rate,</span>
+<span id="cb908-2"><a href="assignments.html#cb908-2" tabindex="-1"></a>    <span class="at">data =</span> influencer)</span>
+<span id="cb908-3"><a href="assignments.html#cb908-3" tabindex="-1"></a><span class="fu">summary</span>(engagement_model)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = sales ~ follower_count + engagement_rate, data = influencer)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -1493.87  -319.65    -9.01   346.75  1624.26 
+## 
+## Coefficients:
+##                    Estimate  Std. Error t value            Pr(&gt;|t|)    
+## (Intercept)       887.57799    84.49382   10.51 &lt;0.0000000000000002 ***
+## follower_count      1.99892     0.06756   29.59 &lt;0.0000000000000002 ***
+## engagement_rate 21485.81618   777.56864   27.63 &lt;0.0000000000000002 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 491.5 on 997 degrees of freedom
+## Multiple R-squared:  0.5094, Adjusted R-squared:  0.5084 
+## F-statistic: 517.6 on 2 and 997 DF,  p-value: &lt; 0.00000000000000022</code></pre>
+<div class="sourceCode" id="cb910"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb910-1"><a href="assignments.html#cb910-1" tabindex="-1"></a>frequency_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(sales <span class="sc">~</span> follower_count <span class="sc">+</span> post_frequency,</span>
+<span id="cb910-2"><a href="assignments.html#cb910-2" tabindex="-1"></a>    <span class="at">data =</span> influencer)</span>
+<span id="cb910-3"><a href="assignments.html#cb910-3" tabindex="-1"></a><span class="fu">summary</span>(frequency_model)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = sales ~ follower_count + post_frequency, data = influencer)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2213.03  -468.92    15.37   429.23  2233.67 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value            Pr(&gt;|t|)    
+## (Intercept)    2997.48090   63.37709  47.296 &lt;0.0000000000000002 ***
+## follower_count    0.90208    0.07257  12.431 &lt;0.0000000000000002 ***
+## post_frequency   10.94625    9.28712   1.179               0.239    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 652.7 on 997 degrees of freedom
+## Multiple R-squared:  0.1349, Adjusted R-squared:  0.1332 
+## F-statistic: 77.75 on 2 and 997 DF,  p-value: &lt; 0.00000000000000022</code></pre>
+<div class="sourceCode" id="cb912"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb912-1"><a href="assignments.html#cb912-1" tabindex="-1"></a>content_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(sales <span class="sc">~</span> follower_count <span class="sc">+</span> content_quality,</span>
+<span id="cb912-2"><a href="assignments.html#cb912-2" tabindex="-1"></a>    <span class="at">data =</span> influencer)</span>
+<span id="cb912-3"><a href="assignments.html#cb912-3" tabindex="-1"></a><span class="fu">summary</span>(content_model)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = sales ~ follower_count + content_quality, data = influencer)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2239.57  -472.04    18.92   423.88  2235.21 
+## 
+## Coefficients:
+##                   Estimate Std. Error t value            Pr(&gt;|t|)    
+## (Intercept)     3064.32650  121.24197  25.274 &lt;0.0000000000000002 ***
+## follower_count     0.90091    0.07263  12.404 &lt;0.0000000000000002 ***
+## content_quality   -1.81099   19.10544  -0.095               0.925    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 653.1 on 997 degrees of freedom
+## Multiple R-squared:  0.1337, Adjusted R-squared:  0.132 
+## F-statistic: 76.95 on 2 and 997 DF,  p-value: &lt; 0.00000000000000022</code></pre>
+<div class="sourceCode" id="cb914"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb914-1"><a href="assignments.html#cb914-1" tabindex="-1"></a>awareness_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(sales <span class="sc">~</span> follower_count <span class="sc">+</span> brand_awareness,</span>
+<span id="cb914-2"><a href="assignments.html#cb914-2" tabindex="-1"></a>    <span class="at">data =</span> influencer)</span>
+<span id="cb914-3"><a href="assignments.html#cb914-3" tabindex="-1"></a><span class="fu">summary</span>(awareness_model)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = sales ~ follower_count + brand_awareness, data = influencer)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2221.64  -465.95    10.36   426.80  2228.69 
+## 
+## Coefficients:
+##                   Estimate Std. Error t value            Pr(&gt;|t|)    
+## (Intercept)     2994.48247   88.14965  33.970 &lt;0.0000000000000002 ***
+## follower_count     0.89808    0.07267  12.358 &lt;0.0000000000000002 ***
+## brand_awareness    1.21243    1.59209   0.762               0.447    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 653 on 997 degrees of freedom
+## Multiple R-squared:  0.1342, Adjusted R-squared:  0.1325 
+## F-statistic: 77.28 on 2 and 997 DF,  p-value: &lt; 0.00000000000000022</code></pre>
+<p>We ran several models, starting with a base model with one independent variable follower_count and sales as dependent variable. Then we added different variables in this model to see if some of them add explanatory power, and it’s the case only for the variable engagement_rate. The effect of follower count on sales increases when engagement rate is added to the model from 0.9 to 1.9, suggesting that engagement rate is acting as a confounder, influencing both follower_count and sales.</p>
+<ol start="2" style="list-style-type: lower-alpha">
+<li>Describe briefly what roles each of the variables in you DAG play (mediator, moderator, collider)</li>
+</ol>
+<div class="sourceCode" id="cb916"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb916-1"><a href="assignments.html#cb916-1" tabindex="-1"></a><span class="co"># Engagement rate is a confounder</span></span>
+<span id="cb916-2"><a href="assignments.html#cb916-2" tabindex="-1"></a></span>
+<span id="cb916-3"><a href="assignments.html#cb916-3" tabindex="-1"></a><span class="fu">library</span>(DiagrammeR)</span>
+<span id="cb916-4"><a href="assignments.html#cb916-4" tabindex="-1"></a></span>
+<span id="cb916-5"><a href="assignments.html#cb916-5" tabindex="-1"></a><span class="fu">mermaid</span>(<span class="st">&quot;</span></span>
+<span id="cb916-6"><a href="assignments.html#cb916-6" tabindex="-1"></a><span class="st">graph LR</span></span>
+<span id="cb916-7"><a href="assignments.html#cb916-7" tabindex="-1"></a><span class="st">   engagement_rate --&gt; follower_count</span></span>
+<span id="cb916-8"><a href="assignments.html#cb916-8" tabindex="-1"></a><span class="st">   engagement_rate --&gt; sales</span></span>
+<span id="cb916-9"><a href="assignments.html#cb916-9" tabindex="-1"></a><span class="st">   follower_count --&gt; sales</span></span>
+<span id="cb916-10"><a href="assignments.html#cb916-10" tabindex="-1"></a><span class="st">&quot;</span>)</span></code></pre></div>
+<div class="DiagrammeR html-widget html-fill-item" id="htmlwidget-f99564eb6e8884a58f83" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-f99564eb6e8884a58f83">{"x":{"diagram":"\ngraph LR\n   engagement_rate --> follower_count\n   engagement_rate --> sales\n   follower_count --> sales\n"},"evals":[],"jsHooks":[]}</script>
+<ol start="3" style="list-style-type: lower-alpha">
+<li>Calculate the correlation coefficients of the variables you expect to be correlated based on your answer in a). Briefly explain any changes (if any) you would like to make to your DAG based on the results.</li>
+</ol>
+<div class="sourceCode" id="cb917"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb917-1"><a href="assignments.html#cb917-1" tabindex="-1"></a><span class="co"># Load necessary libraries</span></span>
+<span id="cb917-2"><a href="assignments.html#cb917-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb917-3"><a href="assignments.html#cb917-3" tabindex="-1"></a><span class="fu">library</span>(corrplot)</span></code></pre></div>
+<pre><code>## corrplot 0.95 loaded</code></pre>
+<div class="sourceCode" id="cb919"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb919-1"><a href="assignments.html#cb919-1" tabindex="-1"></a><span class="co"># Variable selection</span></span>
+<span id="cb919-2"><a href="assignments.html#cb919-2" tabindex="-1"></a>variables <span class="ot">&lt;-</span> influencer[, <span class="fu">c</span>(<span class="st">&quot;follower_count&quot;</span>, <span class="st">&quot;sales&quot;</span>,</span>
+<span id="cb919-3"><a href="assignments.html#cb919-3" tabindex="-1"></a>    <span class="st">&quot;engagement_rate&quot;</span>, <span class="st">&quot;brand_awareness&quot;</span>, <span class="st">&quot;content_quality&quot;</span>,</span>
+<span id="cb919-4"><a href="assignments.html#cb919-4" tabindex="-1"></a>    <span class="st">&quot;post_frequency&quot;</span>)]</span>
+<span id="cb919-5"><a href="assignments.html#cb919-5" tabindex="-1"></a></span>
+<span id="cb919-6"><a href="assignments.html#cb919-6" tabindex="-1"></a><span class="co"># Calculate correlation matrix</span></span>
+<span id="cb919-7"><a href="assignments.html#cb919-7" tabindex="-1"></a>cor_matrix <span class="ot">&lt;-</span> <span class="fu">cor</span>(variables, <span class="at">use =</span> <span class="st">&quot;complete.obs&quot;</span>,</span>
+<span id="cb919-8"><a href="assignments.html#cb919-8" tabindex="-1"></a>    <span class="at">method =</span> <span class="st">&quot;pearson&quot;</span>)</span>
+<span id="cb919-9"><a href="assignments.html#cb919-9" tabindex="-1"></a></span>
+<span id="cb919-10"><a href="assignments.html#cb919-10" tabindex="-1"></a><span class="co"># Print the correlation matrix</span></span>
+<span id="cb919-11"><a href="assignments.html#cb919-11" tabindex="-1"></a><span class="fu">print</span>(cor_matrix)</span></code></pre></div>
+<pre><code>##                 follower_count       sales engagement_rate brand_awareness
+## follower_count      1.00000000 0.365678342     -0.58822421      0.04798687
+## sales               0.36567834 1.000000000      0.28058517      0.03996302
+## engagement_rate    -0.58822421 0.280585165      1.00000000      0.02201733
+## brand_awareness     0.04798687 0.039963019      0.02201733      1.00000000
+## content_quality     0.02521806 0.006428507     -0.01827486      0.55365563
+## post_frequency     -0.01568093 0.028980269      0.03287448      0.51086960
+##                 content_quality post_frequency
+## follower_count      0.025218064    -0.01568093
+## sales               0.006428507     0.02898027
+## engagement_rate    -0.018274863     0.03287448
+## brand_awareness     0.553655632     0.51086960
+## content_quality     1.000000000     0.39864862
+## post_frequency      0.398648616     1.00000000</code></pre>
+<div class="sourceCode" id="cb921"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb921-1"><a href="assignments.html#cb921-1" tabindex="-1"></a><span class="co"># Visualize the correlation matrix using corrplot</span></span>
+<span id="cb921-2"><a href="assignments.html#cb921-2" tabindex="-1"></a><span class="fu">corrplot</span>(cor_matrix, <span class="at">method =</span> <span class="st">&quot;circle&quot;</span>, <span class="at">type =</span> <span class="st">&quot;upper&quot;</span>,</span>
+<span id="cb921-3"><a href="assignments.html#cb921-3" tabindex="-1"></a>    <span class="at">tl.col =</span> <span class="st">&quot;black&quot;</span>, <span class="at">tl.srt =</span> <span class="dv">45</span>, <span class="at">addCoef.col =</span> <span class="st">&quot;black&quot;</span>)</span></code></pre></div>
+<p><img src="14-rmdIntro_files/figure-html/unnamed-chunk-51-1.png" width="672" /></p>
+<ol start="4" style="list-style-type: lower-alpha">
+<li>Run and interpret the appropriate model given your answers in a) - c) (hint: you don’t need anything we did not do in class)</li>
+</ol>
+<div class="sourceCode" id="cb922"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb922-1"><a href="assignments.html#cb922-1" tabindex="-1"></a><span class="co"># Confounder - engagement rate</span></span>
+<span id="cb922-2"><a href="assignments.html#cb922-2" tabindex="-1"></a></span>
+<span id="cb922-3"><a href="assignments.html#cb922-3" tabindex="-1"></a>base_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(sales <span class="sc">~</span> follower_count, <span class="at">data =</span> influencer)</span>
+<span id="cb922-4"><a href="assignments.html#cb922-4" tabindex="-1"></a><span class="fu">summary</span>(base_model)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = sales ~ follower_count, data = influencer)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2236.06  -470.71    18.01   424.89  2232.78 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value            Pr(&gt;|t|)    
+## (Intercept)    3053.54262   41.89236   72.89 &lt;0.0000000000000002 ***
+## follower_count    0.90074    0.07257   12.41 &lt;0.0000000000000002 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 652.8 on 998 degrees of freedom
+## Multiple R-squared:  0.1337, Adjusted R-squared:  0.1329 
+## F-statistic: 154.1 on 1 and 998 DF,  p-value: &lt; 0.00000000000000022</code></pre>
+<div class="sourceCode" id="cb924"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb924-1"><a href="assignments.html#cb924-1" tabindex="-1"></a>engagement_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(sales <span class="sc">~</span> follower_count <span class="sc">+</span> engagement_rate,</span>
+<span id="cb924-2"><a href="assignments.html#cb924-2" tabindex="-1"></a>    <span class="at">data =</span> influencer)</span>
+<span id="cb924-3"><a href="assignments.html#cb924-3" tabindex="-1"></a><span class="fu">summary</span>(engagement_model)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = sales ~ follower_count + engagement_rate, data = influencer)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -1493.87  -319.65    -9.01   346.75  1624.26 
+## 
+## Coefficients:
+##                    Estimate  Std. Error t value            Pr(&gt;|t|)    
+## (Intercept)       887.57799    84.49382   10.51 &lt;0.0000000000000002 ***
+## follower_count      1.99892     0.06756   29.59 &lt;0.0000000000000002 ***
+## engagement_rate 21485.81618   777.56864   27.63 &lt;0.0000000000000002 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 491.5 on 997 degrees of freedom
+## Multiple R-squared:  0.5094, Adjusted R-squared:  0.5084 
+## F-statistic: 517.6 on 2 and 997 DF,  p-value: &lt; 0.00000000000000022</code></pre>
+<p>All the coefficients have a p-value lower than 0.05, which means they are all significant, so we can proceed with the interpretations.</p>
+<p>The coefficient for follower count is now 1.99, meaning for each additional follower, sales increase by 1.99 units, holding another predictor constant. This is higher than the previous value of 0.9 in the base model. After adjusting for engagement rate, the effect of follower count on sales becomes stronger. The coefficient for engagement rate is 2.1, meaning for each unit increase in engagement rate, sales increase by 2.1 units, holding another predictor constant.</p>
+<p>The R-squared of the model increased from 0.13 in the base model to 0.5 in the model including engagement rate. So, this model explains 50% of the variance in sales.</p>
+</div>
+<div id="task-2-selection-bias" class="section level4 hasAnchor" number="8.5.1.2">
+<h4><span class="header-section-number">8.5.1.2</span> Task 2: Selection Bias<a href="assignments.html#task-2-selection-bias" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div class="sourceCode" id="cb926"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb926-1"><a href="assignments.html#cb926-1" tabindex="-1"></a>influencer2 <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">&quot;https://github.com/WU-RDS/MA2024/raw/refs/heads/main/data/influencer2.csv&quot;</span>)</span></code></pre></div>
+<pre><code>## Rows: 100 Columns: 3
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## dbl (3): authenticity, sales_impact, selected
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<div class="sourceCode" id="cb928"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb928-1"><a href="assignments.html#cb928-1" tabindex="-1"></a><span class="fu">str</span>(influencer2)</span></code></pre></div>
+<pre><code>## spc_tbl_ [100 × 3] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
+##  $ authenticity: num [1:100] 72.2 28.9 21.7 45.8 56.5 ...
+##  $ sales_impact: num [1:100] 60.2 79.7 59 49.1 73.9 ...
+##  $ selected    : num [1:100] 1 0 0 0 0 1 1 0 1 1 ...
+##  - attr(*, &quot;spec&quot;)=
+##   .. cols(
+##   ..   authenticity = col_double(),
+##   ..   sales_impact = col_double(),
+##   ..   selected = col_double()
+##   .. )
+##  - attr(*, &quot;problems&quot;)=&lt;externalptr&gt;</code></pre>
+<p>The data-set <code>influencer2</code> contains data from an experiment run by a company to assess whether their selection criteria for influencer campaigns are suitable to assess the impact authenticity of their posts have on sales. Instead of their usual selection criteria they select influencers at random to check if their usual selection criteria change the relationship between authenticit and sales. The data contains the following variables:</p>
+<ul>
+<li><code>sales_impact</code>: the measured sales impact of an influencer</li>
+<li><code>authenticity</code>: an index measuring the perceived authenticity of the influencer’s posts</li>
+<li><code>selected</code>: an indicator of whether this influencer would have been selected according to the companies usual criteria</li>
+</ul>
+<p>Since their usual selection criteria include the expected sales impact of a campaign as well as the authenticity index the company suspects that the selection is a collider.</p>
+<ol style="list-style-type: lower-alpha">
+<li>Please estimate and interpret a model that shows the causal impact of authenticity on sales assuming the company is correct and their selection is a collider</li>
+</ol>
+<div class="sourceCode" id="cb930"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb930-1"><a href="assignments.html#cb930-1" tabindex="-1"></a><span class="co"># provide your code here</span></span>
+<span id="cb930-2"><a href="assignments.html#cb930-2" tabindex="-1"></a></span>
+<span id="cb930-3"><a href="assignments.html#cb930-3" tabindex="-1"></a>model_correct <span class="ot">&lt;-</span> <span class="fu">lm</span>(sales_impact <span class="sc">~</span> authenticity, influencer2)</span>
+<span id="cb930-4"><a href="assignments.html#cb930-4" tabindex="-1"></a>model_collider <span class="ot">&lt;-</span> <span class="fu">lm</span>(sales_impact <span class="sc">~</span> authenticity <span class="sc">+</span></span>
+<span id="cb930-5"><a href="assignments.html#cb930-5" tabindex="-1"></a>    selected, influencer2)</span>
+<span id="cb930-6"><a href="assignments.html#cb930-6" tabindex="-1"></a></span>
+<span id="cb930-7"><a href="assignments.html#cb930-7" tabindex="-1"></a><span class="fu">summary</span>(model_correct)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = sales_impact ~ authenticity, data = influencer2)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -53.349 -10.443   0.159  13.554  45.399 
+## 
+## Coefficients:
+##              Estimate Std. Error t value      Pr(&gt;|t|)    
+## (Intercept)   43.4479     6.4702   6.715 0.00000000124 ***
+## authenticity   0.3215     0.1209   2.658       0.00917 ** 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 19.46 on 98 degrees of freedom
+## Multiple R-squared:  0.06726,    Adjusted R-squared:  0.05774 
+## F-statistic: 7.067 on 1 and 98 DF,  p-value: 0.009171</code></pre>
+<div class="sourceCode" id="cb932"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb932-1"><a href="assignments.html#cb932-1" tabindex="-1"></a><span class="fu">summary</span>(model_collider)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = sales_impact ~ authenticity + selected, data = influencer2)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -47.618 -11.940   0.009  13.048  39.966 
+## 
+## Coefficients:
+##              Estimate Std. Error t value       Pr(&gt;|t|)    
+## (Intercept)   47.4128     6.1883   7.662 0.000000000014 ***
+## authenticity   0.1275     0.1256   1.015       0.312514    
+## selected      15.2177     4.1430   3.673       0.000392 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 18.33 on 97 degrees of freedom
+## Multiple R-squared:  0.1812, Adjusted R-squared:  0.1643 
+## F-statistic: 10.73 on 2 and 97 DF,  p-value: 0.0000617</code></pre>
+<ol start="2" style="list-style-type: lower-alpha">
+<li>Draw the DAG for the model (feel free to draw it by hand and insert an image)</li>
+</ol>
+<div class="sourceCode" id="cb934"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb934-1"><a href="assignments.html#cb934-1" tabindex="-1"></a><span class="co"># collider</span></span>
+<span id="cb934-2"><a href="assignments.html#cb934-2" tabindex="-1"></a><span class="fu">library</span>(DiagrammeR)</span>
+<span id="cb934-3"><a href="assignments.html#cb934-3" tabindex="-1"></a></span>
+<span id="cb934-4"><a href="assignments.html#cb934-4" tabindex="-1"></a><span class="do">## Model the situation assumed by the company</span></span>
+<span id="cb934-5"><a href="assignments.html#cb934-5" tabindex="-1"></a><span class="do">## (=collider)</span></span>
+<span id="cb934-6"><a href="assignments.html#cb934-6" tabindex="-1"></a><span class="fu">mermaid</span>(<span class="st">&quot;</span></span>
+<span id="cb934-7"><a href="assignments.html#cb934-7" tabindex="-1"></a><span class="st">graph LR</span></span>
+<span id="cb934-8"><a href="assignments.html#cb934-8" tabindex="-1"></a><span class="st">   authenticity--&gt; select</span></span>
+<span id="cb934-9"><a href="assignments.html#cb934-9" tabindex="-1"></a><span class="st">   sales--&gt; select</span></span>
+<span id="cb934-10"><a href="assignments.html#cb934-10" tabindex="-1"></a><span class="st">   authenticity--&gt;sales</span></span>
+<span id="cb934-11"><a href="assignments.html#cb934-11" tabindex="-1"></a><span class="st">&quot;</span>)</span></code></pre></div>
+<div class="DiagrammeR html-widget html-fill-item" id="htmlwidget-6166d559454ecd730d7d" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-6166d559454ecd730d7d">{"x":{"diagram":"\ngraph LR\n   authenticity--> select\n   sales--> select\n   authenticity-->sales\n"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="task-3-moderation" class="section level4 hasAnchor" number="8.5.1.3">
+<h4><span class="header-section-number">8.5.1.3</span> Task 3: Moderation<a href="assignments.html#task-3-moderation" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div class="sourceCode" id="cb935"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb935-1"><a href="assignments.html#cb935-1" tabindex="-1"></a>in_app_purchases <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">&quot;https://github.com/WU-RDS/MA2024/raw/refs/heads/main/data/in_app_purchases.csv&quot;</span>)</span></code></pre></div>
+<pre><code>## Rows: 1000 Columns: 3
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (2): gender, campaign_exposure
+## dbl (1): in_app_purchases
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<div class="sourceCode" id="cb937"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb937-1"><a href="assignments.html#cb937-1" tabindex="-1"></a><span class="fu">str</span>(in_app_purchases)</span></code></pre></div>
+<pre><code>## spc_tbl_ [1,000 × 3] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
+##  $ gender           : chr [1:1000] &quot;Male&quot; &quot;Female&quot; &quot;Male&quot; &quot;Female&quot; ...
+##  $ campaign_exposure: chr [1:1000] &quot;Exposed&quot; &quot;Exposed&quot; &quot;Exposed&quot; &quot;Not Exposed&quot; ...
+##  $ in_app_purchases : num [1:1000] 6 16 7 5 5 8 5 10 11 11 ...
+##  - attr(*, &quot;spec&quot;)=
+##   .. cols(
+##   ..   gender = col_character(),
+##   ..   campaign_exposure = col_character(),
+##   ..   in_app_purchases = col_double()
+##   .. )
+##  - attr(*, &quot;problems&quot;)=&lt;externalptr&gt;</code></pre>
+<p>The data-set <code>in_app_purchases</code> includes data on a marketing campaign aimed at boosting in-app purchases. It contains the variables:</p>
+<ul>
+<li><code>in_app</code>: the number of in-app purchases of a user</li>
+<li><code>gender</code>: the gender of the user</li>
+<li><code>campaign_exposure</code>: indicator whether the user was exposed to the campaign</li>
+</ul>
+<ol style="list-style-type: lower-alpha">
+<li>Provide an appropriate visualization showing whether the effect of the campaign is moderated by gender</li>
+</ol>
+<div class="sourceCode" id="cb939"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb939-1"><a href="assignments.html#cb939-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb939-2"><a href="assignments.html#cb939-2" tabindex="-1"></a></span>
+<span id="cb939-3"><a href="assignments.html#cb939-3" tabindex="-1"></a><span class="fu">ggplot</span>(in_app_purchases, <span class="fu">aes</span>(<span class="at">x =</span> campaign_exposure, <span class="at">y =</span> in_app_purchases, <span class="at">fill =</span> gender)) <span class="sc">+</span></span>
+<span id="cb939-4"><a href="assignments.html#cb939-4" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">alpha =</span> <span class="fl">0.7</span>, <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.8</span>)) <span class="sc">+</span>  <span class="co"># Adjusted dodge for separation</span></span>
+<span id="cb939-5"><a href="assignments.html#cb939-5" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb939-6"><a href="assignments.html#cb939-6" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;In-App Purchases by Campaign Exposure and Gender&quot;</span>,</span>
+<span id="cb939-7"><a href="assignments.html#cb939-7" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;Campaign Exposure&quot;</span>,</span>
+<span id="cb939-8"><a href="assignments.html#cb939-8" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">&quot;In-App Purchases&quot;</span>,</span>
+<span id="cb939-9"><a href="assignments.html#cb939-9" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">&quot;Gender&quot;</span></span>
+<span id="cb939-10"><a href="assignments.html#cb939-10" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb939-11"><a href="assignments.html#cb939-11" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb939-12"><a href="assignments.html#cb939-12" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb939-13"><a href="assignments.html#cb939-13" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;top&quot;</span>,</span>
+<span id="cb939-14"><a href="assignments.html#cb939-14" tabindex="-1"></a>    <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>),      <span class="co"># Improves text size</span></span>
+<span id="cb939-15"><a href="assignments.html#cb939-15" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">16</span>, <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>)  <span class="co"># Enhances title appearance</span></span>
+<span id="cb939-16"><a href="assignments.html#cb939-16" tabindex="-1"></a>  )</span></code></pre></div>
+<p><img src="14-rmdIntro_files/figure-html/unnamed-chunk-57-1.png" width="672" /></p>
+<p>From the boxplots we can already see that gender moderates the effect of the campaign. This campaign works much better on women than on men. We can check it formally by running the regression and looking at the coefficients.</p>
+<ol style="list-style-type: lower-alpha">
+<li>Calculate and interpret all of the coefficients in the appropriate model given your answer in a)</li>
+</ol>
+<div class="sourceCode" id="cb940"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb940-1"><a href="assignments.html#cb940-1" tabindex="-1"></a>moderation_gender <span class="ot">&lt;-</span> <span class="fu">lm</span>(in_app_purchases <span class="sc">~</span> campaign_exposure <span class="sc">*</span></span>
+<span id="cb940-2"><a href="assignments.html#cb940-2" tabindex="-1"></a>    gender, <span class="at">data =</span> in_app_purchases)</span>
+<span id="cb940-3"><a href="assignments.html#cb940-3" tabindex="-1"></a><span class="fu">summary</span>(moderation_gender)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = in_app_purchases ~ campaign_exposure * gender, data = in_app_purchases)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -10.9128  -1.9393   0.0607   2.0607  13.1297 
+## 
+## Coefficients:
+##                                         Estimate Std. Error t value
+## (Intercept)                              12.9128     0.1643   78.58
+## campaign_exposureNot Exposed             -7.7965     0.2782  -28.02
+## genderMale                               -4.0425     0.2379  -16.99
+## campaign_exposureNot Exposed:genderMale   3.8654     0.3841   10.06
+##                                                    Pr(&gt;|t|)    
+## (Intercept)                             &lt;0.0000000000000002 ***
+## campaign_exposureNot Exposed            &lt;0.0000000000000002 ***
+## genderMale                              &lt;0.0000000000000002 ***
+## campaign_exposureNot Exposed:genderMale &lt;0.0000000000000002 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 2.944 on 996 degrees of freedom
+## Multiple R-squared:  0.5589, Adjusted R-squared:  0.5576 
+## F-statistic: 420.7 on 3 and 996 DF,  p-value: &lt; 0.00000000000000022</code></pre>
+<p>From the model we can see that all the coefficients are significant (p&lt;0.05), so we can proceed with interpreting them.</p>
+<p>campaign_exposureNot Exposed - When the female customers are not exposed to the campaign, their in app purchases fall by 7.8 units in comparison with customers exposed to the campaign.
+genderMale - Men who are exposed to the campaign make 4.04 fewer in-app purchases on average compared to women who are exposed to the campaign.
+campaign_exposureNot Exposed:genderMale - Men are less negatively affected by not being exposed to the campaign compared to women.</p>
+<p>-7.8 + 3.9 = -3.9: If men are not exposed to the campaign, their in app purchases fall by 3.9 units in comparison with decrease of 7.8 among women.</p>
+</div>
+<div id="task-4-the-ikea-effect" class="section level4 hasAnchor" number="8.5.1.4">
+<h4><span class="header-section-number">8.5.1.4</span> Task 4: The IKEA effect<a href="assignments.html#task-4-the-ikea-effect" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div class="sourceCode" id="cb942"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb942-1"><a href="assignments.html#cb942-1" tabindex="-1"></a>ikea <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">&quot;https://github.com/WU-RDS/MA2024/raw/refs/heads/main/data/ikea.csv&quot;</span>)</span></code></pre></div>
+<pre><code>## Rows: 500 Columns: 3
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## dbl (3): self_assembly, accomplishment, valuation
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<div class="sourceCode" id="cb944"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb944-1"><a href="assignments.html#cb944-1" tabindex="-1"></a><span class="fu">str</span>(ikea)</span></code></pre></div>
+<pre><code>## spc_tbl_ [500 × 3] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
+##  $ self_assembly : num [1:500] 1 2 1 2 2 1 2 2 2 1 ...
+##  $ accomplishment: num [1:500] 4.62 6.44 4.66 7.09 8.6 ...
+##  $ valuation     : num [1:500] 79.3 73.2 69.1 78.4 78.9 ...
+##  - attr(*, &quot;spec&quot;)=
+##   .. cols(
+##   ..   self_assembly = col_double(),
+##   ..   accomplishment = col_double(),
+##   ..   valuation = col_double()
+##   .. )
+##  - attr(*, &quot;problems&quot;)=&lt;externalptr&gt;</code></pre>
+<p>The IKEA effect describes a psychological process through which consumers value products more because they feel a sense of accomplishment after assembling the something themselves. Using the following data, analyze whether you can replicate these results. The data was created through an experiment in which some consumers were randomly given fully assembled furniture while others had to assemble it themselves (it is otherwise the same furniture; variable: <code>self_assembly</code>). The researchers asked consumers about their sense of accomplishment (variable: <code>accomplishment</code>) and how much they value the final product (variable: <code>valuation</code>). Discuss the relative magnitude of the direct and mediated effect of self assembly.</p>
+<div class="sourceCode" id="cb946"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb946-1"><a href="assignments.html#cb946-1" tabindex="-1"></a><span class="co"># provide your code here</span></span>
+<span id="cb946-2"><a href="assignments.html#cb946-2" tabindex="-1"></a></span>
+<span id="cb946-3"><a href="assignments.html#cb946-3" tabindex="-1"></a><span class="co"># Mediation - engagement rate</span></span>
+<span id="cb946-4"><a href="assignments.html#cb946-4" tabindex="-1"></a></span>
+<span id="cb946-5"><a href="assignments.html#cb946-5" tabindex="-1"></a><span class="co"># Step 1: Run regression just with X and Y</span></span>
+<span id="cb946-6"><a href="assignments.html#cb946-6" tabindex="-1"></a>total_effect_ikea <span class="ot">&lt;-</span> <span class="fu">lm</span>(valuation <span class="sc">~</span> self_assembly,</span>
+<span id="cb946-7"><a href="assignments.html#cb946-7" tabindex="-1"></a>    <span class="at">data =</span> ikea)</span>
+<span id="cb946-8"><a href="assignments.html#cb946-8" tabindex="-1"></a></span>
+<span id="cb946-9"><a href="assignments.html#cb946-9" tabindex="-1"></a><span class="co"># Step 2: Run regression just with M1</span></span>
+<span id="cb946-10"><a href="assignments.html#cb946-10" tabindex="-1"></a>X_on_M_ikea <span class="ot">&lt;-</span> <span class="fu">lm</span>(accomplishment <span class="sc">~</span> self_assembly, <span class="at">data =</span> ikea)</span>
+<span id="cb946-11"><a href="assignments.html#cb946-11" tabindex="-1"></a></span>
+<span id="cb946-12"><a href="assignments.html#cb946-12" tabindex="-1"></a></span>
+<span id="cb946-13"><a href="assignments.html#cb946-13" tabindex="-1"></a><span class="co"># Step 3: Run regression with Y on X and M1</span></span>
+<span id="cb946-14"><a href="assignments.html#cb946-14" tabindex="-1"></a>avg_direct_effect_M_ikea <span class="ot">&lt;-</span> <span class="fu">lm</span>(valuation <span class="sc">~</span> self_assembly <span class="sc">+</span></span>
+<span id="cb946-15"><a href="assignments.html#cb946-15" tabindex="-1"></a>    accomplishment, <span class="at">data =</span> ikea)</span>
+<span id="cb946-16"><a href="assignments.html#cb946-16" tabindex="-1"></a></span>
+<span id="cb946-17"><a href="assignments.html#cb946-17" tabindex="-1"></a><span class="fu">summary</span>(total_effect_ikea)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = valuation ~ self_assembly, data = ikea)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -30.597  -7.481  -0.368   6.408  34.087 
+## 
+## Coefficients:
+##               Estimate Std. Error t value            Pr(&gt;|t|)    
+## (Intercept)    53.4978     1.4707   36.38 &lt;0.0000000000000002 ***
+## self_assembly  11.5394     0.9473   12.18 &lt;0.0000000000000002 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 10.57 on 498 degrees of freedom
+## Multiple R-squared:  0.2295, Adjusted R-squared:  0.228 
+## F-statistic: 148.4 on 1 and 498 DF,  p-value: &lt; 0.00000000000000022</code></pre>
+<div class="sourceCode" id="cb948"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb948-1"><a href="assignments.html#cb948-1" tabindex="-1"></a><span class="fu">summary</span>(X_on_M_ikea)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = accomplishment ~ self_assembly, data = ikea)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.77413 -0.64394  0.01379  0.70961  2.72736 
+## 
+## Coefficients:
+##               Estimate Std. Error t value            Pr(&gt;|t|)    
+## (Intercept)    2.84229    0.13974   20.34 &lt;0.0000000000000002 ***
+## self_assembly  2.12206    0.09001   23.57 &lt;0.0000000000000002 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.005 on 498 degrees of freedom
+## Multiple R-squared:  0.5274, Adjusted R-squared:  0.5265 
+## F-statistic: 555.8 on 1 and 498 DF,  p-value: &lt; 0.00000000000000022</code></pre>
+<div class="sourceCode" id="cb950"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb950-1"><a href="assignments.html#cb950-1" tabindex="-1"></a><span class="fu">summary</span>(avg_direct_effect_M_ikea)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = valuation ~ self_assembly + accomplishment, data = ikea)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -25.9883  -6.9040  -0.2609   5.9800  31.6184 
+## 
+## Coefficients:
+##                Estimate Std. Error t value             Pr(&gt;|t|)    
+## (Intercept)      45.287      1.915  23.644 &lt; 0.0000000000000002 ***
+## self_assembly     5.410      1.327   4.078       0.000052866717 ***
+## accomplishment    2.889      0.454   6.363       0.000000000449 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 10.18 on 497 degrees of freedom
+## Multiple R-squared:  0.2876, Adjusted R-squared:  0.2847 
+## F-statistic: 100.3 on 2 and 497 DF,  p-value: &lt; 0.00000000000000022</code></pre>
+<div class="sourceCode" id="cb952"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb952-1"><a href="assignments.html#cb952-1" tabindex="-1"></a><span class="co"># Indirect effect: self_assembly -&gt;</span></span>
+<span id="cb952-2"><a href="assignments.html#cb952-2" tabindex="-1"></a><span class="co"># accomplishment -&gt; valuation</span></span>
+<span id="cb952-3"><a href="assignments.html#cb952-3" tabindex="-1"></a>indirect_effect <span class="ot">&lt;-</span> <span class="fu">coef</span>(X_on_M_ikea)[<span class="st">&quot;self_assembly&quot;</span>] <span class="sc">*</span></span>
+<span id="cb952-4"><a href="assignments.html#cb952-4" tabindex="-1"></a>    <span class="fu">coef</span>(avg_direct_effect_M_ikea)[<span class="st">&quot;accomplishment&quot;</span>]</span>
+<span id="cb952-5"><a href="assignments.html#cb952-5" tabindex="-1"></a></span>
+<span id="cb952-6"><a href="assignments.html#cb952-6" tabindex="-1"></a><span class="co"># Print the indirect effect</span></span>
+<span id="cb952-7"><a href="assignments.html#cb952-7" tabindex="-1"></a>indirect_effect</span></code></pre></div>
+<pre><code>## self_assembly 
+##      6.129904</code></pre>
+<p>The coefficients in all 3 models are significant (p&lt;0.05), so we can proceed with the interpretations.</p>
+<p>First model with just the effect of self assembly on valuation: 11.54 (p&lt;0.05) If consumers assemble the product themselves (as opposed to receiving it fully assembled), their valuation of the product increases by 11.54 units.</p>
+<p>Second model with the effect of the self assembly on the sense of accomplishment: If the furniture is self assembled, it increases the sense of accomplishment by approximately 2.12 units in comparison with furniture that doesn’t have to be assembled.</p>
+<p>Third model with the effect of both self assembly and accomplishment on valuation: After including the accomplishment variable in the model, self assembly still has a positive effect on valuation, but now the effect is reduced compared to the total effect in the first step. The reduction suggests part of the effect of self assembly on valuation is mediated by accomplishment.</p>
+<p>As the next step, we calculate the indirect effect of the self assembly on valuation through sense of accomplishment by multiplying the coefficients from the first and second models: 2.122 * 2.889 = 6.13</p>
+<p>The mediated effect via accomplishment (=6.13) is slightly larger than the direct effect (5.41), suggesting that the IKEA effect (the increased valuation due to self assembly) is largely driven by the sense of accomplishment that consumers feel when assembling the product themselves.</p>
 
 <p><link rel="stylesheet" type="text/css" media="all" href="style.css" /></p>
+</div>
 </div>
 </div>
 </div>

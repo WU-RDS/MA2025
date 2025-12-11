@@ -1898,3 +1898,292 @@ step(mult_logit_model, #our base model
      test = "Chisq",
      data = music_data)
 ```
+
+
+
+
+## Assignment 4 (solutions)
+
+### Assignment A
+
+The data-set `influencer` contains the following variables to assess the success of influencer marketing campaigns:
+
+  - `follower_count`: the number of followers of the influencer
+  - `engagement_rate`: the engagement rate measured as the number of interations divided by the influencers reach
+  - `content_quality`: an index measuring the quality of the influencer's posts
+  - `post_frequency`: the number of times the influencer posted about the brand
+  - `sales`: the number of units sold during the campaign
+  - `brand_awareness`: an index measuring how many people became aware of the brand during the campaign
+
+**Task Instructions**
+
+#### Task 1: Omitted Variable Bias
+
+```{r}
+influencer <- readr::read_csv("https://github.com/WU-RDS/MA2024/raw/refs/heads/main/data/influencer.csv")
+str(influencer)
+set.seed(1234)
+```
+
+We are interested in modeling the sales during the campaigns.
+
+a) Draw a DAG that shows how you would model the causal influence of of `follower_count` on `sales` (feel free to draw it by hand and insert an image. You can add images with `![](./IMAGE.png)`)
+
+
+```{r}
+
+base_model <- lm(sales ~ follower_count, data = influencer)
+summary(base_model)
+
+```
+
+```{r}
+
+engagement_model <- lm(sales ~ follower_count + engagement_rate, data = influencer)
+summary(engagement_model)
+
+```
+```{r}
+
+frequency_model <- lm(sales ~ follower_count + post_frequency, data = influencer)
+summary(frequency_model)
+
+```
+
+```{r}
+
+content_model <- lm(sales ~ follower_count + content_quality, data = influencer)
+summary(content_model)
+
+```
+
+```{r}
+
+awareness_model <- lm(sales ~ follower_count + brand_awareness, data = influencer)
+summary(awareness_model)
+
+```
+
+We ran several models, starting with a base model with one independent variable follower_count and sales as dependent variable. Then we added different variables in this model to see if some of them add explanatory power, and it's the case only for the variable engagement_rate. The effect of follower count on sales increases when engagement rate is added to the model from 0.9 to 1.9, suggesting that engagement rate is acting as a confounder, influencing both follower_count and sales.
+
+
+b) Describe briefly what roles each of the variables in you DAG play (mediator, moderator, collider)
+
+```{r}
+
+#Engagement rate is a confounder
+
+library(DiagrammeR)
+
+mermaid("
+graph LR
+   engagement_rate --> follower_count
+   engagement_rate --> sales
+   follower_count --> sales
+")
+
+
+```
+
+
+c) Calculate the correlation coefficients of the variables you expect to be correlated based on your answer in a). Briefly explain any changes (if any) you would like to make to your DAG based on the results.
+
+```{r}
+
+# Load necessary libraries
+library(ggplot2)
+library(corrplot)
+
+
+#Variable selection
+variables <- influencer[, c("follower_count", "sales", "engagement_rate",
+                              "brand_awareness", "content_quality", "post_frequency")]
+
+# Calculate correlation matrix
+cor_matrix <- cor(variables, use = "complete.obs", method = "pearson")
+
+# Print the correlation matrix
+print(cor_matrix)
+
+# Visualize the correlation matrix using corrplot
+corrplot(cor_matrix, method = "circle", type = "upper",
+         tl.col = "black", tl.srt = 45, addCoef.col = "black")
+
+```
+
+
+d) Run and interpret the appropriate model given your answers in a) - c) (hint: you don't need anything we did not do in class)
+
+```{r}
+
+#Confounder - engagement rate
+
+base_model <- lm(sales ~ follower_count, data = influencer)
+summary(base_model)
+
+engagement_model <- lm(sales ~ follower_count + engagement_rate, data = influencer)
+summary(engagement_model)
+
+```
+
+
+All the coefficients have a p-value lower than 0.05, which means they are all significant, so we can proceed with the interpretations.
+
+The coefficient for follower count is now 1.99, meaning for each additional follower, sales increase by 1.99 units, holding another predictor constant. This is higher than the previous value of 0.9 in the base model. After adjusting for engagement rate, the effect of follower count on sales becomes stronger. The coefficient for engagement rate is 2.1, meaning for each unit increase in engagement rate, sales increase by 2.1 units, holding another predictor constant.
+
+The R-squared of the model increased from 0.13 in the base model to 0.5 in the model including engagement rate. So, this model explains 50% of the variance in sales.
+
+#### Task 2: Selection Bias
+
+```{r}
+influencer2 <- readr::read_csv("https://github.com/WU-RDS/MA2024/raw/refs/heads/main/data/influencer2.csv")
+str(influencer2)
+```
+
+The data-set `influencer2` contains data from an experiment run by a company to assess whether their selection criteria for influencer campaigns are suitable to assess the impact authenticity of their posts have on sales. Instead of their usual selection criteria they select influencers at random to check if their usual selection criteria change the relationship between authenticit and sales. The data contains the following variables:
+
+ - `sales_impact`: the measured sales impact of an influencer
+ - `authenticity`: an index measuring the perceived authenticity of the influencer's posts
+ - `selected`: an indicator of whether this influencer would have been selected according to the companies usual criteria
+
+Since their usual selection criteria include the expected sales impact of a campaign as well as the authenticity index the company suspects that the selection is a collider.
+
+a) Please estimate and interpret a model that shows the causal impact of authenticity on sales assuming the company is correct and their selection is a collider
+
+```{r}
+# provide your code here
+
+model_correct <- lm(sales_impact ~ authenticity, influencer2)
+model_collider <-  lm(sales_impact ~ authenticity + selected, influencer2)
+
+summary(model_correct)
+summary(model_collider)
+
+```
+
+b) Draw the DAG for the model (feel free to draw it by hand and insert an image)
+
+```{r}
+
+#collider
+library(DiagrammeR)
+
+## Model the situation assumed by the company (=collider)
+mermaid("
+graph LR
+   authenticity--> select
+   sales--> select
+   authenticity-->sales
+")
+
+```
+
+#### Task 3: Moderation
+
+```{r}
+in_app_purchases <- readr::read_csv("https://github.com/WU-RDS/MA2024/raw/refs/heads/main/data/in_app_purchases.csv")
+str(in_app_purchases)
+```
+
+
+The data-set `in_app_purchases` includes data on a marketing campaign aimed at boosting in-app purchases. It contains the variables:
+
+- `in_app`: the number of in-app purchases of a user
+- `gender`: the gender of the user
+- `campaign_exposure`: indicator whether the user was exposed to the campaign
+
+a) Provide an appropriate visualization showing whether the effect of the campaign is moderated by gender
+
+```{r}
+
+library(ggplot2)
+
+ggplot(in_app_purchases, aes(x = campaign_exposure, y = in_app_purchases, fill = gender)) +
+  geom_boxplot(alpha = 0.7, position = position_dodge(width = 0.8)) +  # Adjusted dodge for separation
+  labs(
+    title = "In-App Purchases by Campaign Exposure and Gender",
+    x = "Campaign Exposure",
+    y = "In-App Purchases",
+    fill = "Gender"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "top",
+    axis.text = element_text(size = 12),      # Improves text size
+    plot.title = element_text(size = 16, face = "bold")  # Enhances title appearance
+  )
+
+
+```
+
+From the boxplots we can already see that gender moderates the effect of the campaign. This campaign works much better on women than on men. We can check it formally by running the regression and looking at the coefficients.
+
+
+a) Calculate and interpret all of the coefficients in the appropriate model given your answer in a)
+
+```{r}
+
+moderation_gender <- lm(in_app_purchases ~ campaign_exposure*gender, data = in_app_purchases)
+summary(moderation_gender)
+
+```
+
+From the model we can see that all the coefficients are significant (p<0.05), so we can proceed with interpreting them.
+
+campaign_exposureNot Exposed - When the female customers are not exposed to the campaign, their in app purchases fall by 7.8 units in comparison with customers exposed to the campaign.
+genderMale - Men who are exposed to the campaign make 4.04 fewer in-app purchases on average compared to women who are exposed to the campaign.
+campaign_exposureNot Exposed:genderMale - Men are less negatively affected by not being exposed to the campaign compared to women.
+
+-7.8 + 3.9 = -3.9: If men are not exposed to the campaign, their in app purchases fall by 3.9 units in comparison with decrease of 7.8 among women.
+
+
+#### Task 4: The IKEA effect
+
+
+```{r}
+ikea <- readr::read_csv("https://github.com/WU-RDS/MA2024/raw/refs/heads/main/data/ikea.csv")
+str(ikea)
+```
+
+The IKEA effect describes a psychological process through which consumers value products more because they feel a sense of accomplishment after assembling the something themselves. Using the following data, analyze whether you can replicate these results. The data was created through an experiment in which some consumers were randomly given fully assembled furniture while others had to assemble it themselves (it is otherwise the same furniture; variable: `self_assembly`). The researchers asked consumers about their sense of accomplishment (variable: `accomplishment`) and how much they value the final product (variable: `valuation`). Discuss the relative magnitude of the direct and mediated effect of self assembly.
+
+```{r}
+# provide your code here
+
+#Mediation - engagement rate
+
+#Step 1: Run regression just with X and Y
+total_effect_ikea <- lm(valuation ~ self_assembly, data = ikea)
+
+#Step 2: Run regression just with M1
+X_on_M_ikea <- lm(accomplishment ~ self_assembly, data = ikea)
+
+
+# Step 3: Run regression with Y on X and M1
+avg_direct_effect_M_ikea <- lm(valuation ~ self_assembly + accomplishment, data = ikea)
+
+summary(total_effect_ikea)
+summary(X_on_M_ikea)
+summary(avg_direct_effect_M_ikea)
+
+# Indirect effect: self_assembly -> accomplishment -> valuation
+indirect_effect <- coef(X_on_M_ikea)["self_assembly"] * coef(avg_direct_effect_M_ikea)["accomplishment"]
+
+# Print the indirect effect
+indirect_effect
+
+
+```
+
+
+The coefficients in all 3 models are significant (p<0.05), so we can proceed with the interpretations.
+
+First model with just the effect of self assembly on valuation: 11.54 (p<0.05) If consumers assemble the product themselves (as opposed to receiving it fully assembled), their valuation of the product increases by 11.54 units.
+
+Second model with the effect of the self assembly on the sense of accomplishment: If the furniture is self assembled, it increases the sense of accomplishment by approximately 2.12 units in comparison with furniture that doesn't have to be assembled.
+
+Third model with the effect of both self assembly and accomplishment on valuation: After including the accomplishment variable in the model, self assembly still has a positive effect on valuation, but now the effect is reduced compared to the total effect in the first step. The reduction suggests part of the effect of self assembly on valuation is mediated by accomplishment.
+
+As the next step, we calculate the indirect effect of the self assembly on valuation through sense of accomplishment by multiplying the coefficients from the first and second models: 2.122 * 2.889 = 6.13
+
+The mediated effect via accomplishment (=6.13) is slightly larger than the direct effect (5.41), suggesting that the IKEA effect (the increased valuation due to self assembly) is largely driven by the sense of accomplishment that consumers feel when assembling the product themselves.
